@@ -1,3 +1,5 @@
+@import 'variables';
+
 .navbar-brand {
 	padding: 8px 15px;
 }
@@ -16,5 +18,17 @@
 	margin-bottom: 5px;
 }
 .btn-default {
-	background-color: #ff7799;	
+	background-color: $pink-color;	
+}
+
+body {
+	font-family: 'Cabin', serif
+}
+
+.main {
+	background-color: $lightgrey-color;
+}
+
+.bold-text {
+	font-weight: 700;
 }

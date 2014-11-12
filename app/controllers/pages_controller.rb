@@ -13,12 +13,18 @@ class PagesController < ApplicationController
                      {question_header: "1,432 Plans Found",
                       question_main: "Please enter more information to narrow your search.",
                       next_page: 3,
-                     }
+                     },
+
+                     3 => {},
                     }
   
   def show
     @page_data={}
     @page_data[:current_page]=params[:page_id].to_i
     @page_data.merge! @@defaults.merge(@@page_data_table[@page_data[:current_page]])
+
+    if params[:page_id].to_i == 3
+      render 'pages/results'
+    end
   end
 end

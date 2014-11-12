@@ -1,0 +1,41 @@
+@import 'variables';
+
+.results-bg {
+	width: 100%;
+	height: 100%;
+	padding: 10px 0;
+}
+.info-box:before {
+	content: '';
+	display: block;
+	position: relative;
+	top: -5px;
+	left: -15px;
+	width: 104.5%;
+	background-color: $pink-color;
+	height: 5px;
+}
+
+.info-box {
+	background-color: white;
+	padding: 5px 15px 15px;
+	margin-top: 20px;
+}
+
+
+.checkboxes {
+	.box {
+		border-radius: 2px;
+		margin-right: 5px;
+		padding: 2px;
+		cursor: pointer;
+	}
+	.unselected {
+		color: $lightgrey-color;
+		background-color: $lightgrey-color;
+	}
+	.selected {
+		color: white;
+		background-color: $pink-color;
+	}
+}
