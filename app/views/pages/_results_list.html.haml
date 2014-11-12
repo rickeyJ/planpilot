@@ -1,0 +1,43 @@
+.results-list
+  // The Header
+  .row.indiv-result-row.headerrow
+    .col-xs-4.rescol
+      %span.bold-text 
+        = @page_data[:results_header1]
+
+    .col-xs-4.innercol.rescol
+      %span.bold-text 
+        = @page_data[:results_header2]
+
+    .col-xs-4.rescol
+      %span.bold-text
+        = @page_data[:results_header3]
+
+  // The results
+
+  - @page_data[:results_data].each do |res|
+    .row.indiv-result-row{class: "#{cycle('unshaded', 'shaded')}"}
+      .col-xs-4.rescol
+        = image_tag res[:image]
+
+      .col-xs-4.innercol.rescol
+        %span.resulttag
+          = res[:plantype]
+        .bold-text.large
+          = res[:first_line]
+
+        .result-deets
+          = raw(res[:result_deets])
+
+        .bold-text.large
+          = res[:last_line]
+
+      .col-xs-4.rescol
+        .bold-text.large
+          = res[:first_line2]
+
+        .result-deets
+          = raw(res[:result_deets2])
+
+        .bold-text.large
+          = res[:last_line2]
