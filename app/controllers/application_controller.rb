@@ -38,6 +38,8 @@ class ApplicationController < ActionController::Base
     @navbar_entries = NavbarEntry.all.map do |entry|
       {title: entry.title, url: entry.url }
     end
+
+    @navbar_entries = [{title: 'HOME', url: '#'}, {title: 'ABOUT', url: '#'}, {title: 'YOUR PLANS', url: '#'}, {title: 'FAQ', url: '#'}]
   end
 
   def go_back_or_root(message)

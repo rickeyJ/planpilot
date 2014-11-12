@@ -1,0 +1,35 @@
+.row.hero
+  .col-xs-2
+    
+  .col-xs-8.question-text
+    .question-header
+      = @page_data[:question_header]
+    
+    .question-follow
+      = @page_data[:question_main]
+
+    - if @page_data[:current_page]==1
+      = render 'simple_form'
+    - else
+      = render 'complex_form'
+
+  .col-xs-2
+
+    
+.row.testimonial
+  .col-xs-1
+  .col-xs-1.drop-arrow
+    .glyphicon.glyphicon-chevron-left
+
+  .col-xs-8.testimonial-text
+    = @page_data[:testimonial]
+    
+  .col-xs-1.drop-arrow
+    .glyphicon.glyphicon-chevron-right
+      
+  .col-xs-1
+      
+  
+.row.healthcare-providers
+
+.row.footer

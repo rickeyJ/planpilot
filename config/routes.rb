@@ -1,28 +1,21 @@
-require 'resque_web'
-
 TestDk::Application.routes.draw do
 
   # I like having this to populate the navbar with, via the database rather than do it in the views.
   resources :navbar_entries
 
+  post '/page' => 'pages#show'
+  
   # Logins and Profiles
   devise_for :users
   resources :users, path: 'profiles'
 
-  root to: 'tasks#index' # Change this to something else in your app.
+  root to: 'pages#show', page_id: 1 # Change this to something else in your app.
 
   # The rest of the routes file is probably useless to most new apps based on this template, EXCEPT for the 
   # 404 catchall below which has to always be at the end.
 
   # Adds RailsAdmin
   mount RailsAdmin::Engine => '/rails_admin', as: 'rails_admin'
-
-  resources :locations
-  resources :tasks
-  resources :categories
-  
-  ResqueWeb::Engine.eager_load!
-  mount ResqueWeb::Engine => "/resque"
 
   # Added API and Doorkeeper
   namespace :api, defaults: {format: 'json'} do

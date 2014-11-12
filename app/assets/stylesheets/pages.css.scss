@@ -1,0 +1,70 @@
+.hero {
+	width: 100%;
+	height: 500px;
+	background-color: peach;
+	background:  asset-url("hero01-copy.jpg") no-repeat scroll center center ;
+	overflow: hidden;
+	-webkit-background-size: cover;
+	-moz-background-size: cover;
+	-o-background-size: cover;
+
+	background-size: cover;
+}
+
+.question-header {
+	font-size: 2em;
+	margin-bottom: 20px;
+}
+
+.question-text {
+	padding-top: 10%;
+	color: white;
+	width: 30%;
+}
+
+.question-follow {
+	margin-bottom: 15px;
+}
+.drop-arrow {
+	margin-top: 25px;
+}
+
+// For simple form
+.zipinput {
+	width: 150px;
+}
+.inline {
+	display: inline;
+}
+
+// For complex form box
+.complex-form-box {
+	padding: 10px;
+	background-color: white;
+}
+.complex-form-box:before {
+	content: '';
+	display: block;
+	background-color: #ff7799;
+	height: 5px;
+	width: 105%;
+	left: -10px;
+	top: -15px;
+	position: relative;
+}
+
+// For testimonials
+.testimonial-text {
+	font-size: 1.25em;
+	font-weight: bold;
+}
+
+.testimonial {
+	margin-top: 20px;
+}
+
+.testimonial:after {
+	content: '';
+	display: block;
+	background-color: grey;
+}

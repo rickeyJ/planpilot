@@ -1,0 +1,6 @@
+.complex-form-box
+  = form_tag('/page', id: 'pageform') do
+    %input{name: 'page_id', type: 'hidden', value: @page_data[:next_page]}  
+    %input.zipinput.inline.form-control{name: 'zip',  type: 'text', placeholder: 'ZIP Code'}
+    %button.btn.btn-default.submit
+      Go  

@@ -12,5 +12,6 @@
  *= require bootstrap
  *= require bootstrap_and_overrides
  *= require custom.css
+ *= require pages.css
  *= require formtastic-bootstrap
  */
