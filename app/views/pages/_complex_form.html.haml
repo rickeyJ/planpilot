@@ -1,6 +1,12 @@
 .complex-form-box
   = form_tag('/page', id: 'pageform') do
-    %input{name: 'page_id', type: 'hidden', value: @page_data[:next_page]}  
-    %input.zipinput.inline.form-control{name: 'zip',  type: 'text', placeholder: 'ZIP Code'}
-    %button.btn.btn-default.submit
-      Go  
+    .form-content
+      %input{name: 'page_id', type: 'hidden', value: @page_data[:next_page]}  
+      = "I am"
+      %input.ageinput.inline.form-control{name: 'age',  type: 'text', placeholder: '37'}
+      = "years old, I am "
+      = render 'dropdown', {dropdown_title: 'Married', options_list: ['single', 'with domes. part.']}
+      = "and I'm looking for health insurance for"
+      = render 'dropdown', {dropdown_title: 'my family', options_list: ['myself']}
+      %button.btn.btn-default.submit
+        Go  

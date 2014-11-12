@@ -1,0 +1,10 @@
+.dropdown.inline
+  %button.btn.btn-default.dropdown-toggle#dropdownMenu1{type: "button", 'data-toggle' => "dropdown", 'aria-expanded' => "true"}
+    = "#{dropdown_title}"
+    <span class="caret"></span>
+
+  %ul.dropdown-menu{role: "menu", 'aria-labelledby' => "dropdownMenu1"}
+    - options_list.each do |opt|
+      %li{role: "presentation"}
+        %a{role: "menuitem", tabindex: "-1", href: "#"}
+          = "#{opt}"

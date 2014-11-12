@@ -21,6 +21,11 @@
 	background-color: $pink-color;	
 }
 
+.dropdown-toggle {
+	background-color: $lightgrey-color;
+	color: black;
+}
+
 body {
 	font-family: 'Cabin', serif
 }
@@ -43,4 +48,7 @@ body {
 .innercol {
 	border-left: solid 1px $lightgrey-color;
 	border-right: solid 1px $lightgrey-color;
+}
+.inline {
+	display: inline;
 }

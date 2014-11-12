@@ -35,14 +35,12 @@
 .zipinput {
 	width: 150px;
 }
-.inline {
-	display: inline;
-}
 
 // For complex form box
 .complex-form-box {
 	padding: 10px;
 	background-color: white;
+	color: black;
 }
 .complex-form-box:before {
 	content: '';
@@ -53,6 +51,16 @@
 	left: -10px;
 	top: -15px;
 	position: relative;
+}
+.ageinput {
+	width: 50px;
+}
+.maritalstatusinput {
+	width: 120px;
+}
+
+.form-content {
+	line-height: 350%;
 }
 
 // For testimonials
