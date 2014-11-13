@@ -7,7 +7,9 @@
 
       .row.checkboxes
         - @page_data[:checkbox_list].each do |cb|  
-          .col-xs-3
+          .col-xs-3.popupparent
+            %span.popup
+              = raw(cb[:popup_html])
             %span.box.unselected
               &nbsp;X
             %span.box-label
