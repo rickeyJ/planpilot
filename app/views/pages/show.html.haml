@@ -13,6 +13,17 @@
     - else
       = render 'complex_form'
 
+    .steps-text
+      Four Easy Steps
+      - (0..@page_data[:step_index]-1).each do |i|
+        %span.step-circle.step-done
+          = image_tag 'check-mark-hi.png', class: 'step-check img-responsive'
+      %span.step-circle.step-now
+        &nbsp;
+      - (@page_data[:step_index]+1..@page_data[:total_steps]-1).each do |i|
+        %span.step-circle.step-notdone
+          &nbsp;
+
   .col-xs-2
 
     

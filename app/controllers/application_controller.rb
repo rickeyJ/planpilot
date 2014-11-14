@@ -39,7 +39,7 @@ class ApplicationController < ActionController::Base
       {title: entry.title, url: entry.url }
     end
 
-    @navbar_entries = [{title: 'HOME', url: '#'}, {title: 'ABOUT', url: '#'}, {title: 'YOUR PLANS', url: '#'}, {title: 'FAQ', url: '#'}]
+    @navbar_entries = [{title: 'HOME', url: '#'}, {title: 'ABOUT', url: '#'}, {title: 'YOUR PLANS', url: '#'}, {title: 'LOGIN | REGISTER', url: '#'}]
   end
 
   def go_back_or_root(message)

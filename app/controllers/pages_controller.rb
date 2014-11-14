@@ -1,18 +1,21 @@
 class PagesController < ApplicationController
   @@defaults = {
-    testimonial: "I am telling all my friends and family about this site. The options are clear and they guide you to a health plan that's just right for you."
+    testimonial: "I am telling all my friends and family about this site. The options are clear and they guide you to a health plan that's just right for you.",
+    total_steps: 4,
   }
 
   @@page_data_table={
                      1 =>
                      {question_header: 'We\'ve Got You Covered', question_main: 'Your location is the first piece of information you will need to enter.',
                       next_page: 2,
+                      step_index: 0,
                      },
 
                      2 =>
                      {question_header: "1,432 Plans Found",
                       question_main: "Please enter more information to narrow your search.",
                       next_page: 3,
+                      step_index: 1,
                      },
 
                      3 => {
@@ -21,7 +24,8 @@ class PagesController < ApplicationController
                        results_data: [
                          {image: "aetna_logo.png", first_line: "Monthly Premium $871", result_deets: "Typical Drug Cost (Per refill): $50<br>\nPrimary Doctor Visit: $40<br>\nDoctors Nearby 490", last_line: "True Cost of Annual Care: $15,603", first_line2: "Recommended because:", result_deets2: "This will allow you to cover the medication you need.", plantype: 'HMO'},
                          {image: "kp_logo_transparent.gif", first_line: "Monthly Premium $556", result_deets: "Typical Drug Cost (Per refill): $60<br>\nPrimary Doctor Visit: $60<br>\nDoctors Nearby 1225", last_line: "True Cost of Annual Care: $18,233", first_line2: "Recommended because:", result_deets2: "Your doctors are in this network.", plantype: 'PPO'}
-                       ]
+                       ],
+                      step_index: 3,
                      },
                     }
   
