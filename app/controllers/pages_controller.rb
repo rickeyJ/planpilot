@@ -13,12 +13,20 @@ class PagesController < ApplicationController
 
                      2 =>
                      {question_header: "1,432 Plans Found",
-                      question_main: "Please enter more information to narrow your search.",
+                      question_main: "Find the best plan for me.",
                       next_page: 3,
+                      current_info: 'Oakland, CA',
                       step_index: 1,
                      },
 
                      3 => {
+                       question_header: "1,432 Plans Found",
+                       question_main: "You may be eligible for a subsidy.",
+                       next_page: 4,
+                       step_index: 2,
+                     },
+                     
+                     4 => {
                        results_header1: 'Health Plan', results_header2: 'By The Numbers', results_header3: 'The Bottom Line',
                        checkbox_list: [{label: "I have a favorite doctor", popup_html: '<input class="doctornameinput inline form-control" type="text" placeholder="Enter doctor name"><button class="btn btn-default submit">Go</button>'}, {label: "I have an ongoing illness"}, {label: "I take prescription medication"}, {label: "I'm a smoker"},],
                        results_data: [
@@ -34,7 +42,7 @@ class PagesController < ApplicationController
     @page_data[:current_page]=params[:page_id].to_i
     @page_data.merge! @@defaults.merge(@@page_data_table[@page_data[:current_page]])
 
-    if params[:page_id].to_i == 3
+    if params[:page_id].to_i == 4
       render 'pages/results'
     end
   end

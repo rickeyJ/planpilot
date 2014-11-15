@@ -2,16 +2,16 @@
   .col-xs-2
     
   .col-xs-8.question-text
+    .current-info
+      = @page_data[:current_info]
+      
     .question-header
       = @page_data[:question_header]
     
-    .question-follow
-      = @page_data[:question_main]
-
     - if @page_data[:current_page]==1
       = render 'simple_form'
     - else
-      = render 'complex_form'
+      = render "complex_form_#{@page_data[:current_page]}"
 
     .steps-text
       Four Easy Steps

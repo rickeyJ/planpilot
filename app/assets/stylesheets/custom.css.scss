@@ -10,7 +10,7 @@
 	color: black;
 }
 .navbar-default .navbar-nav > li > a:hover {
-	color: pink;
+	color: $pink-color;
 }
 
 .navbar {
@@ -51,4 +51,30 @@ body {
 }
 .inline {
 	display: inline;
+}
+
+.dialog-set {
+	margin-top: 20px;
+}
+
+.dialog-preferred {
+	background-color: $pink-color;
+}
+
+.dialog-nonpreferred {
+	background-color: $darkgrey-color;
+}
+
+.empty-div {
+	visibility: hidden;
+	padding: 5px;
+	display: inline-block;
+}
+.dialog-button {
+	float: right;
+	margin-left: 10px;
+	color: white;
+	padding: 5px;
+	border-radius: 5px;
+	cursor: pointer;
 }
