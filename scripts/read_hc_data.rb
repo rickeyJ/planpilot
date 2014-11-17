@@ -8,8 +8,21 @@ ck=ColumnKey.new ARGV[1]
 File.open(ARGV[0]).readlines.each do |l|
   if index == 0
     ck.set_keys
-#    ck.add_keys ini_keys
+    ck.payload_keys=ini_keys
   else
+
+    vals = l.split "\t"
+    vals.each_with_index do |val, idx|
+      if ck.key_values(idx).empty? and ck.payload_keys[idx].nil?
+        unless /^\s*$/.match(val)
+          $stderr.write("#{idx} value #{val} has no parent key."); exit -1
+        end
+        next
+      end
+
+      
+        
+    end
   end
 
   index+=1

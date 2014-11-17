@@ -1,5 +1,7 @@
 class ColumnKey
+  attr_accessor :payload_keys
   def initialize(f)
+    @payload_keys=nil
     @keys=[]
     @fh=File.open(f)
     @filters = {price_type: ['medical', 'drug', 'specialist', 'emergency', 'Primary Care Physician', 'Inpatient Facility', 'Generic Drugs', 'Preferred Brand Drugs', 'Non-preferred Brand Drugs', 'Specialty Drugs', 'Inpatient Physician'],
@@ -16,7 +18,7 @@ class ColumnKey
       @keys
     end
   end
-  
+
   def set_keys
     filters=@filters
     @fh.readlines.each_with_index do |l, line_no|

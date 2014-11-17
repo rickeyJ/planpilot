@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20140220054846) do
+ActiveRecord::Schema.define(version: 20141117181249) do
 
   create_table "categories", force: true do |t|
     t.string   "name"
@@ -114,5 +114,21 @@ ActiveRecord::Schema.define(version: 20140220054846) do
 
   add_index "users", ["email"], name: "index_users_on_email", unique: true
   add_index "users", ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
+
+  create_table "zip_infos", force: true do |t|
+    t.string   "zip"
+    t.string   "zip_type"
+    t.string   "primary_city"
+    t.text     "acceptable_cities"
+    t.text     "unacceptable_cities"
+    t.string   "state"
+    t.string   "county"
+    t.string   "timezone"
+    t.string   "area_codes"
+    t.float    "latitude"
+    t.float    "longitude"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
 
 end
