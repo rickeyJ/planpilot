@@ -5,6 +5,7 @@
   = form_tag('/page', id: 'pageform') do
     .form-content
       %input#page_id{name: 'page_id', type: 'hidden', value: @page_data[:next_page]}  
+      %input{name: 'current_info', type: 'hidden', value: @page_data[:current_info].to_json}  
       = "What is your annual family income? "
       %input#income.zipinput.inline.form-control{name: 'income',  type: 'text', placeholder: ''}
       %button.btn.btn-default.submit

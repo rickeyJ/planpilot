@@ -15,7 +15,6 @@ class PagesController < ApplicationController
                      {question_header: "1,432 Plans Found",
                       question_main: "Find the best plan for me.",
                       next_page: 3,
-                      current_info: 'Oakland, CA',
                       step_index: 1,
                      },
 
@@ -42,8 +41,22 @@ class PagesController < ApplicationController
     @page_data[:current_page]=params[:page_id].to_i
     @page_data.merge! @@defaults.merge(@@page_data_table[@page_data[:current_page]])
 
+    @page_data[:current_info]=params[:current_info] ? JSON.parse(params[:current_info]) : {}
+    @page_data[:current_info].merge! build_current_info
+    
     if params[:page_id].to_i == 4
       render 'pages/results'
     end
+  end
+
+  private
+  def build_current_info
+    h={}
+    if params[:zip]
+      h[:county]=ZipInfo.where(zip: params[:zip])[0].county
+      h[:state]=ZipInfo.where(zip: params[:zip])[0].state
+    end
+
+    h
   end
 end
