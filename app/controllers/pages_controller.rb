@@ -56,7 +56,15 @@ class PagesController < ApplicationController
       h[:county]=ZipInfo.where(zip: params[:zip])[0].county
       h[:state]=ZipInfo.where(zip: params[:zip])[0].state
     end
-
+    if params[:shop_for]
+      h[:shop_for]=params[:shop_for]
+    end
+    if params[:marital_status]
+      h[:marital_status]=params[:marital_status]
+    end
+    if params[:age]
+      h[:age]=params[:age]
+    end
     h
   end
 end

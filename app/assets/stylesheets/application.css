@@ -14,5 +14,6 @@
  *= require custom.css
  *= require pages.css
  *= require results.css
+ *= require devise.css
  *= require formtastic-bootstrap
  */

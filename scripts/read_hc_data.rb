@@ -5,6 +5,8 @@ ini_keys = ['State', 'County', 'Metal Level', 'Issuer Name', 'Plan_ID', 'Plan_Ma
 index=0
 ck=ColumnKey.new ARGV[1]
 
+# Hold all the plans in a hash
+plans={}
 File.open(ARGV[0]).readlines.each do |l|
   if index == 0
     ck.set_keys
@@ -20,9 +22,13 @@ File.open(ARGV[0]).readlines.each do |l|
         next
       end
 
-      
-        
+      if ck.key_values(idx).empty?
+        # This is a payload key so add to the plan's payload
+        plan
+      end
+
     end
+    
   end
 
   index+=1

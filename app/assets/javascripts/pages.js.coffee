@@ -17,3 +17,12 @@ $ ->
 	$(".dialog-preferred").click (evt) ->
 		$(".interstitial").toggle();
 		$(".form-content").toggle();
+
+	$(".dropdown-menu li").click (evt) ->
+		id=$(this).parent().attr('id')
+		val=$(this).find('a').data('val')
+		$(this).parent().parent().find('.dropdown_title').html("\n" + val + "\n")
+
+		target_id = id.replace('_choices', '')
+		$("#" + target_id).val(val)
+		null
