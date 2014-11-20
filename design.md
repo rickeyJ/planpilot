@@ -1,7 +1,7 @@
 # tables
 
 cost_maps
-* price_type: medical, drug, specialist, emergency, Primary Care Physician, Inpatient Facility, Generic Drugs, Preferred Brand Drugs, Non-preferred Brand Drugs, Specialty Drugs, Inpatient Physician
+* service: medical, drug, specialist, emergency, Primary Care Physician, Inpatient Facility, Generic Drugs, Preferred Brand Drugs, Non-preferred Brand Drugs, Specialty Drugs, Inpatient Physician
 * consumer_type: individual, family
 * child_number: 0-3
 * age_threshold
@@ -11,3 +11,5 @@ cost_maps
 plan
 * serialize InfoPayload Hash (use keys in get columns)
 
+Rails g model Plan payload:text
+rails g model CostMap consumer_type:string child_number:integer age_threshold:integer service:string charge_type:string plan_id:integer

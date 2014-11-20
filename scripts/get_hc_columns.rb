@@ -12,7 +12,7 @@ class ColumnKey
   end
 
   def payload_keys=(list)
-    @payload_keys = list.map { |x| x.to_sym }
+    @payload_keys = list.map { |x| x.downcase.gsub(/ /, '_').to_sym }
   end
   
   def key_values(i=-1)
@@ -32,7 +32,7 @@ class ColumnKey
       end
       
       property_string = ''
-      puts l
+
       matched=false
       filters[:charge_type].each do |ct|
         r=Regexp.new Regexp.escape(ct), Regexp::IGNORECASE
@@ -63,7 +63,7 @@ class ColumnKey
 
         property_string += "\tconsumer_type: #{types[0]}"
 
-        @keys[line_no][:child_no]=child_number l
+        @keys[line_no][:child_number]=child_number l
         @keys[line_no][:age_threshold]=age_threshold l
       end
 
@@ -78,7 +78,7 @@ class ColumnKey
       @keys[line_no][:service]="#{svc}"
       property_string += "\tservice: #{svc}"
 
-      puts "#{property_string}"
+
     end
   end
   

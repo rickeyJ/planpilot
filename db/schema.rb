@@ -11,22 +11,18 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20141117181249) do
+ActiveRecord::Schema.define(version: 20141120062609) do
 
-  create_table "categories", force: true do |t|
-    t.string   "name"
+  create_table "cost_maps", force: true do |t|
+    t.string   "consumer_type"
+    t.integer  "child_number"
+    t.integer  "age_threshold"
+    t.string   "service"
+    t.string   "charge_type"
+    t.integer  "plan_id"
     t.datetime "created_at"
     t.datetime "updated_at"
-  end
-
-  create_table "locations", force: true do |t|
-    t.float    "lat"
-    t.float    "long"
-    t.string   "name"
-    t.string   "address"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.integer  "owner_id"
+    t.string   "val"
   end
 
   create_table "navbar_entries", force: true do |t|
@@ -75,24 +71,11 @@ ActiveRecord::Schema.define(version: 20141117181249) do
 
   add_index "oauth_applications", ["uid"], name: "index_oauth_applications_on_uid", unique: true
 
-  create_table "task_categorizations", force: true do |t|
-    t.integer  "task_id"
-    t.integer  "category_id"
+  create_table "plans", force: true do |t|
+    t.text     "payload"
     t.datetime "created_at"
     t.datetime "updated_at"
-  end
-
-  create_table "tasks", force: true do |t|
-    t.string   "title"
-    t.integer  "owner_id"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-    t.date     "due_date"
-  end
-
-  create_table "test_models", force: true do |t|
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.string   "plan_identifier"
   end
 
   create_table "users", force: true do |t|

@@ -6,6 +6,7 @@ index=0
 
 # Supply the analyzed column list as the 2nd cmd line arg
 ck=ColumnKey.new ARGV[1]
+num_of_plans = ARGV[2] || 5000
 
 def clean_val(val)
   if val.class==String      
@@ -31,7 +32,7 @@ plans={}
 def gen_code(code_name, options={})
   # Return a var name to use in later code
   if code_name == :create_plan
-    puts "p=Plan.find_or_create_by(id: '#{options[:id]}')"
+    puts "p=Plan.find_or_create_by(plan_identifier: '#{options[:id]}')"
     'p'
   elsif code_name == :create_costmap_assoc
     find_by_str="plan: #{options[:plan_var]}, "
@@ -48,7 +49,7 @@ def gen_code(code_name, options={})
     puts "end"
     ''
   elsif code_name == :add_payload_attribute
-    puts "#{options[:plan_var]}=#{options[:payload]}"
+    puts "#{options[:plan_var]}.payload=#{options[:payload]}; #{options[:plan_var]}.save"
     ''
   else
     ''
@@ -77,7 +78,7 @@ File.open(ARGV[0]).readlines.each do |l|
       if ck.key_values(idx).empty?
         # This is a payload key so add to the plan's payload
         payload[ck.payload_keys[idx]]=val
-        if ck.payload_keys[idx]==:Plan_ID
+        if ck.payload_keys[idx]==:plan_id
           plan_var = gen_code :create_plan, id: val
         end
               
@@ -90,6 +91,7 @@ File.open(ARGV[0]).readlines.each do |l|
   end
 
   index+=1
+  exit if index>num_of_plans.to_i
 end
 
 ck.key_values.each do |k|
