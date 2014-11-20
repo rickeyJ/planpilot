@@ -12,6 +12,12 @@
     .collapse.navbar-collapse{id: "bs-example-navbar-collapse-1"}
       %ul.nav.navbar-nav.navbar-right
         // Let's put the first four entries outside the dropdown
-        - @navbar_entries[0..3].each do |entry|
+        - @navbar_entries[0..2].each do |entry|
           %li
             = link_to entry[:title], entry[:url]
+        - if current_user
+          %li
+            = link_to "SIGN OUT (#{current_user.email[0..8]}...)", destroy_user_session_path, :method => :delete
+        - else
+          %li
+            = link_to 'SIGN IN | REGISTER', new_user_session_path
