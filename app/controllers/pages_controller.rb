@@ -1,7 +1,7 @@
 class PagesController < ApplicationController
   @@defaults = {
     testimonial: "I am telling all my friends and family about this site. The options are clear and they guide you to a health plan that's just right for you.",
-    total_steps: 4,
+    total_steps: 5, number_of_steps_in_words: 'Five'
   }
 
   @@page_data_table={
@@ -24,8 +24,18 @@ class PagesController < ApplicationController
                        next_page: 4,
                        step_index: 2,
                      },
-                     
+
                      4 => {
+                       question_header: "1,432 Plans Found",
+                       question_main: "Please tell us a bit about your medical history.",
+
+                       next_page: 5,
+                       step_index: 3,
+                       
+                     },
+                     
+                     5 => {
+                       is_results_page: true,
                        results_header1: 'Health Plan', results_header2: 'By The Numbers', results_header3: 'The Bottom Line',
                        checkbox_list: [{label: "I have a favorite doctor", popup_html: '<input class="doctornameinput inline form-control" type="text" placeholder="Enter doctor name"><button class="btn btn-default submit">Go</button>'}, {label: "I have an ongoing illness"}, {label: "I take prescription medication"}, {label: "I'm a smoker"},],
                        results_data: [
@@ -44,7 +54,7 @@ class PagesController < ApplicationController
     @page_data[:current_info]=params[:current_info] ? JSON.parse(params[:current_info]) : {}
     @page_data[:current_info].merge! build_current_info
     
-    if params[:page_id].to_i == 4
+    if params[:is_results_page]
       render 'pages/results'
     end
   end

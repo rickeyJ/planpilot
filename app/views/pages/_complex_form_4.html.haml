@@ -1,0 +1,21 @@
+- content_for :main do
+  = "Are you a smoker? "
+
+  %input{id: 'smoker', name: 'smoker', type: 'hidden'}
+  = render 'dropdown', {dropdown_id: 'smoker_choices', dropdown_title: '-select-', options_list: ['Yes', 'No']}
+  %hr
+
+  = "Do you have an ongoing condition? "
+  %input{id: 'ongoing_condition', name: 'ongoing_condition', type: 'hidden'}
+  = render 'dropdown', {dropdown_id: 'ongoing_condition_choices', dropdown_title: '-select-', options_list: ['Yes', 'No']}
+  %p
+  %input.largetextarea{type: 'text', disabled: 'true', placeholder: 'Enter your condition (optional)'}
+  %hr    
+
+  = "Do you take prescription medication? "
+  %input{id: 'take_prescription', name: 'take_prescription', type: 'hidden'}
+  = render 'dropdown', {dropdown_id: 'take_prescription_choices', dropdown_title: '-select-', options_list: ['Yes', 'No']}
+  %p
+  %input.largetextarea{type: 'text', disabled: 'true', placeholder: 'Enter the medicines you take (optional)'}
+  %hr
+      

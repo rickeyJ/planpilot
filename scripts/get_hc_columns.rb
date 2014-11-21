@@ -78,7 +78,15 @@ class ColumnKey
       @keys[line_no][:service]="#{svc}"
       property_string += "\tservice: #{svc}"
 
-
+    end
+    @key_sets = @keys.inject({}) do |acc, collection|
+      collection.each do |k, v|
+        if !acc.keys.include? k
+          acc[k]=[]
+        end
+        acc[k] |= [v]
+      end
+      acc
     end
   end
   

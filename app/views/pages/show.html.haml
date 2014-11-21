@@ -10,12 +10,12 @@
       = @page_data[:question_header]
     
     - if @page_data[:current_page]==1
-      = render 'simple_form'
+      = render partial: 'simple_form'
     - else
-      = render "complex_form_#{@page_data[:current_page]}"
+      = render partial: "complex_form_#{@page_data[:current_page]}", layout: 'form_layout'
 
     .steps-text
-      Four Easy Steps
+      = "#{@page_data[:number_of_steps_in_words]} Easy Steps"
       - (0..@page_data[:step_index]-1).each do |i|
         %span.step-circle.step-done
           = image_tag 'check-mark-hi.png', class: 'step-check img-responsive'

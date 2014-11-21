@@ -1,18 +1,11 @@
-.complex-form-box
-  .question-follow
-    = @page_data[:question_main]
-
-  = form_tag('/page', id: 'pageform') do
-    .form-content
-      %input{name: 'page_id', type: 'hidden', value: @page_data[:next_page]}  
-      %input{name: 'current_info', type: 'hidden', value: @page_data[:current_info].to_json}  
-      = "I am"
-      %input.ageinput.inline.form-control{name: 'age',  type: 'text', placeholder: ''}
-      = "years old, I am "
-      = render 'dropdown', {dropdown_id: 'marital_status_choices', dropdown_title: '-select-', options_list: ['married', 'single']}
-      %input{id: 'marital_status', name: 'marital_status', type: 'hidden'}
-      = "and I'm looking for health insurance for"
-      = render 'dropdown', {dropdown_id: 'shop_for_choices', dropdown_title: '-select-', options_list: ['my family', 'myself']}
-      %input{id: 'shop_for', name: 'shop_for', type: 'hidden'}
-      %button.btn.btn-default.submit
-        Go  
+- content_for(:main) do 
+  = "I am"
+  %input.ageinput.inline.form-control{name: 'age',  type: 'text', placeholder: ''}
+  = "years old, I am "
+  = render 'dropdown', {dropdown_id: 'marital_status_choices', dropdown_title: '-select-', options_list: ['married', 'single']}
+  %input{id: 'marital_status', name: 'marital_status', type: 'hidden'}
+  = "and I'm looking for health insurance for"
+  = render 'dropdown', {dropdown_id: 'shop_for_choices', dropdown_title: '-select-', options_list: ['my family', 'myself']}
+  %input{id: 'shop_for', name: 'shop_for', type: 'hidden'}
+  %button.btn.btn-default.submit
+    Go  

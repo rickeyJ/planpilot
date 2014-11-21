@@ -51,6 +51,8 @@ def gen_code(code_name, options={})
   elsif code_name == :add_payload_attribute
     puts "#{options[:plan_var]}.payload=#{options[:payload]}; #{options[:plan_var]}.save"
     ''
+  elsif code_name == :add_costmap_attr
+
   else
     ''
   end
@@ -67,6 +69,7 @@ File.open(ARGV[0]).readlines.each do |l|
     plan_var=''
     payload={}
     struct_attrs={}
+    map_keys = ''
     vals.each_with_index do |val, idx|
       if ck.key_values(idx).empty? and ck.payload_keys[idx].nil?
         unless /^\s*$/.match(val)
@@ -81,12 +84,16 @@ File.open(ARGV[0]).readlines.each do |l|
         if ck.payload_keys[idx]==:plan_id
           plan_var = gen_code :create_plan, id: val
         end
-              
+
+        map_keys="#{plan_var}.map_keys=["
       else # This is a structured key value
-        gen_code :create_costmap_assoc, plan_var: plan_var, info_attrs: ck.key_values(idx), val: val
+        #        gen_code :create_costmap_assoc, plan_var: plan_var, info_attrs: ck.key_values(idx), val: val
+        map_keys += "[#{ck.key_values(idx)}, #{val}], "
       end
 
     end
+    map_keys += "]"
+    puts map_keys
     gen_code :add_payload_attribute, plan_var: plan_var, payload: payload
   end
 
