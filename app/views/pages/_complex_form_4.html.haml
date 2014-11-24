@@ -18,4 +18,13 @@
   %p
   %input.largetextarea{type: 'text', disabled: 'true', placeholder: 'Enter the medicines you take (optional)'}
   %hr
-      
+
+  = "Do you have a favorite doctor? "
+  %input{id: 'fave_doctor', name: 'fave_doctor', type: 'hidden'}
+  = render 'dropdown', {dropdown_id: 'fave_doctor_choices', dropdown_title: '-select-', options_list: ['Yes', 'No']}
+  %p
+  %input.largetextarea{type: 'text', disabled: 'true', placeholder: 'Enter your doctor\'s name (optional)'}
+  %hr
+
+  %button.btn.btn-default.submit
+    Go  

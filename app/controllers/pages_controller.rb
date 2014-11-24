@@ -37,7 +37,7 @@ class PagesController < ApplicationController
                      5 => {
                        is_results_page: true,
                        results_header1: 'Health Plan', results_header2: 'By The Numbers', results_header3: 'The Bottom Line',
-                       checkbox_list: [{label: "I have a favorite doctor", popup_html: '<input class="doctornameinput inline form-control" type="text" placeholder="Enter doctor name"><button class="btn btn-default submit">Go</button>'}, {label: "I have an ongoing illness"}, {label: "I take prescription medication"}, {label: "I'm a smoker"},],
+                       checkbox_list: [{id: 'fave_doctor', label: "I have a favorite doctor", popup_html: '<input class="doctornameinput inline form-control" type="text" placeholder="Enter doctor name"><button class="btn btn-default submit">Go</button>'}, {id: 'ongoing_condition', label: "I have an ongoing illness"}, {id: 'take_prescription', label: "I take prescription medication"}, {id: 'smoker', label: "I'm a smoker"},],
                        results_data: [
                          {image: "aetna_logo.png", first_line: "Monthly Premium $871", result_deets: "Typical Drug Cost (Per refill): $50<br>\nPrimary Doctor Visit: $40<br>\nDoctors Nearby 490", last_line: "True Cost of Annual Care: $15,603", first_line2: "Recommended because:", result_deets2: "This will allow you to cover the medication you need.", plantype: 'HMO'},
                          {image: "kp_logo_transparent.gif", first_line: "Monthly Premium $556", result_deets: "Typical Drug Cost (Per refill): $60<br>\nPrimary Doctor Visit: $60<br>\nDoctors Nearby 1225", last_line: "True Cost of Annual Care: $18,233", first_line2: "Recommended because:", result_deets2: "Your doctors are in this network.", plantype: 'PPO'}
@@ -54,7 +54,7 @@ class PagesController < ApplicationController
     @page_data[:current_info]=params[:current_info] ? JSON.parse(params[:current_info]) : {}
     @page_data[:current_info].merge! build_current_info
     
-    if params[:is_results_page]
+    if @page_data[:is_results_page]
       render 'pages/results'
     end
   end
@@ -66,15 +66,13 @@ class PagesController < ApplicationController
       h[:county]=ZipInfo.where(zip: params[:zip])[0].county
       h[:state]=ZipInfo.where(zip: params[:zip])[0].state
     end
-    if params[:shop_for]
-      h[:shop_for]=params[:shop_for]
+
+    [:shop_for, :marital_status, :age, :smoker, :ongoing_condition, :fave_doctor, :take_prescription ].each do |id|
+      if params[id]
+        h[id]=params[id]
+      end
     end
-    if params[:marital_status]
-      h[:marital_status]=params[:marital_status]
-    end
-    if params[:age]
-      h[:age]=params[:age]
-    end
+    
     h
   end
 end

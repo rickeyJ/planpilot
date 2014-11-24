@@ -3,7 +3,7 @@ show_toggle = (elt) ->
 		$(elt).css('visibility', 'visible')
 	else if $(elt).css('visibility') == 'visible'
 		$(elt).css('visibility', 'hidden')
-	nil
+	null
 
 $ ->
 	$('.box').click( (eventObject) -> 

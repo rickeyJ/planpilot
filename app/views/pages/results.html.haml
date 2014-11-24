@@ -1,4 +1,5 @@
-.results-bg
+.results-top-bg
+  %div{id: 'current_info', type: 'hidden', value: @page_data[:current_info].to_json}  
   .row.results-row
     .col-xs-2
     .col-xs-8.info-box
@@ -10,12 +11,13 @@
           .col-xs-3.popupparent
             %span.popup
               = raw(cb[:popup_html])
-            %span.box.unselected
+            %span.box{id: cb[:id], class: results_refine_selection(cb[:id], @page_data[:current_info])}
               &nbsp;X
             %span.box-label
               = cb[:label]
     .col-xs-2
-      
+
+.results-bottom-bg      
   .row.results-row
     .col-xs-2
     .col-xs-8.info-box
