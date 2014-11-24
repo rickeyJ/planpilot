@@ -1,0 +1,5 @@
+%h1
+  = @plan.plan_identifier
+
+%ul
+  = @plan.deflate_map_keys

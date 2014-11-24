@@ -1,4 +1,6 @@
 require_relative './get_hc_columns'
+require 'zlib'
+require 'base64'
 
 ini_keys = ['State', 'County', 'Metal Level', 'Issuer Name', 'Plan_ID', 'Plan_Marketing_Name', 'Plan_Type', 'Rating_Area', 'Child_Only_Offering', 'Source', 'Customer_Service_Phone_Number_Local', 'Customer_Service_Phone_Number_Toll_Free', 'Customer_Service_Phone_Number_TTY', 'Network_URL', 'Plan_Brochure_URL', 'Summary_of_Benefits_URL', 'Drug_Formulary_URL']
 
@@ -6,7 +8,15 @@ index=0
 
 # Supply the analyzed column list as the 2nd cmd line arg
 ck=ColumnKey.new ARGV[1]
-num_of_plans = ARGV[2] || 5000
+start_plan = ARGV[2] || 0
+end_plan = ARGV[3] || 5000
+
+def base64ify(str)
+  Base64.encode64(Zlib::Deflate.deflate(str)).split("\n").inject('') do |acc, l|
+      acc += "#{l}\\n"
+      acc
+  end
+end
 
 def clean_val(val)
   if val.class==String      
@@ -49,7 +59,7 @@ def gen_code(code_name, options={})
     puts "end"
     ''
   elsif code_name == :add_payload_attribute
-    puts "#{options[:plan_var]}.payload=#{options[:payload]}; #{options[:plan_var]}.save"
+    puts "#{options[:plan_var]}.payload=\"" + base64ify("#{options[:payload]}") + "\"; #{options[:plan_var]}.save"
     ''
   elsif code_name == :add_costmap_attr
 
@@ -58,19 +68,21 @@ def gen_code(code_name, options={})
   end
 end
 
-File.open(ARGV[0]).readlines.each do |l|
+File.open(ARGV[0]).readlines.each_with_index do |l, index|
   if index == 0
     ck.set_keys
     ck.payload_keys=ini_keys
   else
-    
-    vals = l.split "\t"
+    next if index < start_plan.to_i
 
+    vals = l.split "\t"
+    next if vals.size != 128
     plan_var=''
     payload={}
     struct_attrs={}
     map_keys = ''
     vals.each_with_index do |val, idx|
+
       if ck.key_values(idx).empty? and ck.payload_keys[idx].nil?
         unless /^\s*$/.match(val)
           $stderr.write("#{idx} value #{val} has no parent key."); exit -1
@@ -84,24 +96,28 @@ File.open(ARGV[0]).readlines.each do |l|
         if ck.payload_keys[idx]==:plan_id
           plan_var = gen_code :create_plan, id: val
         end
-
-        map_keys="#{plan_var}.map_keys=["
       else # This is a structured key value
         #        gen_code :create_costmap_assoc, plan_var: plan_var, info_attrs: ck.key_values(idx), val: val
+        val.chomp!
+        val="\"#{val}\"" unless /^"/.match val
         map_keys += "[#{ck.key_values(idx)}, #{val}], "
       end
 
     end
-    map_keys += "]"
-    puts map_keys
+
+    map_keys.gsub! /, $/, ""
+    map_keys.gsub! /\=\>/, ":"
+    
+    base64_string= base64ify "[#{map_keys}]"
+
+    puts "#{plan_var}.map_keys=\"" +  base64_string + "\""
     gen_code :add_payload_attribute, plan_var: plan_var, payload: payload
   end
 
-  index+=1
-  exit if index>num_of_plans.to_i
+  exit if index>end_plan.to_i
 end
 
 ck.key_values.each do |k|
-  puts k
+#  puts k
 end
 

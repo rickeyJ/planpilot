@@ -1,5 +1,7 @@
 class ColumnKey
   attr_reader :payload_keys
+  attr_accessor :key_sets
+  
   def initialize(f)
     @payload_keys=nil
     @keys=[]
@@ -17,7 +19,10 @@ class ColumnKey
   
   def key_values(i=-1)
     if i!=-1
-      @keys[i]
+      @keys[i].inject({}) do |acc, pair|
+        acc[pair[0]]=@key_sets[pair[0]].index pair[1]
+        acc
+      end
     else
       @keys
     end
@@ -37,16 +42,16 @@ class ColumnKey
       filters[:charge_type].each do |ct|
         r=Regexp.new Regexp.escape(ct), Regexp::IGNORECASE
         if r.match l
-          @keys[line_no][:charge_type]=ct
-          property_string += "charge_type: #{ct}"
+          @keys[line_no]["charge_type"]=ct
+          property_string += "\"charge_type\" => #{ct}"
           matched=true
         end
 
       end
       if !matched
         type = (is_service?(l) and service(l)!='dental') ? "copay" : "premium"
-        @keys[line_no][:charge_type]=type
-        property_string += "charge_type: #{type}"
+        @keys[line_no]["charge_type"]=type
+        property_string += "\"charge_type\" => #{type}"
       end
       matched=false
 
@@ -59,12 +64,12 @@ class ColumnKey
           $stderr.write("#{l}, #{types} matched not 1 consumer type.\n"); exit -1;
         end
 
-        @keys[line_no][:consumer_type]="#{types[0]}"
+        @keys[line_no]["consumer_type"]="#{types[0]}"
 
-        property_string += "\tconsumer_type: #{types[0]}"
+        property_string += "\t\"consumer_type\" => #{types[0]}"
 
-        @keys[line_no][:child_number]=child_number l
-        @keys[line_no][:age_threshold]=age_threshold l
+        @keys[line_no]["child_number"]=child_number l
+        @keys[line_no]["age_threshold"]=age_threshold l
       end
 
       svcs = filters[:services].map do |svc|
@@ -75,8 +80,8 @@ class ColumnKey
       end    
 
       svc = svcs.size > 0 ? svcs[0] : ''
-      @keys[line_no][:service]="#{svc}"
-      property_string += "\tservice: #{svc}"
+      @keys[line_no]["service"]="#{svc}"
+      property_string += "\t\"service\" => #{svc}"
 
     end
     @key_sets = @keys.inject({}) do |acc, collection|

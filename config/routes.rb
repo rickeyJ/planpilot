@@ -10,6 +10,8 @@ TestDk::Application.routes.draw do
   devise_for :users
   resources :users, path: 'profiles'
 
+  resources :plans, only: :show
+  
   root to: 'pages#show', page_id: 1 # Change this to something else in your app.
 
   # The rest of the routes file is probably useless to most new apps based on this template, EXCEPT for the 
