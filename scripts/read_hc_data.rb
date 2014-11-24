@@ -100,7 +100,7 @@ File.open(ARGV[0]).readlines.each_with_index do |l, index|
       if ck.key_values(idx).empty?
         # This is a payload key so add to the plan's payload
         payload[ck.payload_keys[idx]]=val
-        if ck.payload_keys[idx]==:state || ck.payload_keys[idx]==:county || ck.payload_keys[idx]==:plan_id
+        if ck.payload_keys[idx]==:state || ck.payload_keys[idx]==:county || ck.payload_keys[idx]==:plan_identifier
           state_and_county_arr << "#{ck.payload_keys[idx]}: \"#{val}\""
         end
       else # This is a structured key value
