@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20141123052711) do
+ActiveRecord::Schema.define(version: 20141124045110) do
 
   create_table "cost_maps", force: true do |t|
     t.string   "consumer_type"
@@ -77,6 +77,8 @@ ActiveRecord::Schema.define(version: 20141123052711) do
     t.datetime "updated_at"
     t.string   "plan_identifier"
     t.text     "map_keys"
+    t.string   "state"
+    t.string   "county"
   end
 
   create_table "users", force: true do |t|

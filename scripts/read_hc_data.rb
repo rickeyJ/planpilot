@@ -42,8 +42,13 @@ plans={}
 def gen_code(code_name, options={})
   # Return a var name to use in later code
   if code_name == :create_plan
-    puts "p=Plan.find_or_create_by(plan_identifier: '#{options[:id]}')"
+    puts "p=Plan.find_or_create_by(#{options[:search_attrs]})"
     'p'
+  elsif code_name == :other_plan_attrs
+    print_str=options[:attr_str]
+    print_str.gsub! /__plan_var__/, options[:plan_var]
+    puts print_str
+    
   elsif code_name == :create_costmap_assoc
     find_by_str="plan: #{options[:plan_var]}, "
     options[:info_attrs].each do |attr, val|
@@ -77,10 +82,12 @@ File.open(ARGV[0]).readlines.each_with_index do |l, index|
 
     vals = l.split "\t"
     next if vals.size != 128
-    plan_var=''
+
+    plan_var = map_keys = plan_id_str = ''
+    state_and_county_arr= []
     payload={}
     struct_attrs={}
-    map_keys = ''
+    
     vals.each_with_index do |val, idx|
 
       if ck.key_values(idx).empty? and ck.payload_keys[idx].nil?
@@ -93,8 +100,8 @@ File.open(ARGV[0]).readlines.each_with_index do |l, index|
       if ck.key_values(idx).empty?
         # This is a payload key so add to the plan's payload
         payload[ck.payload_keys[idx]]=val
-        if ck.payload_keys[idx]==:plan_id
-          plan_var = gen_code :create_plan, id: val
+        if ck.payload_keys[idx]==:state || ck.payload_keys[idx]==:county || ck.payload_keys[idx]==:plan_id
+          state_and_county_arr << "#{ck.payload_keys[idx]}: \"#{val}\""
         end
       else # This is a structured key value
         #        gen_code :create_costmap_assoc, plan_var: plan_var, info_attrs: ck.key_values(idx), val: val
@@ -105,6 +112,9 @@ File.open(ARGV[0]).readlines.each_with_index do |l, index|
 
     end
 
+    plan_var = gen_code :create_plan, search_attrs: state_and_county_arr.join(", ")
+
+    gen_code :other_plan_attrs, attr_str: plan_id_str, plan_var: plan_var
     map_keys.gsub! /, $/, ""
     map_keys.gsub! /\=\>/, ":"
     
