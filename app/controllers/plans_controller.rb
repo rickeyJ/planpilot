@@ -1,6 +1,8 @@
 class PlansController < ApplicationController
   def show
-    @plan = Plan.find_by_plan_identifier params[:id]
+    state = params[:state].gsub(/\+/, ' ')
+    county = params[:county].gsub(/\+/, ' ')
+    @plan = (Plan.where plan_identifier: params[:id], state: state, county: county)[0]
   end
 
 end

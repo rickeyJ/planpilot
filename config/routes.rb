@@ -10,7 +10,7 @@ TestDk::Application.routes.draw do
   devise_for :users
   resources :users, path: 'profiles'
 
-  resources :plans, only: :show
+  get '/plans/:id/:state/:county' => 'plans#show'
   
   root to: 'pages#show', page_id: 1 # Change this to something else in your app.
 
