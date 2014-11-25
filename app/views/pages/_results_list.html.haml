@@ -1,44 +1,45 @@
 .results-list
   // The Header
   .row.indiv-result-row.headerrow
-    .col-xs-4.rescol
-      %span.bold-text 
-        = @page_data[:results_header1]
-
-    .col-xs-4.innercol.rescol
-      %span.bold-text 
-        = @page_data[:results_header2]
-
-    .col-xs-4.rescol
-      %span.bold-text
-        = @page_data[:results_header3]
+    - @page_data[:results_header].each do |hdr|
+      .rescol{class: "col-xs-#{hdr[:col_size]}"}
+        %span.bold-text 
+          = hdr[:val]
 
   // The results
 
-  - @page_data[:results_data].each do |res|
-    .row.indiv-result-row{class: "#{cycle('unshaded', 'shaded')}"}
-      .col-xs-4.rescol
-        = image_tag res[:image]
+  - @page_data[:results_data].each_with_index do |res, idx|
+    .row.indiv-result-row{class: "#{cycle('unshaded', 'shaded', name: 'shading_class')}"}
+      .col-xs-3.rescol
+        .ribbon{class: "#{idx==0 ? 'best' : idx==1 ? 'good' : 'none'}"}
+          = "#{idx==0 ? 'Best' : idx==1 ? 'Good' : 'No'} Plan"
+          .ribbon-stitches-top
+            %span
+              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+        .plan-name
+          = res[:plan_name]
 
       .col-xs-4.innercol.rescol
-        %span.resulttag
-          = res[:plantype]
-        .bold-text.large
-          = res[:first_line]
+        .bold-text
+          = "#{@page_data[:labels][:monthly_premium]}: #{res[:monthly_premium]}"
 
         .result-deets
-          = raw(res[:result_deets])
+          = "#{@page_data[:labels][:subsidy]}: #{res[:subsidy]}"
 
-        .bold-text.large
-          = res[:last_line]
+        .bold-text.large.orange-color
+          = "#{@page_data[:labels][:final_monthly_premium]}: #{res[:final_monthly_premium]}"
 
       .col-xs-4.rescol
-        .bold-text.large
-          = res[:first_line2]
+        .bold-text
+          = "#{@page_data[:labels][:true_cost]}: #{res[:true_cost]}"
 
         .result-deets
-          = raw(res[:result_deets2])
-          .ribbon_round
-            19500
-        .bold-text.large
-          = res[:last_line2]
+          = "#{@page_data[:labels][:annual_subsidy]}: #{res[:annual_subsidy]}"
+
+        .bold-text.large.pink-color
+          = "#{@page_data[:labels][:true_annual_cost]}: #{res[:true_annual_cost]}"
+
+      .col-xs-1.rescol
+        .action-box.blue-bg
+          Save For Later
