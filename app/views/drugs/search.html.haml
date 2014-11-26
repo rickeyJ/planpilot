@@ -1,0 +1,7 @@
+.container
+  
+  Response from GoodRX is
+  %ul
+    - @resp["data"]["candidates"].each do |drug_name|
+      %li
+        = drug_name.capitalize

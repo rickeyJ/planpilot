@@ -11,6 +11,8 @@ TestDk::Application.routes.draw do
   resources :users, path: 'profiles'
 
   get '/plans/:id/:state/:county' => 'plans#show'
+  get '/drug_search' => 'drugs#search_form'
+  post '/drug_search' => 'drugs#search'
   
   root to: 'pages#show', page_id: 1 # Change this to something else in your app.
 

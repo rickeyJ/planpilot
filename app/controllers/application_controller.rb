@@ -11,7 +11,7 @@ class ApplicationController < ActionController::Base
   end
 
   rescue_from ActionController::RoutingError do |exception|
-    error_message = I18n.t(:message_404) + ": #{params[:path]}"
+    error_message = I18n.t(:message_404) + ": #{params}"
     go_back_or_root(error_message)
   end
   rescue_from CanCan::AccessDenied do |exception|
