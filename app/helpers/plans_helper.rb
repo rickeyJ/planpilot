@@ -1,5 +1,6 @@
 # {:charge_type=>["premium", "deductible", "Out Of Pocket", "copay"], :consumer_type=>["Adult", "Child", "Individual", "Couple", "individual", "family", "Family"], :child_number=>[-1, 1, 2, 3], :age_threshold=>[-1, 21, 27, 30, 40, 50, 60], :service=>["Dental", "", "Medical", "Drug", "Primary Care Physician", "Specialist", "Emergency", "Inpatient Facility", "Inpatient Physician", "Generic Drugs", "Preferred Brand Drugs", "preferred Brand Drugs", "Specialty Drugs"]}
 
+# This is now superseded by translation code in the Plan model - Nov 26
 module PlansHelper
   def display_desc_keys(keys)
     str=keys.map do |k, v|
