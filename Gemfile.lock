@@ -114,8 +114,6 @@ GEM
       railties (>= 3.2, < 5.0)
     formtastic (3.0.0)
       actionpack (>= 3.2.13)
-    geocoder (1.2.6)
-    gmaps4rails (2.1.2)
     haml (4.0.5)
       tilt
     haml-rails (0.5.3)
@@ -335,8 +333,6 @@ DEPENDENCIES
   factory_girl_rails
   formtastic
   formtastic-bootstrap!
-  geocoder
-  gmaps4rails
   haml-rails
   jbuilder
   jquery-rails

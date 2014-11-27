@@ -11,10 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20141124045110) do
-
-  # These are extensions that must be enabled in order to support this database
-  enable_extension "plpgsql"
+ActiveRecord::Schema.define(version: 20141127023951) do
 
   create_table "cost_maps", force: true do |t|
     t.string   "consumer_type"
@@ -46,7 +43,7 @@ ActiveRecord::Schema.define(version: 20141124045110) do
     t.string   "scopes"
   end
 
-  add_index "oauth_access_grants", ["token"], name: "index_oauth_access_grants_on_token", unique: true, using: :btree
+  add_index "oauth_access_grants", ["token"], name: "index_oauth_access_grants_on_token", unique: true
 
   create_table "oauth_access_tokens", force: true do |t|
     t.integer  "resource_owner_id"
@@ -59,9 +56,9 @@ ActiveRecord::Schema.define(version: 20141124045110) do
     t.string   "scopes"
   end
 
-  add_index "oauth_access_tokens", ["refresh_token"], name: "index_oauth_access_tokens_on_refresh_token", unique: true, using: :btree
-  add_index "oauth_access_tokens", ["resource_owner_id"], name: "index_oauth_access_tokens_on_resource_owner_id", using: :btree
-  add_index "oauth_access_tokens", ["token"], name: "index_oauth_access_tokens_on_token", unique: true, using: :btree
+  add_index "oauth_access_tokens", ["refresh_token"], name: "index_oauth_access_tokens_on_refresh_token", unique: true
+  add_index "oauth_access_tokens", ["resource_owner_id"], name: "index_oauth_access_tokens_on_resource_owner_id"
+  add_index "oauth_access_tokens", ["token"], name: "index_oauth_access_tokens_on_token", unique: true
 
   create_table "oauth_applications", force: true do |t|
     t.string   "name",         null: false
@@ -72,7 +69,7 @@ ActiveRecord::Schema.define(version: 20141124045110) do
     t.datetime "updated_at"
   end
 
-  add_index "oauth_applications", ["uid"], name: "index_oauth_applications_on_uid", unique: true, using: :btree
+  add_index "oauth_applications", ["uid"], name: "index_oauth_applications_on_uid", unique: true
 
   create_table "plans", force: true do |t|
     t.text     "payload"
@@ -82,6 +79,16 @@ ActiveRecord::Schema.define(version: 20141124045110) do
     t.text     "map_keys"
     t.string   "state"
     t.string   "county"
+    t.text     "map_keys_string"
+    t.text     "payload_string"
+  end
+
+  create_table "profiles", force: true do |t|
+    t.integer  "user_id"
+    t.text     "plans"
+    t.text     "demographic_data"
+    t.datetime "created_at"
+    t.datetime "updated_at"
   end
 
   create_table "users", force: true do |t|
@@ -101,8 +108,8 @@ ActiveRecord::Schema.define(version: 20141124045110) do
     t.integer  "age"
   end
 
-  add_index "users", ["email"], name: "index_users_on_email", unique: true, using: :btree
-  add_index "users", ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true, using: :btree
+  add_index "users", ["email"], name: "index_users_on_email", unique: true
+  add_index "users", ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
 
   create_table "zip_infos", force: true do |t|
     t.string   "zip"

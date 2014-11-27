@@ -17,3 +17,16 @@ $ ->
 			$(this).addClass 'selected'			
 	)
 
+	$(".action-box").click( (eventObject) ->
+		curr_info_hash = $("div#current_info").data('value')
+		plan_data = {'plan': {state: curr_info_hash['state'], county: curr_info_hash['county']}}
+		plan_data['plan']['plan_id']=$(this).parent().parent().find('.plan-name').data('plan-id')
+		$.ajax({ 
+			url: '/api/v1/users/add_plan.json',
+			type: 'post',
+			dataType: 'json',
+			data: plan_data,
+			success:  null
+			})
+		null
+	)

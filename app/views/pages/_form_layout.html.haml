@@ -5,6 +5,6 @@
   = form_tag('/page', id: 'pageform') do
     .form-content
       %input#page_id{name: 'page_id', type: 'hidden', value: @page_data[:next_page]}  
-      %input{name: 'current_info', type: 'hidden', value: @page_data[:current_info].to_json}  
+      %input{id: 'current_info', name: 'current_info', type: 'hidden', value: @page_data[:current_info].to_json}  
       = content_for :main
   = content_for :suffix_form_content

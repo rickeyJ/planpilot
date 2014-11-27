@@ -1,13 +1,33 @@
 class Plan < ActiveRecord::Base
   include ActionView::Helpers::NumberHelper
   def deflate_map_keys
-    orig_keys=Zlib::Inflate.inflate(Base64.decode64(self.map_keys))
-    keys = orig_keys.gsub(/:([^=]+)=>/, ":\\1=>")
+    if self.map_keys_string
+      keys=self.map_keys_string
+    else
+      orig_keys=Zlib::Inflate.inflate(Base64.decode64(self.map_keys))
+
+      # Cache a JSON parseable string for every plan that is accessed at least once.
+
+      # This is necessary because of a prior bug in generating data
+      keys = orig_keys.gsub(/:([^=]+)=>/, ":\\1=>")
+      self.map_keys_string=keys
+      self.save
+    end
     JSON.parse keys
   end
   def deflate_payload
-    orig_keys=Zlib::Inflate.inflate(Base64.decode64(self.payload))
-    keys = orig_keys.gsub(/\:([^\=\/]+)\=\>/, "\"\\1\" : ")
+    if self.payload_string
+      keys=self.payload_string
+    else
+      # Cache a JSON parseable string for every plan that is accessed at least once.
+
+      orig_keys=Zlib::Inflate.inflate(Base64.decode64(self.payload))
+
+      # This is necessary because of a prior bug in generating data
+      keys = orig_keys.gsub(/\:([^\=\/]+)\=\>/, "\"\\1\" : ")
+      self.payload_string=keys
+      self.save
+    end      
     JSON.parse keys
   end
 
@@ -46,7 +66,7 @@ class Plan < ActiveRecord::Base
     ann_premium= (monthly_premium)*12
     true_cost = (monthly_premium - subsidy)*12
 
-    data={plan_name: name, image: "", monthly_premium: '$' + monthly_premium.to_s, subsidy: "$#{subsidy}",
+    data={plan_id: self.plan_identifier, plan_name: name, image: "", monthly_premium: '$' + monthly_premium.to_s, subsidy: "$#{subsidy}",
           final_monthly_premium: "$" + (monthly_premium - subsidy).to_s, ann_premium: "$#{ann_premium}",
           annual_subsidy: '$' + (12*subsidy).to_s, true_annual_cost: "$" + number_with_delimiter(true_cost, delimiter: ',')}
     data

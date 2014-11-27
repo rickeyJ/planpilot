@@ -23,10 +23,13 @@ TestDk::Application.routes.draw do
   mount RailsAdmin::Engine => '/rails_admin', as: 'rails_admin'
 
   # Added API and Doorkeeper
-  namespace :api, defaults: {format: 'json'} do
-    resources :tasks
+  constraints(format: /json/) do
+    namespace :api, defaults: {format: 'json'} do
+      namespace :v1 do
+        post '/users/:action' => 'users#api_action'
+      end
+    end
   end
-
   use_doorkeeper
 
   # Need a catch all to redirect to the errors controller, for catching 404s as an exception

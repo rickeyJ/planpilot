@@ -41,10 +41,6 @@ group :doc do
   gem 'sdoc', require: false
 end
 
-gem 'gmaps4rails'
-
-gem 'geocoder'
-
 gem 'devise', git: 'https://github.com/plataformatec/devise.git', :branch => 'lm-rails-4-2'
 gem 'haml-rails'
 gem 'cancan'
