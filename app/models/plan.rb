@@ -75,7 +75,7 @@ class Plan < ActiveRecord::Base
   private
   def calculate_premium(keys, age)
     relevant_cell = keys.select do |cell|
-      cell[0]["charge_type"]=='Premium' && age > cell[0]["age"].to_i
+      cell[0]["charge_type"]=='Premium' && age > cell[0]["age_threshold"].to_i
     end.last
 
     relevant_cell[1].gsub(/^\$/, '').to_i

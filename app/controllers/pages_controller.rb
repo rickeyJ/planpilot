@@ -61,7 +61,7 @@ class PagesController < ApplicationController
       info=@page_data[:current_info]
       state = info["state"].gsub(/\+/, ' ')
       county = (info["county"].gsub(/\+/, ' ')).gsub(/ COUNTY\s*$/i, '')
-      age = info["age"].to_i || 35
+      info["age"] = info["age"]='' ? 35 : info['age']
 
       # The data from HC.gov had county names in both up and down case. :)
       plans=Plan.where state: state, county: [county, county.upcase]
