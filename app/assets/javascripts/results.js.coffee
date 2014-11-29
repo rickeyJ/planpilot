@@ -17,6 +17,12 @@ $ ->
 			$(this).addClass 'selected'			
 	)
 
+	save_action_wrap = (sent_data) ->
+		return (resp_data, status, xhr) ->
+			if resp_data['status'] == 'failure'
+				if resp_data['message'] == 'not logged in'
+					$(location).attr('href', '/users/sign_in?add_plan=' + encodeURIComponent(JSON.stringify(sent_data)))
+
 	$(".action-box").click( (eventObject) ->
 		curr_info_hash = $("div#current_info").data('value')
 		plan_data = {'plan': {state: curr_info_hash['state'], county: curr_info_hash['county']}}
@@ -26,7 +32,7 @@ $ ->
 			type: 'post',
 			dataType: 'json',
 			data: plan_data,
-			success:  null
+			success:  save_action_wrap(plan_data)
 			})
 		null
 	)
