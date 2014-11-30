@@ -33,7 +33,7 @@
   .col-xs-1.drop-arrow
     .glyphicon.glyphicon-chevron-left
 
-  .col-xs-8.testimonial-text
+  .col-xs-8.testimonial-text.large
     = @page_data[:testimonial]
     
   .col-xs-1.drop-arrow
@@ -41,7 +41,17 @@
       
   .col-xs-1
       
-  
+.row.testimonial-author.large
+  .col-xs-4
+  .col-xs-4
+    = @page_data[:random_person_rec][@page_data[:random_person_index]][:name]
+  .col-xs-4
+
+.row.testimonial-picture-row
+  .col-xs-4.testimonial-picture
+  .col-xs-4.testimonial-picture.picture-middle
+    = image_tag @page_data[:random_person_rec][@page_data[:random_person_index]][:img], class: 'testimonial-image-holder img-responsive'
+  .col-xs-4.testimonial-picture
+      
 .row.healthcare-providers
 
-.row.footer

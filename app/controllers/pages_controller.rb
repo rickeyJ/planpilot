@@ -1,8 +1,10 @@
 class PagesController < ApplicationController
   include PlanSorter
   @@defaults = {
+    testimonial_sentences: ["I am telling all my friends and family about this site.", "The options are clear and they guide you to a health plan that's just right for you.", "They helped me understand the main terms used in healthcare plans in an easy way." "I would definitely return to the site after I buy health insurance."],
     testimonial: "I am telling all my friends and family about this site. The options are clear and they guide you to a health plan that's just right for you.",
     total_steps: 5, number_of_steps_in_words: 'Five',
+    random_person_rec: [{name: 'Alicia Bennett', img: "smiley_face_1.jpg"}, {name: 'Martha Chung', img: "smiley_face_2.jpg"}, {name: 'Tom Martindale', img: "smiley_face_3.jpg"}, {name: 'Rosaria Martinez', img: 'smiley_face_4.png'}],
     labels: {monthly_premium: 'Monthly Premium', subsidy: 'Your Subsidy', final_monthly_premium: 'Your Monthly Premium',
              ann_premium: 'Total Annual Premium', annual_subsidy: 'Annual Subsidy', true_annual_cost: 'Your True Annual Cost',
             more_info: 'More Info',},
@@ -53,6 +55,9 @@ class PagesController < ApplicationController
     @page_data={}
     @page_data[:current_page]=params[:page_id].to_i
     @page_data.merge! @@defaults.merge(@@page_data_table[@page_data[:current_page]])
+
+    @page_data[:random_person_index]=rand(3)+1
+    puts ">>> #{@page_data[:random_person_index]}"
 
     @page_data[:current_info]=params[:current_info] ? JSON.parse(params[:current_info]) : {}
     @page_data[:current_info].merge! build_current_info
