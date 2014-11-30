@@ -86,3 +86,16 @@ body {
 .orange-color {
 	color: $orange-color;
 }
+
+.footer {
+	padding-top: 20px;
+	h5 {
+		color: $pink-color;
+	}
+
+	ul.unstyled-list {
+		list-style-type: none;
+		font-size: 0.8em;
+		margin: 0; padding: 0; 
+	}
+}
