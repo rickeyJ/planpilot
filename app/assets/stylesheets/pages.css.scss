@@ -39,6 +39,41 @@
 	background-size: cover;
 }
 
+.testimonial-author {
+	color: $pink-color;
+	text-align: center;
+	padding: 20px 0px;
+}
+
+.testimonial-picture-row {
+	background-color: white;
+}
+
+.testimonial-picture {
+	border-bottom-color: $darkgrey-color;
+	height: 160px;
+	// Has to be twice the padding
+	border-width: 0 0 80px 0;
+	padding: 40px 0;
+	border-style: solid;
+
+	&.picture-middle {
+		padding: 0px 0;
+		background-color: white;
+		border-bottom-color: $darkgrey-color;
+		border-style: solid;
+	}
+}
+.testimonial-image-holder {
+	position: relative;
+	top: 25px;
+	height: 100px;
+	width: 100px;
+	border-radius: 50%;
+	border-top-color: white;
+	border-bottom-color: $darkgrey-color;
+	margin: auto;
+}
 .question-text {
 	padding-top: 80px;
 	color: white;
@@ -98,7 +133,6 @@ input[type=text] {
 
 // For testimonials
 .testimonial-text {
-	font-size: 1.25em;
 	font-weight: bold;
 }
 
