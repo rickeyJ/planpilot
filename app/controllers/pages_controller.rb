@@ -43,7 +43,7 @@ class PagesController < ApplicationController
                      5 => {
                        is_results_page: true,
                        results_header: [
-                                        {val: 'Health Plan', col_size: 4},  {val: 'Monthly Premium', col_size: 3},
+                                        {val: 'Health Plan', col_size: 3},  {val: 'Monthly Premium', col_size: 4},
                                         {val: 'True Cost Per Year', col_size: 4}, {val: 'Action', col_size: 1}],
                        checkbox_list: [{id: 'fave_doctor', label: "I have a favorite doctor", popup_html: '<input class="doctornameinput inline form-control" type="text" placeholder="Enter doctor name"><button class="btn btn-default submit">Go</button>'}, {id: 'ongoing_condition', label: "I have an ongoing illness"}, {id: 'take_prescription', label: "I take prescription medication"}, {id: 'smoker', label: "I'm a smoker"},],
                        results_data: [ ],
@@ -57,7 +57,6 @@ class PagesController < ApplicationController
     @page_data.merge! @@defaults.merge(@@page_data_table[@page_data[:current_page]])
 
     @page_data[:random_person_index]=rand(3)+1
-    puts ">>> #{@page_data[:random_person_index]}"
 
     @page_data[:current_info]=params[:current_info] ? JSON.parse(params[:current_info]) : {}
     @page_data[:current_info].merge! build_current_info
@@ -87,9 +86,13 @@ class PagesController < ApplicationController
       h[:state]=ZipInfo.where(zip: params[:zip])[0].state
     end
 
-    [:shop_for, :marital_status, :age, :smoker, :ongoing_condition, :fave_doctor, :take_prescription ].each do |id|
+    [:shop_for, :marital_status, :number_of_children, :age, :smoker, :ongoing_condition, :fave_doctor, :take_prescription ].each do |id|
       if params[id]
-        h[id]=params[id]
+        if id == :number_of_children
+          h[id] = params[id] == '3 or more' ? 3 : params[id].to_i
+        else
+          h[id]=params[id]
+        end
       end
     end
     
