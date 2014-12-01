@@ -21,6 +21,14 @@ $ ->
 	$(".dropdown-menu li").click (evt) ->
 		id=$(this).parent().attr('id')
 		val=$(this).find('a').data('val')
+
+		# all decisions will be based on the above two values
+		if id == 'shop_for_choices'
+			if val == 'my family'
+				$('.family-info').show("slow")
+			if val == 'myself'
+				$('.family-info').hide()
+
 		$(this).parent().parent().find('.dropdown_title').html("\n" + val + "\n")
 
 		target_id = id.replace('_choices', '')
