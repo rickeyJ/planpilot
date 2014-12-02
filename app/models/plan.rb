@@ -74,7 +74,6 @@ class Plan < ActiveRecord::Base
 
   private
   def calculate_premium(keys, consumer_info)
-    puts ">>> #{keys}"
     age=consumer_info['age'].to_i
     child_number = consumer_info['number_of_children'] || 0
     

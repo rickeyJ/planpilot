@@ -1,20 +1,52 @@
 .results-top-bg
-  %div{id: 'current_info', type: 'hidden', 'data-value' => @page_data[:current_info].to_json}  
+  // Need this here to allow interaction of checkboxes with clicks
+  #current_info{type: 'hidden', 'data-value' => @page_data[:current_info].to_json}  
+
   .row.results-row
     .col-xs-2
     .col-xs-8.info-box
-      .bold-text
-        REFINE THE RESULTS
+      = form_tag 'page', action: 'post' do
+        = hidden_field_tag :current_info, @page_data[:current_info].to_json
+        = hidden_field_tag :page_id, @page_data[:next_page]
+        .pull-right
+          = submit_tag 'Refresh', class: 'action-box'
+        .bold-text
+          REFINE THE RESULTS
+        .row.demographic-titles
+          .col-xs-2
+            ZIP Code:
+          .col-xs-2
+            Age:
+          .col-xs-2
+            Plan For:
+          .col-xs-2
+            Children:
+          .col-xs-2
+            Income:
+        .row.demographic-data
+          .col-xs-2
+            = text_field_tag :zip, @page_data[:current_info]['zip'], class: 'zipinput'
+          .col-xs-2
+            = text_field_tag :age, @page_data[:current_info]['age'], class: 'zipinput'
+          .col-xs-2
+            = render 'dropdown', {dropdown_id: 'shop_for_choices', dropdown_title: @page_data[:current_info]['shop_for'], options_list: ['my family', 'myself']}
+            %input{id: 'shop_for', name: 'shop_for', type: 'hidden', value: @page_data[:current_info]['shop_for']}
 
-      .row.checkboxes
-        - @page_data[:checkbox_list].each do |cb|  
-          .col-xs-3.popupparent
-            %span.popup
-              = raw(cb[:popup_html])
-            %span.box{id: cb[:id], class: results_refine_selection(cb[:id], @page_data[:current_info])}
-              &nbsp;X
-            %span.box-label
-              = cb[:label]
+          .col-xs-2
+            = text_field_tag :number_of_children, @page_data[:current_info]['number_of_children'], class: 'zipinput'
+          .col-xs-2
+            = text_field_tag :income, @page_data[:current_info]['income'], class: 'zipinput'
+
+        .row.checkboxes
+          - @page_data[:checkbox_list].each do |cb|  
+            .col-xs-3.popupparent
+              %span.popup
+                = raw(cb[:popup_html])
+              %span.box{id: cb[:id], class: results_refine_selection(cb[:id], @page_data[:current_info])}
+                &nbsp;X
+              %span.box-label
+                = cb[:label]
+
     .col-xs-2
 
 .results-bottom-bg      
