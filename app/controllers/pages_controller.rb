@@ -53,10 +53,9 @@ class PagesController < ApplicationController
       info["age"] = info["age"]=='' ? 35 : info['age']
 
       # The data from HC.gov had county names in both up and down case. :)
-      county = (info["county"].gsub(/\+/, ' ')).gsub(/ COUNTY\s*$/i, '')
       plans=Plan.where state: state, county: [county, county.upcase]
       @plans = plans.inject([]) do |acc, plan|
-        acc << plan.arrange_data(info)
+        acc << plan.extract_data_for_person(info)
         acc
       end
 
@@ -76,6 +75,9 @@ class PagesController < ApplicationController
           h[id.to_s] = params[id] == '3 or more' ? 3 : params[id].to_i
         elsif id == :zip
           h['county']=ZipInfo.where(zip: params[:zip])[0].county
+          # Clean up the county name, so we use it more consistently in the rest of the app
+          h['county'] = (h["county"].gsub(/\+/, ' ')).gsub(/ COUNTY\s*$/i, '')
+
           h['state']=ZipInfo.where(zip: params[:zip])[0].state
         end
       end

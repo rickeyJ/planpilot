@@ -17,7 +17,7 @@
             %span
               &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 
-        .plan-name{'data-plan-id'=> res[:plan_id]}
+        .plan-name{'data-plan-id'=> res['plan_id']}
           = res[:plan_name]
 
       .col-xs-4.innercol.rescol
@@ -41,5 +41,6 @@
           = "#{page_data[:labels][:true_annual_cost]}: #{res[:true_annual_cost]}"
 
       .col-xs-1.rescol
-        .action-box
-          Save For Later
+        - unless current_user and current_user.has_plan?(res.slice('state', 'county', 'plan_id'))
+          .action-box
+            Save For Later
