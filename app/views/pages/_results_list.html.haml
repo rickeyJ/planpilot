@@ -1,14 +1,14 @@
 .results-list
   // The Header
   .row.indiv-result-row.headerrow
-    - @page_data[:results_header].each do |hdr|
+    - page_data[:results_header].each do |hdr|
       .rescol{class: "col-xs-#{hdr[:col_size]}"}
         %span.bold-text 
           = hdr[:val]
 
   // The results
 
-  - @page_data[:results_data].each_with_index do |res, idx|
+  - plans.each_with_index do |res, idx|
     .row.indiv-result-row{class: "#{cycle('unshaded', 'shaded', name: 'shading_class')}"}
       .col-xs-3.rescol
         .ribbon{class: "#{idx==0 ? 'best' : idx==1 ? 'good' : 'none'}"}
@@ -22,23 +22,23 @@
 
       .col-xs-4.innercol.rescol
         .bold-text
-          = "#{@page_data[:labels][:monthly_premium]}: #{res[:monthly_premium]}"
+          = "#{page_data[:labels][:monthly_premium]}: #{res[:monthly_premium]}"
 
         .result-deets
-          = "#{@page_data[:labels][:subsidy]}: #{res[:subsidy]}"
+          = "#{page_data[:labels][:subsidy]}: #{res[:subsidy]}"
 
         .bold-text.large.orange-color
-          = "#{@page_data[:labels][:final_monthly_premium]}: #{res[:final_monthly_premium]}"
+          = "#{page_data[:labels][:final_monthly_premium]}: #{res[:final_monthly_premium]}"
 
       .col-xs-4.rescol
         .bold-text
-          = "#{@page_data[:labels][:ann_premium]}: #{res[:ann_premium]}"
+          = "#{page_data[:labels][:ann_premium]}: #{res[:ann_premium]}"
 
         .result-deets
-          = "#{@page_data[:labels][:annual_subsidy]}: #{res[:annual_subsidy]}"
+          = "#{page_data[:labels][:annual_subsidy]}: #{res[:annual_subsidy]}"
 
         .bold-text.large.pink-color
-          = "#{@page_data[:labels][:true_annual_cost]}: #{res[:true_annual_cost]}"
+          = "#{page_data[:labels][:true_annual_cost]}: #{res[:true_annual_cost]}"
 
       .col-xs-1.rescol
         .action-box

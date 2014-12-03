@@ -1,15 +1,5 @@
 class PagesController < ApplicationController
   include PlanSorter
-  @@defaults = {
-    testimonial_sentences: ["I am telling all my friends and family about this site.", "The options are clear and they guide you to a health plan that's just right for you.", "They helped me understand the main terms used in healthcare plans in an easy way." "I would definitely return to the site after I buy health insurance."],
-    testimonial: "I am telling all my friends and family about this site. The options are clear and they guide you to a health plan that's just right for you.",
-    total_steps: 5, number_of_steps_in_words: 'Five',
-    random_person_rec: [{name: 'Alicia Bennett', img: "smiley_face_1.jpg"}, {name: 'Martha Chung', img: "smiley_face_2.jpg"}, {name: 'Tom Martindale', img: "smiley_face_3.jpg"}, {name: 'Rosaria Martinez', img: 'smiley_face_4.png'}],
-    labels: {monthly_premium: 'Monthly Premium', subsidy: 'Your Subsidy', final_monthly_premium: 'Your Monthly Premium',
-             ann_premium: 'Total Annual Premium', annual_subsidy: 'Annual Subsidy', true_annual_cost: 'Your True Annual Cost',
-            more_info: 'More Info',},
-  }
-
   @@page_data_table={
                      1 =>
                      {question_header: 'We\'ve Got You Covered', question_main: 'Your location is the first piece of information you will need to enter.',
@@ -42,20 +32,14 @@ class PagesController < ApplicationController
                      
                      5 => {
                        is_results_page: true,
-                       results_header: [
-                                        {val: 'Health Plan', col_size: 3},  {val: 'Monthly Premium', col_size: 4},
-                                        {val: 'True Cost Per Year', col_size: 4}, {val: 'Action', col_size: 1}],
-                       checkbox_list: [{id: 'fave_doctor', label: "I have a favorite doctor", popup_html: '<input class="doctornameinput inline form-control" type="text" placeholder="Enter doctor name"><button class="btn btn-default submit">Go</button>'}, {id: 'ongoing_condition', label: "I have an ongoing illness"}, {id: 'take_prescription', label: "I take prescription medication"}, {id: 'smoker', label: "I'm a smoker"},],
-                       results_data: [ ],
                        next_page: 5,
                        step_index: 3,
                      },
                     }
   
   def show
-    @page_data={}
     @page_data[:current_page]=params[:page_id].to_i
-    @page_data.merge! @@defaults.merge(@@page_data_table[@page_data[:current_page]])
+    @page_data.merge! (@@page_data_table[@page_data[:current_page]])
 
     @page_data[:random_person_index]=rand(3)+1
 
@@ -66,16 +50,17 @@ class PagesController < ApplicationController
       puts ">> #{@page_data[:current_info]}"
       info=@page_data[:current_info]
       state = info["state"].gsub(/\+/, ' ')
-      county = (info["county"].gsub(/\+/, ' ')).gsub(/ COUNTY\s*$/i, '')
       info["age"] = info["age"]=='' ? 35 : info['age']
 
       # The data from HC.gov had county names in both up and down case. :)
+      county = (info["county"].gsub(/\+/, ' ')).gsub(/ COUNTY\s*$/i, '')
       plans=Plan.where state: state, county: [county, county.upcase]
-      results = plans.map do |plan|
-        @page_data[:results_data] << plan.arrange_data(info)
+      @plans = plans.inject([]) do |acc, plan|
+        acc << plan.arrange_data(info)
+        acc
       end
 
-      @page_data[:results_data] = sort_results(@page_data[:results_data])
+      @plans = sort_results(@plans)
       render 'pages/results'
     end
   end
