@@ -47,7 +47,8 @@ class PagesController < ApplicationController
                                         {val: 'True Cost Per Year', col_size: 4}, {val: 'Action', col_size: 1}],
                        checkbox_list: [{id: 'fave_doctor', label: "I have a favorite doctor", popup_html: '<input class="doctornameinput inline form-control" type="text" placeholder="Enter doctor name"><button class="btn btn-default submit">Go</button>'}, {id: 'ongoing_condition', label: "I have an ongoing illness"}, {id: 'take_prescription', label: "I take prescription medication"}, {id: 'smoker', label: "I'm a smoker"},],
                        results_data: [ ],
-                      step_index: 3,
+                       next_page: 5,
+                       step_index: 3,
                      },
                     }
   
@@ -62,10 +63,11 @@ class PagesController < ApplicationController
     @page_data[:current_info].merge! build_current_info
     
     if @page_data[:is_results_page]
+      puts ">> #{@page_data[:current_info]}"
       info=@page_data[:current_info]
       state = info["state"].gsub(/\+/, ' ')
       county = (info["county"].gsub(/\+/, ' ')).gsub(/ COUNTY\s*$/i, '')
-      info["age"] = info["age"]='' ? 35 : info['age']
+      info["age"] = info["age"]=='' ? 35 : info['age']
 
       # The data from HC.gov had county names in both up and down case. :)
       plans=Plan.where state: state, county: [county, county.upcase]
@@ -81,21 +83,19 @@ class PagesController < ApplicationController
   private
   def build_current_info
     h={}
-    if params[:zip]
-      h[:county]=ZipInfo.where(zip: params[:zip])[0].county
-      h[:state]=ZipInfo.where(zip: params[:zip])[0].state
-    end
 
-    [:shop_for, :marital_status, :number_of_children, :age, :smoker, :ongoing_condition, :fave_doctor, :take_prescription ].each do |id|
+    [:zip, :shop_for, :marital_status, :number_of_children, :age, :smoker, :ongoing_condition, :fave_doctor, :take_prescription, :income ].each do |id|
       if params[id]
+        h[id.to_s]=params[id]
         if id == :number_of_children
-          h[id] = params[id] == '3 or more' ? 3 : params[id].to_i
-        else
-          h[id]=params[id]
+          h[id.to_s] = params[id] == '3 or more' ? 3 : params[id].to_i
+        elsif id == :zip
+          h['county']=ZipInfo.where(zip: params[:zip])[0].county
+          h['state']=ZipInfo.where(zip: params[:zip])[0].state
         end
       end
     end
-    
+
     h
   end
 end

@@ -9,7 +9,7 @@
   .col-xs-2
   .col-xs-8
     = form_for(resource, :as => resource_name, :url => session_path(resource_name)) do |f|
-      %div
+      .login-info-box
         = f.label :email
         %br
         = f.email_field :email, :autofocus => true

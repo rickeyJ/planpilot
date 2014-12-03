@@ -32,6 +32,7 @@
 	padding: 10px 5px;
 	margin-top: 10px;
 	cursor: pointer;
+	border: none;
 }
 .checkboxes {
 
@@ -115,6 +116,24 @@
 	min-width: 40px;
 	text-align: center;
 }
+
+.demographic-titles {
+	margin-top: 20px;
+}
+.demographic-data {
+	input {
+		background-color: $lightgrey-color;
+	}
+	.btn {
+		padding: 2px 6px;
+	}
+	margin-bottom: 20px;
+}
+
+input.action-box {
+	margin-top: 0;
+}
+/* Ribbon start */
 
 .ribbon {
   position:relative;
