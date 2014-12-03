@@ -14,8 +14,9 @@ class ApplicationController < ActionController::Base
     error_message = I18n.t(:message_404) + ": #{params}"
     go_back_or_root(error_message)
   end
-  rescue_from CanCan::AccessDenied do |exception|
-    error_message = I18n.t(:access_denied_message)
+  rescue_from CanCan::AccessDenied do |exception|    
+    link = "<A href='#{url_for([:new, :user, :session])}'>#{I18n.t(:access_denied_link_message)}</A>"
+    error_message = I18n.t(:access_denied_message_html, link: link).html_safe
     go_back_or_root(error_message)
   end
 
