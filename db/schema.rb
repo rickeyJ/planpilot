@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20141127023951) do
+ActiveRecord::Schema.define(version: 20141203194929) do
 
   create_table "cost_maps", force: true do |t|
     t.string   "consumer_type"
@@ -30,6 +30,7 @@ ActiveRecord::Schema.define(version: 20141127023951) do
     t.string   "url"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.integer  "user_id"
   end
 
   create_table "oauth_access_grants", force: true do |t|
