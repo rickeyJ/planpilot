@@ -4,8 +4,8 @@ class ProfilesController < ApplicationController
   def show
     if current_user
       @plans = @profile.plans.map do |plan_keys|
-        county = plan_keys['plan']["county"]
-        p=Plan.where(state: plan_keys['plan']['state'], county: [county, county.upcase], plan_identifier: plan_keys['plan']['plan_id']).first
+        county = plan_keys["county"]
+        p=Plan.where(state: plan_keys['state'], county: [county, county.upcase], plan_identifier: plan_keys['plan_id']).first
         p.extract_data_for_person(@profile.demographic_data)
       end
     else
