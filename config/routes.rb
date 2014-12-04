@@ -8,7 +8,7 @@ TestDk::Application.routes.draw do
   
   # Logins and Profiles
   devise_for :users, controllers: { sessions: "users/sessions" }
-  resources :users, path: 'profiles'
+  resource :profile
 
   get '/plans/:id/:state/:county' => 'plans#show'
   get '/drug_search' => 'drugs#search_form'

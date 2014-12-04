@@ -16,13 +16,15 @@ class Users::SessionsController < Devise::SessionsController
     @demographic_data_str = params[:current_info]
     
     super do |logged_in_user|
-      plan_data=JSON.parse @plan_data_str
-      logged_in_user.build_profile unless logged_in_user.profile
+      if !params[:add_plan].empty?
+        plan_data=JSON.parse @plan_data_str
+        logged_in_user.build_profile unless logged_in_user.profile
 
-      logged_in_user.profile.plans << plan_data unless logged_in_user.profile.plans.include?(plan_data)
-      logged_in_user.profile.demographic_data ||= {}
-      logged_in_user.profile.demographic_data.merge! JSON.parse(@demographic_data_str)
-      logged_in_user.profile.save
+        logged_in_user.profile.plans << plan_data unless logged_in_user.profile.plans.include?(plan_data)
+        logged_in_user.profile.demographic_data ||= {}
+        logged_in_user.profile.demographic_data.merge! JSON.parse(@demographic_data_str)
+        logged_in_user.profile.save
+      end
     end
   end
 

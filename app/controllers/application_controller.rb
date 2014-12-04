@@ -8,14 +8,31 @@ class ApplicationController < ActionController::Base
     I18n.locale = set_locale
     insert_default_param_filter
     create_navbar_data
+
+    # The entire app gets to see these defaults - should really be in the DB though. :(
+    @page_data = @@defaults = {
+      testimonial_sentences: ["I am telling all my friends and family about this site.", "The options are clear and they guide you to a health plan that's just right for you.", "They helped me understand the main terms used in healthcare plans in an easy way." "I would definitely return to the site after I buy health insurance."],
+      testimonial: "I am telling all my friends and family about this site. The options are clear and they guide you to a health plan that's just right for you.",
+      total_steps: 5, number_of_steps_in_words: 'Five',
+      random_person_rec: [{name: 'Alicia Bennett', img: "smiley_face_1.jpg"}, {name: 'Martha Chung', img: "smiley_face_2.jpg"}, {name: 'Tom Martindale', img: "smiley_face_3.jpg"}, {name: 'Rosaria Martinez', img: 'smiley_face_4.png'}],
+      labels: {monthly_premium: 'Monthly Premium', subsidy: 'Your Subsidy', final_monthly_premium: 'Your Monthly Premium',
+               ann_premium: 'Total Annual Premium', annual_subsidy: 'Annual Subsidy', true_annual_cost: 'Your True Annual Cost',
+               more_info: 'More Info',},
+      results_header: [
+        {val: 'Health Plan', col_size: 3},  {val: 'Monthly Premium', col_size: 4},
+        {val: 'True Cost Per Year', col_size: 4}, {val: 'Action', col_size: 1}],
+      checkbox_list: [{id: 'fave_doctor', label: "I have a favorite doctor", popup_html: '<input class="doctornameinput inline form-control" type="text" placeholder="Enter doctor name"><button class="btn btn-default submit">Go</button>'}, {id: 'ongoing_condition', label: "I have an ongoing illness"}, {id: 'take_prescription', label: "I take prescription medication"}, {id: 'smoker', label: "I'm a smoker"},],
+    }
+
   end
 
   rescue_from ActionController::RoutingError do |exception|
     error_message = I18n.t(:message_404) + ": #{params}"
     go_back_or_root(error_message)
   end
-  rescue_from CanCan::AccessDenied do |exception|
-    error_message = I18n.t(:access_denied_message)
+  rescue_from CanCan::AccessDenied do |exception|    
+    link = "<A href='#{url_for([:new, :user, :session])}'>#{I18n.t(:access_denied_link_message)}</A>"
+    error_message = I18n.t(:access_denied_message_html, link: link).html_safe
     go_back_or_root(error_message)
   end
 
@@ -36,10 +53,11 @@ class ApplicationController < ActionController::Base
 
   def create_navbar_data
     @navbar_entries = NavbarEntry.all.map do |entry|
-      {title: entry.title, url: entry.url }
+      if entry.user_id == -1 || Ability.new(current_user).can?(:read, entry)
+        {title: entry.title, url: entry.url }
+      end
     end
-
-    @navbar_entries = [{title: 'HOME', url: '#'}, {title: 'ABOUT', url: '#'}, {title: 'YOUR PLANS', url: '#'}, {title: 'LOGIN | REGISTER', url: '#'}]
+    @navbar_entries.compact!
   end
 
   def go_back_or_root(message)

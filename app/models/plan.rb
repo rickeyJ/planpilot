@@ -56,7 +56,7 @@ class Plan < ActiveRecord::Base
     decoded_keys
   end
 
-  def arrange_data(info)
+  def extract_data_for_person(info)
     plan_payload = self.deflate_payload
     plan_keys = self.decode_map_keys
     name=plan_payload["plan_marketing_name"]
@@ -66,7 +66,7 @@ class Plan < ActiveRecord::Base
     ann_premium= (monthly_premium)*12
     true_cost = (monthly_premium - subsidy)*12
 
-    data={plan_id: self.plan_identifier, plan_name: name, image: "", monthly_premium: '$' + monthly_premium.to_s, subsidy: "$#{subsidy}",
+    data={'state' => self.state, 'county' => self.county, 'plan_id' => self.plan_identifier, plan_name: name, image: "", monthly_premium: '$' + monthly_premium.to_s, subsidy: "$#{subsidy}",
           final_monthly_premium: "$" + (monthly_premium - subsidy).to_s, ann_premium: "$#{ann_premium}",
           annual_subsidy: '$' + (12*subsidy).to_s, true_annual_cost: "$" + number_with_delimiter(true_cost, delimiter: ',')}
     data

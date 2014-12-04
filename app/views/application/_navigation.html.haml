@@ -17,6 +17,8 @@
             = link_to entry[:title], entry[:url]
         - if current_user
           %li
+            = link_to "PROFILE", profile_path
+          %li
             = link_to "SIGN OUT (#{current_user.email[0..8]}...)", destroy_user_session_path, :method => :delete
         - else
           %li
