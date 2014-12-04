@@ -75,7 +75,7 @@ class Plan < ActiveRecord::Base
   private
   def calculate_premium(keys, consumer_info)
     age=consumer_info['age'].to_i
-    child_number = consumer_info['number_of_children'] || 0
+    child_number = consumer_info['number_of_children'].to_i || 0
     
     relevant_cell = keys.select do |cell|
       cell[0]["charge_type"]=='Premium' && age > cell[0]["age_threshold"].to_i &&
