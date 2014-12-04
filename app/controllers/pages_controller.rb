@@ -52,6 +52,7 @@ class PagesController < ApplicationController
       state = info["state"].gsub(/\+/, ' ')
       info["age"] = info["age"]=='' ? 35 : info['age']
 
+      county = info['county']
       # The data from HC.gov had county names in both up and down case. :)
       plans=Plan.where state: state, county: [county, county.upcase]
       @plans = plans.inject([]) do |acc, plan|
