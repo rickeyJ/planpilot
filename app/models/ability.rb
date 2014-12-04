@@ -7,17 +7,11 @@ class Ability
     user ||= User.new # guest user (not logged in)
 
     # Not logged in = can only see the tasks index page.
-    if !user.id
-      can :index, Task, :owner_id => nil
-    else
+    if user.id
       if user.admin?
         can :manage, :all
       else
-        can :create, :all
-        can :edit, :all, :owner_id => user.id
-        can :read, :all, :owner_id => user.id
-        can :update, :all, :owner_id => user.id
-        can :destroy, :all, owner_id: user.id
+        can :manage, :all, :user_id => user.id
       end
     end
 
