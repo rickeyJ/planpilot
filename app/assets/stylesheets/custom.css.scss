@@ -1,5 +1,36 @@
 @import 'variables';
 
+body {
+	font-family: 'Cabin', serif
+}
+
+.navbar-default .navbar-nav .question_mark {
+	max-height: 60px;
+	max-width: 60px;
+	// The math should work out that the ht avlbl to the image is 28px
+	padding: 16px 0px;
+}
+
+.explain_text {
+	position: relative;
+}
+.explain_text.highlighted {
+	background-color: yellow;
+	font-size: 1.1em;
+	padding: 3px;
+}
+
+.help_text {
+	display: none;
+	position: absolute;
+	top: -60px;
+	left: 50px;
+	z-index: 2;
+	background-color: #FAFAD2;
+	padding: 5px;
+	width: 400%;
+}
+
 .navbar-brand {
 	padding: 8px 15px;
 }
@@ -24,10 +55,6 @@
 .dropdown-toggle {
 	background-color: $lightgrey-color;
 	color: black;
-}
-
-body {
-	font-family: 'Cabin', serif
 }
 
 .main {

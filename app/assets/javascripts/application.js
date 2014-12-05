@@ -15,4 +15,5 @@
 //= require bootstrap.min
 //= require turbolinks
 //= require underscore
+//= require nav
 //= require_tree .

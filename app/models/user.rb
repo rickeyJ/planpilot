@@ -10,6 +10,6 @@ class User < ActiveRecord::Base
     return false if !self.profile or !self.profile.plans or self.profile.plans.empty?
 
     puts ">>> checking #{self.profile.plans} with #{plan_hash}"
-    self.profile.plans.include?({'plan' => plan_hash})
+    self.profile.plans.include?(plan_hash)
   end
 end

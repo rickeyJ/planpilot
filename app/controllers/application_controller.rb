@@ -15,7 +15,7 @@ class ApplicationController < ActionController::Base
       testimonial: "I am telling all my friends and family about this site. The options are clear and they guide you to a health plan that's just right for you.",
       total_steps: 5, number_of_steps_in_words: 'Five',
       random_person_rec: [{name: 'Alicia Bennett', img: "smiley_face_1.jpg"}, {name: 'Martha Chung', img: "smiley_face_2.jpg"}, {name: 'Tom Martindale', img: "smiley_face_3.jpg"}, {name: 'Rosaria Martinez', img: 'smiley_face_4.png'}],
-      labels: {monthly_premium: 'Monthly Premium', subsidy: 'Your Subsidy', final_monthly_premium: 'Your Monthly Premium',
+      labels: {monthly_premium: 'Monthly __explain_start__Premium__explain_end__', subsidy: 'Your Subsidy', final_monthly_premium: 'Your Monthly Premium',
                ann_premium: 'Total Annual Premium', annual_subsidy: 'Annual Subsidy', true_annual_cost: 'Your True Annual Cost',
                more_info: 'More Info',},
       results_header: [

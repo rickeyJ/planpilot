@@ -4,7 +4,7 @@
     - page_data[:results_header].each do |hdr|
       .rescol{class: "col-xs-#{hdr[:col_size]}"}
         %span.bold-text 
-          = hdr[:val]
+          = add_help_tags(hdr[:val])
 
   // The results
 
@@ -22,7 +22,7 @@
 
       .col-xs-4.innercol.rescol
         .bold-text
-          = "#{page_data[:labels][:monthly_premium]}: #{res[:monthly_premium]}"
+          = add_help_tags(page_data[:labels][:monthly_premium]) + ": #{res[:monthly_premium]}"
 
         .result-deets
           = "#{page_data[:labels][:subsidy]}: #{res[:subsidy]}"
