@@ -1,7 +1,19 @@
 .container
-  
+  = render 'search_form'
   Response from GoodRX is
   %ul
-    - @resp["data"]["candidates"].each do |drug_name|
+    - @drug_search_resp["data"]["candidates"].each do |drug_name|
       %li
         = drug_name.capitalize
+
+  - if @generic_names.size > 0
+    .bold_text.large_text
+      Has a generic drug: 
+      = @generic_names
+      
+  .bold_text
+    = @fp_resp
+  .bold_text
+    = @lp_resp
+  .bold_text
+    = @http_error
