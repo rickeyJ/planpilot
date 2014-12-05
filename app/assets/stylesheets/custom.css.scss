@@ -23,12 +23,14 @@ body {
 .help_text {
 	display: none;
 	position: absolute;
-	top: -60px;
+	top: -65px;
 	left: 50px;
 	z-index: 2;
 	background-color: #FAFAD2;
 	padding: 5px;
 	width: 400%;
+	border-radius: 10px;
+	border: black 1px dotted;
 }
 
 .navbar-brand {

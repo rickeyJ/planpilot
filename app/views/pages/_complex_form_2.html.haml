@@ -1,7 +1,14 @@
 - content_for(:main) do 
   = "I am"
   %input.ageinput.inline.form-control{name: 'age',  type: 'text', placeholder: ''}
-  years old, and I'm looking for health insurance for
+  years old, and I'm looking to 
+
+  %span.explain_text
+    provide coverage
+    .help_text
+      This is where the help would go typically.
+  to
+
   = render 'dropdown', {dropdown_id: 'shop_for_choices', dropdown_title: '-select-', options_list: ['my family', 'myself']}
   %input{id: 'shop_for', name: 'shop_for', type: 'hidden'}
 
