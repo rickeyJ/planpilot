@@ -6,14 +6,38 @@
       %li
         = drug_name.capitalize
 
-  - if @generic_names.size > 0
-    .bold_text.large_text
-      Has a generic drug: 
-      = @generic_names
+  .bold-text.large-text
+    = "Conclusion: #{@conclusion}"
+    - if @conclusion == 'Comparable'
+      = "&mdash; #{@variation}".html_safe
       
-  .bold_text
-    = @fp_resp
-  .bold_text
-    = @lp_resp
-  .bold_text
-    = @http_error
+  %table.table
+    %tr
+      %th
+      %th
+        Dosage
+      %th
+        Form
+      %th
+        Price  
+      
+    %tr
+      %td
+        Fair Price
+      %td
+        = @fp_resp['data']['dosage']
+      %td
+        = @fp_resp['data']['form']
+      %td
+        = @fp_resp['data']['price']
+    %tr
+      %td
+        Low Price
+      %td
+        = @lp_resp['data']['dosage']
+      %td
+        = @lp_resp['data']['form']
+      %td
+        = @lp_resp['data']['price']
+
+        
