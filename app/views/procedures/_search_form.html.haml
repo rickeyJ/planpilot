@@ -1,0 +1,4 @@
+.container
+  = form_tag '/procedures_search', method: 'post' do
+    = text_field_tag 'cpt_code', nil, placeholder: 'CPT Code'
+    = submit_tag 'Search on PokitDok!'

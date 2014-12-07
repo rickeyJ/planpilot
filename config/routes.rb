@@ -11,8 +11,14 @@ TestDk::Application.routes.draw do
   resource :profile
 
   get '/plans/:id/:state/:county' => 'plans#show'
+
+  # Goodrx
   get '/drug_search' => 'drugs#search_form'
   post '/drug_search' => 'drugs#search'
+
+  # Pokitdok
+  get '/procedures_search' => 'procedures#search_form'
+  post '/procedures_search' => 'procedures#search'
   
   root to: 'pages#show', page_id: 1 # Change this to something else in your app.
 
