@@ -1,5 +1,7 @@
 class PagesController < ApplicationController
   include PlanSorter
+  include ActionView::Helpers::NumberHelper
+  
   @@page_data_table={
                      1 =>
                      {question_header: 'We\'ve Got You Covered', question_main: 'Your location is the first piece of information you will need to enter.',
@@ -8,21 +10,21 @@ class PagesController < ApplicationController
                      },
 
                      2 =>
-                     {question_header: "1,432 Plans Found",
+                     {question_header: "Plans Found",
                       question_main: "Find the best plan for me.",
                       next_page: 3,
                       step_index: 1,
                      },
 
                      3 => {
-                       question_header: "1,432 Plans Found",
+                       question_header: "Plans Found",
                        question_main: "You may be eligible for a subsidy.",
                        next_page: 4,
                        step_index: 2,
                      },
 
                      4 => {
-                       question_header: "1,432 Plans Found",
+                       question_header: "Plans Found",
                        question_main: "Please tell us a bit about your medical history.",
 
                        next_page: 5,
@@ -47,7 +49,6 @@ class PagesController < ApplicationController
     @page_data[:current_info].merge! build_current_info
     
     if @page_data[:is_results_page]
-      puts ">> #{@page_data[:current_info]}"
       info=@page_data[:current_info]
       state = info["state"].gsub(/\+/, ' ')
       info["age"] = info["age"]=='' ? 35 : info['age']
@@ -80,6 +81,8 @@ class PagesController < ApplicationController
           h['county'] = (h["county"].gsub(/\+/, ' ')).gsub(/ COUNTY\s*$/i, '')
 
           h['state']=ZipInfo.where(zip: params[:zip])[0].state
+          h['number_of_plans']=Plan.where(state: h['state'], county: h['county']).size
+          h['question_header']="#{number_with_delimiter(h['number_of_plans'])} #{h['question_header']}"
         end
       end
     end
