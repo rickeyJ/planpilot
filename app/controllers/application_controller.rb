@@ -21,7 +21,7 @@ class ApplicationController < ActionController::Base
       results_header: [
         {val: 'Health Plan', col_size: 3},  {val: 'Monthly Premium', col_size: 4},
         {val: 'True Cost Per Year', col_size: 4}, {val: 'Action', col_size: 1}],
-      checkbox_list: [{id: 'fave_doctor', label: "I have a favorite doctor", popup_html: '<input class="doctornameinput inline form-control" type="text" placeholder="Enter doctor name"><button class="btn btn-default submit">Go</button>'}, {id: 'ongoing_condition', label: "I have an ongoing illness"}, {id: 'take_prescription', label: "I take prescription medication"}, {id: 'smoker', label: "I'm a smoker"},],
+      checkbox_list: [{id: 'fave_doctor', label: "I have a favorite doctor", popup_html: '<input class="doctornameinput inline form-control" type="text" placeholder="Enter doctor name"><button class="btn btn-default submit">Go</button>'}, {id: 'ongoing_condition', label: "I have an ongoing condition"}, {id: 'take_prescription', label: "I take prescription medication"},],
     }
 
   end

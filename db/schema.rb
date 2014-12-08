@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20141203194929) do
+ActiveRecord::Schema.define(version: 20141207214801) do
 
   create_table "cost_maps", force: true do |t|
     t.string   "consumer_type"
@@ -23,6 +23,13 @@ ActiveRecord::Schema.define(version: 20141203194929) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.string   "val"
+  end
+
+  create_table "cpt_code_maps", force: true do |t|
+    t.string   "cpt_code"
+    t.string   "procedure_name"
+    t.datetime "created_at"
+    t.datetime "updated_at"
   end
 
   create_table "navbar_entries", force: true do |t|

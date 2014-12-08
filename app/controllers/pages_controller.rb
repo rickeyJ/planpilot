@@ -47,7 +47,8 @@ class PagesController < ApplicationController
 
     @page_data[:current_info]=params[:current_info] ? JSON.parse(params[:current_info]) : {}
     @page_data[:current_info].merge! build_current_info
-    
+
+    puts ">>> session data = #{@page_data[:current_info]}"
     if @page_data[:is_results_page]
       info=@page_data[:current_info]
       state = info["state"].gsub(/\+/, ' ')
@@ -70,7 +71,7 @@ class PagesController < ApplicationController
   def build_current_info
     h={}
 
-    [:zip, :shop_for, :marital_status, :number_of_children, :age, :smoker, :ongoing_condition, :fave_doctor, :take_prescription, :income ].each do |id|
+    [:zip, :shop_for, :marital_status, :number_of_children, :age, :smoker, :ongoing_condition, :fave_doctor, :take_prescription, :income, :procedure_names ].each do |id|
       if params[id]
         h[id.to_s]=params[id]
         if id == :number_of_children

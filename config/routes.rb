@@ -33,6 +33,7 @@ TestDk::Application.routes.draw do
     namespace :api, defaults: {format: 'json'} do
       namespace :v1 do
         post '/users/:action' => 'users#api_action'
+        post '/procedures/:action' => 'procedures#api_action'
       end
     end
   end

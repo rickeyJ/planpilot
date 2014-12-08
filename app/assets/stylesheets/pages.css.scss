@@ -30,13 +30,9 @@
 	width: 100%;
 	min-height: 500px;
 	background-color: peach;
-	background:  asset-url("hero01-copy.jpg") no-repeat scroll center center ;
+	background:  asset-url("hero01.jpg") no-repeat scroll top left ;
 	overflow: hidden;
-	-webkit-background-size: cover;
-	-moz-background-size: cover;
-	-o-background-size: cover;
-
-	background-size: cover;
+	
 }
 
 .testimonial-author {
@@ -156,4 +152,17 @@ input[type=text] {
 	display: none;
 }
 
+// For jQUI auto complete
 
+.ui-front {
+	background-color: #eee;
+	border-radius: 10px;
+	border: #000 solid 1px;
+	max-width: 250px;
+	
+	padding-left: 15px;
+	li {
+		list-style-type: none;
+		cursor: pointer;
+	}
+}
