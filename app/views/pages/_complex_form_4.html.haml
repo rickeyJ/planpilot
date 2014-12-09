@@ -1,9 +1,9 @@
 - content_for :main do
-  = "Do you have an ongoing condition? "
+  = "Are there any medical procedures you need? "
   %input{id: 'ongoing_condition', name: 'ongoing_condition', type: 'hidden'}
   = render 'dropdown', {dropdown_id: 'ongoing_condition_choices', dropdown_title: '-select-', options_list: ['Yes', 'No']}
   %p
-  %input.largetextarea.autocomplete#procedure_names{name: 'procedure_names[]', type: 'text', disabled: 'true', placeholder: 'Enter your condition (optional)'}
+  %input.largetextarea.autocomplete#procedure_names{name: 'procedure_names[]', type: 'text', disabled: 'true', placeholder: 'Enter the procedure name'}
   %hr    
 
   = "Do you take prescription medication? "

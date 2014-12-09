@@ -46,7 +46,8 @@ class PagesController < ApplicationController
     @page_data[:random_person_index]=rand(3)+1
 
     @page_data[:current_info]=params[:current_info] ? JSON.parse(params[:current_info]) : {}
-    @page_data[:current_info].merge! build_current_info
+    @page_data[:current_info][:question_header] = @page_data[:question_header]
+    @page_data[:current_info].merge! build_current_info(@page_data[:current_info])
 
     puts ">>> session data = #{@page_data[:current_info]}"
     if @page_data[:is_results_page]
@@ -68,9 +69,7 @@ class PagesController < ApplicationController
   end
 
   private
-  def build_current_info
-    h={}
-
+  def build_current_info(h)
     [:zip, :shop_for, :marital_status, :number_of_children, :age, :smoker, :ongoing_condition, :fave_doctor, :take_prescription, :income, :procedure_names ].each do |id|
       if params[id]
         h[id.to_s]=params[id]
@@ -80,10 +79,11 @@ class PagesController < ApplicationController
           h['county']=ZipInfo.where(zip: params[:zip])[0].county
           # Clean up the county name, so we use it more consistently in the rest of the app
           h['county'] = (h["county"].gsub(/\+/, ' ')).gsub(/ COUNTY\s*$/i, '')
+          h['county'] = (h["county"].gsub(/\+/, ' ')).gsub(/ BOROUGH\s*$/i, '')
 
           h['state']=ZipInfo.where(zip: params[:zip])[0].state
-          h['number_of_plans']=Plan.where(state: h['state'], county: h['county']).size
-          h['question_header']="#{number_with_delimiter(h['number_of_plans'])} #{h['question_header']}"
+          h['number_of_plans']=Plan.where(state: h['state'], county: [h['county'], h['county'].upcase]).size
+          h[:question_header]="#{number_with_delimiter(h['number_of_plans'])} #{h[:question_header]}"
         end
       end
     end
