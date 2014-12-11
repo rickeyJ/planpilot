@@ -29,6 +29,12 @@ $ ->
 			if val == 'myself'
 				$('.family-info').hide()
 
+		if id == 'take_prescription_choices'
+			if val == 'Yes'
+				$('.medication-info').show("slow")
+			if val == 'No'
+				$('.medication-info').hide()
+
 		if id == 'ongoing_condition_choices' 
 			if val == 'Yes'
 				$('#procedure_names').attr('disabled', false)
@@ -41,11 +47,22 @@ $ ->
 		$("#" + target_id).val(val)
 		null
 
-	$(".autocomplete").autocomplete({
+	$(".procedure-autocomplete").autocomplete({
 		minLength: 3,
 		source: (req, resp) ->
 			$.ajax({
 				url: '/api/v1/procedures/procedure_names',
+				method: 'post',
+				data: {q: req.term},
+				success: resp,
+				error: resp})
+		})
+
+	$(".drugname-autocomplete").autocomplete({
+		minLength: 3,
+		source: (req, resp) ->
+			$.ajax({
+				url: '/api/v1/drugs/drug_names',
 				method: 'post',
 				data: {q: req.term},
 				success: resp,

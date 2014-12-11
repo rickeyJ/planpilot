@@ -25,4 +25,4 @@ rails g model CostMap consumer_type:string child_number:integer age_threshold:in
   * 45%
   * $75 Copay after deductible
 * For costs independent of deductible, calculate total cost
-* For costs dependent on deductible, 
+* For costs dependent on deductible, see if this will cause the deductible to be paid up, and then calculate cost above that
