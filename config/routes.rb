@@ -13,8 +13,7 @@ TestDk::Application.routes.draw do
   get '/plans/:id/:state/:county' => 'plans#show'
 
   # Goodrx
-  get '/drug_search' => 'drugs#search_form'
-  post '/drug_search' => 'drugs#search'
+  get '/drug_search' => 'drugs#search'
 
   # Pokitdok
   get '/procedures_search' => 'procedures#search_form'

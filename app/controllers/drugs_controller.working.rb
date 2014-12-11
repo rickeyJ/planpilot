@@ -3,9 +3,11 @@ require 'open-uri'
 require 'base64'
 
 class DrugsController < ApplicationController
-  include ActionView::Helpers::SanitizeHelper
   before_action :initialize_instance
   
+  def search_form
+  end
+
   def search
     if !params[:q]
       render  and return
@@ -27,16 +29,13 @@ class DrugsController < ApplicationController
     @drug_info[:canonical]=canonical_drug_name
     brand_params = pricing_params.merge(main_params).merge({'manufacturer' => 'brand'})
     brand_resp = goodrx_api_call('compare-price', brand_params)
-    @drug_info[:brand_prices] = brand_resp['data']['price_detail']['price']
+    @drug_info[:brand_prices] = @brand_resp['data']['prices']
 
-    # Some drugs don't have a generic entry? Sandostatin LAR Depot.
-    if brand_resp['data']['generic'].size > 0
-      generic_params = pricing_params.merge(main_params).merge({'manufacturer' => 'generic'})
-      generic_resp = goodrx_api_call('compare-price', generic_params)
+    generic_params = pricing_params.merge(main_params).merge({'manufacturer' => 'generic'})
+    @generic_resp = goodrx_api_call('compare-price', generic_params)
+    @drug_info[:generic_prices] = @generic_resp['data']['prices']
 
-      @drug_info[:generic_name] = generic_resp['data']['generic'][0]
-      @drug_info[:generic_prices] = generic_resp['data']['price_detail']['price']
-    end
+    @drug_info[:generic_name] = @generic_resp['data']['generic'][0]
     @conclusions = make_conclusion
   end
   private
@@ -93,12 +92,7 @@ class DrugsController < ApplicationController
     if @drug_info[:generic_name]!=@drug_info[:canonical]
       @drug_info[:is_generic]=false
       final_conclusion << "The lowest price for your drug is $#{@drug_info[:brand_prices][0]}"
-
-      if @drug_info[:generic_name]
-        final_conclusion << "There are cheaper prices for a generic version, <span class='bold-text'>#{sanitize(@drug_info[:generic_name])}</div>".html_safe
-      else
-        final_conclusion << "No information about generic equivalents was found."
-      end
+      final_conclusion << "There are cheaper prices for a generic version, #{@drug_info[:generic_name]}"
     else
       @drug_info[:is_generic]=true
       final_conclusion << "The lowest price for your drug is $#{@drug_info[:generic_prices][0]}"
@@ -109,7 +103,6 @@ class DrugsController < ApplicationController
   end
 
   def initialize_instance
-    @drug_info = {}
     @resp_strings = {}
   end
 end

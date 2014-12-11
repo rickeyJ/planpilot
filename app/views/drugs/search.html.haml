@@ -1,43 +1,5 @@
 .container
   = render 'search_form'
-  Response from GoodRX is
-  %ul
-    - @drug_search_resp["data"]["candidates"].each do |drug_name|
-      %li
-        = drug_name.capitalize
-
-  .bold-text.large-text
-    = "Conclusion: #{@conclusion}"
-    - if @conclusion == 'Comparable'
-      = "&mdash; #{@variation}".html_safe
-      
-  %table.table
-    %tr
-      %th
-      %th
-        Dosage
-      %th
-        Form
-      %th
-        Price  
-      
-    %tr
-      %td
-        Fair Price
-      %td
-        = @fp_resp['data']['dosage']
-      %td
-        = @fp_resp['data']['form']
-      %td
-        = @fp_resp['data']['price']
-    %tr
-      %td
-        Low Price
-      %td
-        = @lp_resp['data']['dosage']
-      %td
-        = @lp_resp['data']['form']
-      %td
-        = @lp_resp['data']['price']
-
-        
+  %hr
+  - if @resp_strings.keys.size > 0
+    = render 'goodrx_results'

@@ -1,0 +1,22 @@
+Response from GoodRX for
+%span.bold-text  
+  = @drug_name
+is
+%ul
+  - @drug_search_resp["data"]["candidates"].each do |drug_name|
+    %li
+      = drug_name.capitalize
+
+.large-text
+  Conclusions
+
+%ul
+  - @conclusions.each do |conc|
+    %li
+      = conc
+
+%hr
+  %pre
+    = @resp_strings['drug-search']  
+  %pre
+    = @resp_strings['compare-price']  
