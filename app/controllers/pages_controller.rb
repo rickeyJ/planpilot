@@ -70,7 +70,7 @@ class PagesController < ApplicationController
 
   private
   def build_current_info(h)
-    [:zip, :shop_for, :marital_status, :number_of_children, :age, :smoker, :ongoing_condition, :fave_doctor, :take_prescription, :income, :procedure_names ].each do |id|
+    [:zip, :shop_for, :marital_status, :number_of_children, :age, :smoker, :ongoing_condition, :fave_doctor, :take_prescription, :income, :procedure_names, :drugname, :drugdosage, :drugorders ].each do |id|
       if params[id]
         h[id.to_s]=params[id]
         if id == :number_of_children

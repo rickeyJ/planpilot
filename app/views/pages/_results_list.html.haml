@@ -38,7 +38,7 @@
           = "#{page_data[:labels][:annual_subsidy]}: #{res[:annual_subsidy]}"
 
         .bold-text.large.pink-color
-          = "#{page_data[:labels][:true_annual_cost]}: #{res[:true_annual_cost]}"
+          = "#{page_data[:labels][:true_annual_cost]}: #{res[:true_annual_cost]} (Not paying for #{res[:drugname]})"
 
       .col-xs-1.rescol
         - unless current_user and current_user.has_plan?(res.slice('state', 'county', 'plan_id'))

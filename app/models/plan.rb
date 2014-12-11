@@ -68,7 +68,8 @@ class Plan < ActiveRecord::Base
 
     data={'state' => self.state, 'county' => self.county, 'plan_id' => self.plan_identifier, plan_name: name, image: "", monthly_premium: '$' + monthly_premium.to_s, subsidy: "$#{subsidy}",
           final_monthly_premium: "$" + (monthly_premium - subsidy).to_s, ann_premium: "$#{ann_premium}",
-          annual_subsidy: '$' + (12*subsidy).to_s, true_annual_cost: "$" + number_with_delimiter(true_cost, delimiter: ',')}
+          annual_subsidy: '$' + (12*subsidy).to_s, true_annual_cost: "$" + number_with_delimiter(true_cost, delimiter: ','),
+         drugname: info['drugname']}
     data
   end
 
