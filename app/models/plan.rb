@@ -46,7 +46,7 @@ class Plan < ActiveRecord::Base
         elsif k=="age_threshold"
           val=['N/A', 21, 27, 30, 40, 50, 60][v]
         elsif k=="service"
-          val=["Dental", "", "Medical", "Drug", "Primary Care Physician", "Specialist", "Emergency", "Inpatient Facility", "Inpatient Physician", "Generic Drugs", "Preferred Brand Drugs", "preferred Brand Drugs", "Specialty Drugs"][v]
+          val=["Dental", "", "Medical", "Drug", "Primary Care Physician", "Specialist", "Emergency", "Inpatient Facility", "Inpatient Physician", "Generic Drugs", "Preferred Brand Drugs", "Non-preferred Brand Drugs", "Specialty Drugs"][v]
         end
         acc.merge({k => val})
       end
@@ -56,34 +56,91 @@ class Plan < ActiveRecord::Base
     decoded_keys
   end
 
-  def extract_data_for_person(info)
+  def extract_data_for_person(consumer_info, drug_info)
     plan_payload = self.deflate_payload
     plan_keys = self.decode_map_keys
-    name=plan_payload["plan_marketing_name"]
-    monthly_premium = calculate_premium(plan_keys, info)
 
+    puts ">>> looking at plan keys:\n\t#{plan_keys}"
+    
+    name=plan_payload["plan_marketing_name"]
+    monthly_premium = calculate_premium(plan_keys, consumer_info)
+    drug_hit = calculate_drug_hit(plan_keys, consumer_info, drug_info)
+    
     subsidy=300
     ann_premium= (monthly_premium)*12
     true_cost = (monthly_premium - subsidy)*12
 
-    data={'state' => self.state, 'county' => self.county, 'plan_id' => self.plan_identifier, plan_name: name, image: "", monthly_premium: '$' + monthly_premium.to_s, subsidy: "$#{subsidy}",
-          final_monthly_premium: "$" + (monthly_premium - subsidy).to_s, ann_premium: "$#{ann_premium}",
-          annual_subsidy: '$' + (12*subsidy).to_s, true_annual_cost: "$" + number_with_delimiter(true_cost, delimiter: ','),
-         drugname: info['drugname']}
+    puts ">>> Analyzed #{consumer_info}"
+    data={'state' => self.state, 'county' => self.county, 'plan_id' => self.plan_identifier, plan_name: name, image: "",
+          monthly_premium: "$#{dp2(monthly_premium)}", subsidy: "$#{subsidy}",
+          final_monthly_premium: "$#{dp2(monthly_premium - subsidy)}", ann_premium: "$#{dp2(ann_premium)}",
+          annual_subsidy: '$' + (12*subsidy).to_s, true_annual_cost: "$" + number_with_delimiter(true_cost.ceil, delimiter: ','),
+         }
     data
   end
 
   private
+
+  def dp2(flt)
+    sprintf("%0.2f", flt)
+  end
+  
+  def calculate_drug_hit(keys, consumer_info, drug_info)
+    # Extract co pay (could be numerical, percentage of dosage cost, or could be included in some other column)
+    copay_str=''
+    if drug_info[:generic_name] == consumer_info['drugname']
+      copay_str = (keys.select { |c| c[0]['charge_type']=='Copay' and c[0]['service'] == 'Generic Drugs' }).first[1]
+    elsif drug_info[:is_specialty]
+      copay_str = (keys.select { |c| c[0]['charge_type']=='Copay' and c[0]['service'] == 'Specialty Drugs' }).first[1]
+    else
+      # We'll assume this is a preferred brand
+      copay_str = (keys.select { |c| c[0]['charge_type']=='Copay' and c[0]['service'] == 'Preferred Brand Drugs' }).first[1]
+    end
+
+    puts ">>> copay value is #{copay_str}"
+    
+    # 20% Coinsurance after deductible
+    # $10 
+    # No Charge after Deductible
+    # No Charge
+    # 45%
+    # $75 Copay after deductible
+    # For costs independent of deductible, calculate total cost
+
+    if /deductible/i.match(copay_str)
+    # For costs dependent on deductible, see if this will cause the deductible to be paid up, and then calculate cost above that
+      deductible = calculate_deductible(keys, consumer_info)
+      puts ">>> Deductible is #{deductible}"
+      
+    else
+    end
+    
+  end
   def calculate_premium(keys, consumer_info)
     age=consumer_info['age'].to_i
     child_number = consumer_info['number_of_children'].to_i || 0
+    shop_for = consumer_info['shop_for']
     
     relevant_cell = keys.select do |cell|
       cell[0]["charge_type"]=='Premium' && age > cell[0]["age_threshold"].to_i &&
-        cell[0]["child_number"] == child_number
+        (shop_for == 'myself' && cell[0]['consumer_type']=='Individual' ||
+         shop_for == 'my family' && cell[0]['consumer_type']=='Couple' && cell[0]["child_number"] == child_number)
     end.last
 
-    relevant_cell[1].gsub(/^\$/, '').to_i
+    relevant_cell[1].gsub(/^\$/, '').to_f
+  end
+  def calculate_deductible(keys, consumer_info)
+    age=consumer_info['age'].to_i
+    child_number = consumer_info['number_of_children'].to_i || 0
+    shop_for = consumer_info['shop_for']
+    
+    relevant_cell = keys.select do |cell|
+      cell[0]["charge_type"]=='Deductible' &&
+        (shop_for == 'myself' && cell[0]['consumer_type']=='Individual' ||
+         shop_for == 'my family' && cell[0]['consumer_type']=='Family')
+    end.last
+
+    relevant_cell[1].gsub(/^\$/, '').to_f
   end
   
 end

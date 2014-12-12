@@ -12,6 +12,26 @@ module GoodRx
 
       drug_search_resp['data']['candidates']
     end
+    def self.compare_price(q)
+      drug_info={}
+      main_params = {api_key: ENV['GOODRX_API_KEY']}
+      pricing_params = {name: q}
+      
+      brand_params = pricing_params.merge(main_params).merge({'manufacturer' => 'brand'})
+      brand_resp = goodrx_api_call('compare-price', brand_params)
+      drug_info[:brand_prices] = brand_resp['data']['price_detail']['price']
+
+      # Some drugs don't have a generic entry? Sandostatin LAR Depot.
+      if brand_resp['data']['generic'].size > 0
+        generic_params = pricing_params.merge(main_params).merge({'manufacturer' => 'generic'})
+        generic_resp = goodrx_api_call('compare-price', generic_params)
+
+        drug_info[:generic_name] = generic_resp['data']['generic'][0]
+        drug_info[:generic_prices] = generic_resp['data']['price_detail']['price']
+      end
+
+      drug_info
+    end
 
     private
     def self.goodrx_api_call(api_method, api_params)

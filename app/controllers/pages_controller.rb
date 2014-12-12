@@ -56,10 +56,16 @@ class PagesController < ApplicationController
       info["age"] = info["age"]=='' ? 35 : info['age']
 
       county = info['county']
+
       # The data from HC.gov had county names in both up and down case. :)
+      goodrx_prices = GoodRx::ApiWrappers.compare_price(info['drugname'])
+      goodrx_prices[:drug_base_cost] = drug_expense(goodrx_prices, info)[:actual_cost]
+      goodrx_prices[:is_specialty] = SpecialtyDrug.is_drug?(info['drugname'])
+
+      puts ">>> Base cost is #{goodrx_prices[:drug_base_cost]}"
       plans=Plan.where state: state, county: [county, county.upcase]
       @plans = plans.inject([]) do |acc, plan|
-        acc << plan.extract_data_for_person(info)
+        acc << plan.extract_data_for_person(info, goodrx_prices)
         acc
       end
 
@@ -90,4 +96,16 @@ class PagesController < ApplicationController
 
     h
   end
+
+  def drug_expense(drug_info, consumer_info)
+    generic_cost = drug_info[:generic_prices][0].to_f * consumer_info['drugdosage'].to_f * consumer_info['drugorders'].to_f
+    if drug_info[:generic_name] != consumer_info['drugname']
+      actual_cost = drug_info[:brand_prices][0].to_f * consumer_info['drugdosage'].to_f * consumer_info['drugorders'].to_f
+    else
+      actual_cost = generic_cost
+    end
+
+    {actual_cost: actual_cost, generic_cost: generic_cost}
+
+  end  
 end
