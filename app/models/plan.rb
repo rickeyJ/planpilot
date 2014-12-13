@@ -1,5 +1,7 @@
 class Plan < ActiveRecord::Base
   include ActionView::Helpers::NumberHelper
+  class DataParseException < Exception
+  end
   def deflate_map_keys
     if self.map_keys_string
       keys=self.map_keys_string
@@ -68,7 +70,7 @@ class Plan < ActiveRecord::Base
     
     subsidy=300
     ann_premium= (monthly_premium)*12
-    true_cost = (monthly_premium - subsidy)*12
+    true_cost = (monthly_premium - subsidy)*12 + drug_hit
 
     puts ">>> Analyzed #{consumer_info}"
     data={'state' => self.state, 'county' => self.county, 'plan_id' => self.plan_identifier, plan_name: name, image: "",
@@ -88,7 +90,11 @@ class Plan < ActiveRecord::Base
   def calculate_drug_hit(keys, consumer_info, drug_info)
     # Extract co pay (could be numerical, percentage of dosage cost, or could be included in some other column)
     copay_str=''
+    total_hit = 0.0
+
+    drug_price = drug_info[:brand_prices][0].to_f
     if drug_info[:generic_name] == consumer_info['drugname']
+      drug_price = drug_info[:generic_prices][0].to_f
       copay_str = (keys.select { |c| c[0]['charge_type']=='Copay' and c[0]['service'] == 'Generic Drugs' }).first[1]
     elsif drug_info[:is_specialty]
       copay_str = (keys.select { |c| c[0]['charge_type']=='Copay' and c[0]['service'] == 'Specialty Drugs' }).first[1]
@@ -97,25 +103,56 @@ class Plan < ActiveRecord::Base
       copay_str = (keys.select { |c| c[0]['charge_type']=='Copay' and c[0]['service'] == 'Preferred Brand Drugs' }).first[1]
     end
 
+    drug_cost = consumer_info['drugdosage'].to_f * consumer_info['drugorders'].to_f * drug_price
+
     puts ">>> copay value is #{copay_str}"
     
     # 20% Coinsurance after deductible
-    # $10 
     # No Charge after Deductible
     # No Charge
+    # $10 
     # 45%
     # $75 Copay after deductible
-    # For costs independent of deductible, calculate total cost
 
+    puts ">>> Starting with total_hit of #{total_hit} and cost of #{drug_cost}"
     if /deductible/i.match(copay_str)
     # For costs dependent on deductible, see if this will cause the deductible to be paid up, and then calculate cost above that
       deductible = calculate_deductible(keys, consumer_info)
       puts ">>> Deductible is #{deductible}"
+      total_hit = [drug_cost, deductible].min
+      puts "Hit is now #{total_hit}"
       
-    else
+      # If there's still something left over to pay, pay it using the copay
+      if drug_cost - deductible > 0
+        if (matches=/(\d+)\%/.match(copay_str))
+          copay = matches[1].to_f/100 * (drug_cost - deductible)
+        elsif (matches=/\$(\d+) [cC]/.match(copay_str))
+          copay=matches[1].to_f * consumer_info['drugorders'].to_f
+        elsif (matches=/No charge/i.match(copay_str))
+          copay=0
+        else
+          # We shouldn't get here.
+          raise DataParseException, "Copay str #{copay_str} didn't make sense!"
+        end
+        total_hit += copay
+        puts "Hit is now #{total_hit}"
+      end
+    else # Nothing to do with deductible - For costs independent of deductible, calculate total cost
+      puts ">>> Starting with total_hit of #{total_hit}"
+      if (matches=/^\s*(\d+)\%/.match(copay_str))
+        total_hit = matches[1].to_f/100 * (drug_cost - deductible)
+      elsif (matches=/^\s*\$(\d+)/.match(copay_str))
+        total_hit = matches[1].to_f * consumer_info['drugorders'].to_f
+      elsif (matches=/^\s*No charge/i.match(copay_str))
+        total_hit=0
+      else
+        raise DataParseException, "Copay str #{copay_str} didn't make sense!"
+      end
     end
-    
+
+    total_hit
   end
+
   def calculate_premium(keys, consumer_info)
     age=consumer_info['age'].to_i
     child_number = consumer_info['number_of_children'].to_i || 0
@@ -127,7 +164,7 @@ class Plan < ActiveRecord::Base
          shop_for == 'my family' && cell[0]['consumer_type']=='Couple' && cell[0]["child_number"] == child_number)
     end.last
 
-    relevant_cell[1].gsub(/^\$/, '').to_f
+    relevant_cell[1].gsub(/[\$,]/, '').to_f
   end
   def calculate_deductible(keys, consumer_info)
     age=consumer_info['age'].to_i
@@ -138,9 +175,9 @@ class Plan < ActiveRecord::Base
       cell[0]["charge_type"]=='Deductible' &&
         (shop_for == 'myself' && cell[0]['consumer_type']=='Individual' ||
          shop_for == 'my family' && cell[0]['consumer_type']=='Family')
-    end.last
+    end.first
 
-    relevant_cell[1].gsub(/^\$/, '').to_f
+    relevant_cell[1].gsub(/[\$,]/, '').to_f
   end
   
 end
