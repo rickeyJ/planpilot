@@ -57,15 +57,25 @@ class PagesController < ApplicationController
 
       county = info['county']
 
-      # The data from HC.gov had county names in both up and down case. :)
-      goodrx_prices = GoodRx::ApiWrappers.compare_price(info['drugname'])
-      goodrx_prices[:drug_base_cost] = drug_expense(goodrx_prices, info)[:actual_cost]
-      goodrx_prices[:is_specialty] = SpecialtyDrug.is_drug?(info['drugname'])
+      goodrx_prices=nil
+      if info['take_prescription'] == 'Yes'
+        goodrx_prices = GoodRx::ApiWrappers.compare_price(info['drugnames'][0])
+        goodrx_prices[:drug_base_cost] = drug_expense(goodrx_prices, info)[:actual_cost]
+        goodrx_prices[:is_specialty] = SpecialtyDrug.is_drug?(info['drugnames'][0])
+        puts ">>> Base cost is #{goodrx_prices[:drug_base_cost]}"
+      end
 
-      puts ">>> Base cost is #{goodrx_prices[:drug_base_cost]}"
+      pokitdok_prices = nil
+      if info['procedure_names']
+        info['procedure_orders']='1'
+        cpt_code = CptCodeMap.find_by_procedure_name(info['procedure_names'][0]).cpt_code
+        pokitdok_prices = PokitdokApi::ApiWrappers.price_search(cpt_code, info['zip'])
+      end
+
+      # The data from HC.gov had county names in both up and down case. :)
       plans=Plan.where state: state, county: [county, county.upcase]
       @plans = plans.inject([]) do |acc, plan|
-        acc << plan.extract_data_for_person(info, goodrx_prices)
+        acc << plan.extract_data_for_person(info, goodrx_prices, pokitdok_prices)
         acc
       end
 
@@ -76,7 +86,7 @@ class PagesController < ApplicationController
 
   private
   def build_current_info(h)
-    [:zip, :shop_for, :marital_status, :number_of_children, :age, :smoker, :ongoing_condition, :fave_doctor, :take_prescription, :income, :procedure_names, :drugname, :drugdosage, :drugorders ].each do |id|
+    [:zip, :shop_for, :marital_status, :number_of_children, :age, :smoker, :ongoing_condition, :fave_doctor, :take_prescription, :income, :procedure_names, :drugnames, :drugdosage, :drugorders ].each do |id|
       if params[id]
         h[id.to_s]=params[id]
         if id == :number_of_children
@@ -99,7 +109,7 @@ class PagesController < ApplicationController
 
   def drug_expense(drug_info, consumer_info)
     generic_cost = drug_info[:generic_prices][0].to_f * consumer_info['drugdosage'].to_f * consumer_info['drugorders'].to_f
-    if drug_info[:generic_name] != consumer_info['drugname']
+    if drug_info[:generic_name] != consumer_info['drugnames'][0]
       actual_cost = drug_info[:brand_prices][0].to_f * consumer_info['drugdosage'].to_f * consumer_info['drugorders'].to_f
     else
       actual_cost = generic_cost

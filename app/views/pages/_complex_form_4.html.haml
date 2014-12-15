@@ -4,6 +4,7 @@
   = render 'dropdown', {dropdown_id: 'ongoing_condition_choices', dropdown_title: '-select-', options_list: ['Yes', 'No']}
   %p
   %input.largetextarea.procedure-autocomplete#procedure_names{name: 'procedure_names[]', type: 'text', disabled: 'true', placeholder: 'Enter the procedure name'}
+  %input#procedure_ids{name: 'procedure_ids[]', type: 'hidden'}
   %hr    
 
   = "Do you take prescription medication? "
@@ -11,10 +12,10 @@
   = render 'dropdown', {dropdown_id: 'take_prescription_choices', dropdown_title: '-select-', options_list: ['Yes', 'No']}
   %p
   .medication-info
-    %input.largetextarea.drugname-autocomplete{name: 'drugname', type: 'text',  placeholder: 'Enter the drug name'}
+    %input.largetextarea.drugname-autocomplete{name: 'drugnames[]', type: 'text',  placeholder: 'Enter the drug name'}
     %input.zipinput{name: 'drugdosage', type: 'text',  placeholder: 'Dosage per order'}
     %input.zipinput{name: 'drugorders', type: 'text',  placeholder: 'Annual orders'}
     %hr
 
-    %button.btn.btn-default.submit
-      Go  
+  %button.btn.btn-default.submit
+    Go  
