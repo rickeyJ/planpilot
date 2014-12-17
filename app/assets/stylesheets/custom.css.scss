@@ -67,7 +67,12 @@ body {
 	font-weight: 700;
 }
 .large-text, .large {
-	font-size: 1.3em;
+	@media (min-width: 450px) {
+		font-size: 1.3em;
+	}
+	@media (max-width: 450px) {
+		font-size: 1em;
+	}
 }
 .shaded {
 	background-color: $lightpink-color;
