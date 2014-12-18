@@ -10,11 +10,10 @@ TestDk::Application.routes.draw do
   devise_for :users, controllers: { sessions: "users/sessions" }
   resource :profile
 
-  get '/plans/:id/:state/:county' => 'plans#show'
+  resources :plans
 
   # Goodrx
-  get '/drug_search' => 'drugs#search_form'
-  post '/drug_search' => 'drugs#search'
+  get '/drug_search' => 'drugs#search'
 
   # Pokitdok
   get '/procedures_search' => 'procedures#search_form'
@@ -34,6 +33,7 @@ TestDk::Application.routes.draw do
       namespace :v1 do
         post '/users/:action' => 'users#api_action'
         post '/procedures/:action' => 'procedures#api_action'
+        post '/drugs/:action' => 'drugs#api_action'
       end
     end
   end

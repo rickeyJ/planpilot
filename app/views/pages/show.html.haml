@@ -7,7 +7,7 @@
       = show_current_info @page_data[:current_info]
       
     .question-header
-      = @page_data[:question_header]
+      = @page_data[:current_info][:question_header]
     
     - if @page_data[:current_page]==1
       = render partial: 'simple_form'

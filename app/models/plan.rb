@@ -1,5 +1,7 @@
 class Plan < ActiveRecord::Base
   include ActionView::Helpers::NumberHelper
+  class DataParseException < Exception
+  end
   def deflate_map_keys
     if self.map_keys_string
       keys=self.map_keys_string
@@ -30,7 +32,8 @@ class Plan < ActiveRecord::Base
     end      
     JSON.parse keys
   end
-
+  alias :payload_data :deflate_payload
+  
   def decode_map_keys
     keys=self.deflate_map_keys
     decoded_keys=keys.map do |cell_pair|
@@ -46,7 +49,7 @@ class Plan < ActiveRecord::Base
         elsif k=="age_threshold"
           val=['N/A', 21, 27, 30, 40, 50, 60][v]
         elsif k=="service"
-          val=["Dental", "", "Medical", "Drug", "Primary Care Physician", "Specialist", "Emergency", "Inpatient Facility", "Inpatient Physician", "Generic Drugs", "Preferred Brand Drugs", "preferred Brand Drugs", "Specialty Drugs"][v]
+          val=["Dental", "", "Medical", "Drug", "Primary Care Physician", "Specialist", "Emergency", "Inpatient Facility", "Inpatient Physician", "Generic Drugs", "Preferred Brand Drugs", "Non-preferred Brand Drugs", "Specialty Drugs"][v]
         end
         acc.merge({k => val})
       end
@@ -56,33 +59,187 @@ class Plan < ActiveRecord::Base
     decoded_keys
   end
 
-  def extract_data_for_person(info)
+  def extract_data_for_person(consumer_info, drug_info, pd_info)
     plan_payload = self.deflate_payload
     plan_keys = self.decode_map_keys
-    name=plan_payload["plan_marketing_name"]
-    monthly_premium = calculate_premium(plan_keys, info)
 
+    name=plan_payload["plan_marketing_name"]
+    monthly_premium = calculate_premium(plan_keys, consumer_info)
+
+    if drug_info
+      drug_hit = calculate_drug_hit(plan_keys, consumer_info, drug_info)
+    else
+      drug_hit = 0.0
+    end
+    if pd_info
+      procedure_hit = calculate_procedure_hit(plan_keys, consumer_info, pd_info)
+    else
+      procedure_hit = 0.0
+    end
+
+    # we will substitute this with Nick's subsidy calculation eventually.
     subsidy=300
     ann_premium= (monthly_premium)*12
-    true_cost = (monthly_premium - subsidy)*12
+    true_cost = (monthly_premium - subsidy)*12 + drug_hit + procedure_hit
 
-    data={'state' => self.state, 'county' => self.county, 'plan_id' => self.plan_identifier, plan_name: name, image: "", monthly_premium: '$' + monthly_premium.to_s, subsidy: "$#{subsidy}",
-          final_monthly_premium: "$" + (monthly_premium - subsidy).to_s, ann_premium: "$#{ann_premium}",
-          annual_subsidy: '$' + (12*subsidy).to_s, true_annual_cost: "$" + number_with_delimiter(true_cost, delimiter: ',')}
+    puts ">>> Analyzed #{consumer_info}"
+    data={plan_db_id: self.id, 'state' => self.state, 'county' => self.county, 'plan_id' => self.plan_identifier,
+          plan_name: name, image: "", monthly_premium: "$#{dp2(monthly_premium)}", subsidy: "$#{subsidy}",
+          final_monthly_premium: "$#{dp2(monthly_premium - subsidy)}", ann_premium: "$#{dp2(ann_premium)}",
+          annual_subsidy: '$' + (12*subsidy).to_s, true_annual_cost: "$" + number_with_delimiter(true_cost.ceil, delimiter: ','),
+          :ann_premium_in_num => ann_premium, :annual_subsidy_in_num => 12*subsidy,
+         }
     data
   end
 
   private
+
+  def dp2(flt)
+    sprintf("%0.2f", flt)
+  end
+  
+  def calculate_drug_hit(keys, consumer_info, drug_info)
+    # Extract co pay (could be numerical, percentage of dosage cost, or could be included in some other column)
+    copay_str=''
+    total_hit = 0.0
+
+    drug_price = drug_info[:brand_prices][0].to_f
+    if drug_info[:generic_name] == consumer_info['drugname']
+      drug_price = drug_info[:generic_prices][0].to_f
+      copay_str = (keys.select { |c| c[0]['charge_type']=='Copay' and c[0]['service'] == 'Generic Drugs' }).first[1]
+    elsif drug_info[:is_specialty]
+      copay_str = (keys.select { |c| c[0]['charge_type']=='Copay' and c[0]['service'] == 'Specialty Drugs' }).first[1]
+    else
+      # We'll assume this is a preferred brand
+      copay_str = (keys.select { |c| c[0]['charge_type']=='Copay' and c[0]['service'] == 'Preferred Brand Drugs' }).first[1]
+    end
+
+    drug_cost = consumer_info['drugdosage'].to_f * consumer_info['drugorders'].to_f * drug_price
+
+    puts ">>> copay value is #{copay_str}"
+    
+    # 20% Coinsurance after deductible
+    # No Charge after Deductible
+    # No Charge
+    # $10 
+    # 45%
+    # $75 Copay after deductible
+
+    puts ">>> Starting with total_hit of #{total_hit} and cost of #{drug_cost}"
+    if /deductible/i.match(copay_str)
+    # For costs dependent on deductible, see if this will cause the deductible to be paid up, and then calculate cost above that
+      deductible = calculate_deductible(keys, consumer_info)
+      puts ">>> Deductible is #{deductible}"
+      total_hit = [drug_cost, deductible].min
+      puts "Hit is now #{total_hit}"
+      
+      # If there's still something left over to pay, pay it using the copay
+      if drug_cost - deductible > 0
+        if (matches=/(\d+)\%/.match(copay_str))
+          copay = matches[1].to_f/100 * (drug_cost - deductible)
+        elsif (matches=/\$(\d+) [cC]/.match(copay_str))
+          copay=matches[1].to_f * consumer_info['drugorders'].to_f
+        elsif (matches=/No charge/i.match(copay_str))
+          copay=0
+        else
+          # We shouldn't get here.
+          raise DataParseException, "Copay str #{copay_str} didn't make sense!"
+        end
+        total_hit += copay
+        puts "Hit is now #{total_hit}"
+      end
+    else # Nothing to do with deductible - For costs independent of deductible, calculate total cost
+      puts ">>> Starting with total_hit of #{total_hit}"
+      if (matches=/^\s*(\d+)\%/.match(copay_str))
+        total_hit = matches[1].to_f/100 * drug_cost
+      elsif (matches=/^\s*\$(\d+)/.match(copay_str))
+        total_hit = matches[1].to_f * consumer_info['drugorders'].to_f
+      elsif (matches=/^\s*No charge/i.match(copay_str))
+        total_hit=0
+      else
+        raise DataParseException, "Copay str #{copay_str} didn't make sense!"
+      end
+    end
+
+    total_hit
+  end
+
+  def calculate_procedure_hit(keys, consumer_info, pd_info)
+    # Extract co pay (could be numerical, percentage of dosage cost, or could be included in some other column)
+    copay_str=''
+    total_hit = 0.0
+
+#    Obtained {"meta"=>{"rate_limit_amount"=>2, "rate_limit_reset"=>1418687175, "application_mode"=>"test", "processing_time"=>23, "rate_limit_cap"=>1000, "credits_remaining"=>9996, "activity_id"=>"548f64f7fba8eb4ce9ebd0a5", "credits_billed"=>1}, "data"=>[{"high_price"=>85.0, "cpt_code"=>"G0123", "low_price"=>25.0, "average_price"=>45.58, "geo_zip_area"=>"331", "standard_deviation"=>18.16, "median_price"=>42.0}]} for G0123, 33133
+
+    pd_cost = (pd_info['data'][0]['high_price'].to_f + pd_info['data'][0]['low_price'].to_f)/2
+    # We'll assume this is the right copay type for now.
+    copay_str = (keys.select { |c| c[0]['charge_type']=='Copay' and c[0]['service'] == 'Specialist' }).first[1]
+    puts ">>> copay value is #{copay_str}"
+
+    puts ">>> Starting with total_hit of #{total_hit} and cost of #{pd_cost}"
+    if /deductible/i.match(copay_str)
+    # For costs dependent on deductible, see if this will cause the deductible to be paid up, and then calculate cost above that
+      deductible = calculate_deductible(keys, consumer_info)
+      puts ">>> Deductible is #{deductible}"
+      total_hit = [pd_cost, deductible].min
+      puts "Hit is now #{total_hit}"
+      
+      # If there's still something left over to pay, pay it using the copay
+      if pd_cost - deductible > 0
+        if (matches=/(\d+)\%/.match(copay_str))
+          copay = matches[1].to_f/100 * (pd_cost - deductible)
+        elsif (matches=/\$(\d+) [cC]/.match(copay_str))
+          copay=matches[1].to_f * consumer_info['procedure_orders'].to_i
+        elsif (matches=/No charge/i.match(copay_str))
+          copay=0
+        else
+          # We shouldn't get here.
+          raise DataParseException, "Copay str #{copay_str} didn't make sense!"
+        end
+        total_hit += copay
+        puts "Hit is now #{total_hit}"
+      end
+    else # Nothing to do with deductible - For costs independent of deductible, calculate total cost
+      puts ">>> Starting with total_hit of #{total_hit}"
+      if (matches=/^\s*(\d+)\%/.match(copay_str))
+        total_hit = matches[1].to_f/100 * pd_cost
+      elsif (matches=/^\s*\$(\d+)/.match(copay_str))
+        total_hit = matches[1].to_f * consumer_info['procedure_orders'].to_f
+      elsif (matches=/^\s*No charge/i.match(copay_str))
+        total_hit=0
+      else
+        raise DataParseException, "Copay str #{copay_str} didn't make sense!"
+      end
+    end
+
+    total_hit
+  end
+
   def calculate_premium(keys, consumer_info)
     age=consumer_info['age'].to_i
     child_number = consumer_info['number_of_children'].to_i || 0
+    shop_for = consumer_info['shop_for']
     
     relevant_cell = keys.select do |cell|
       cell[0]["charge_type"]=='Premium' && age > cell[0]["age_threshold"].to_i &&
-        cell[0]["child_number"] == child_number
+        (shop_for == 'myself' && cell[0]['consumer_type']=='Individual' ||
+         shop_for == 'my family' && cell[0]['consumer_type']=='Couple' && cell[0]["child_number"] == child_number)
     end.last
 
-    relevant_cell[1].gsub(/^\$/, '').to_i
+    relevant_cell[1].gsub(/[\$,]/, '').to_f
+  end
+  def calculate_deductible(keys, consumer_info)
+    age=consumer_info['age'].to_i
+    child_number = consumer_info['number_of_children'].to_i || 0
+    shop_for = consumer_info['shop_for']
+    
+    relevant_cell = keys.select do |cell|
+      cell[0]["charge_type"]=='Deductible' &&
+        (shop_for == 'myself' && cell[0]['consumer_type']=='Individual' ||
+         shop_for == 'my family' && cell[0]['consumer_type']=='Family')
+    end.first
+
+    relevant_cell[1].gsub(/[\$,]/, '').to_f
   end
   
 end

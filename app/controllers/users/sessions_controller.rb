@@ -20,7 +20,7 @@ class Users::SessionsController < Devise::SessionsController
         plan_data=JSON.parse @plan_data_str
         logged_in_user.build_profile unless logged_in_user.profile
 
-        logged_in_user.profile.plans << plan_data unless logged_in_user.profile.plans.include?(plan_data)
+        logged_in_user.profile.plans << plan_data['plan'] unless logged_in_user.profile.plans.include?(plan_data['plan'])
         logged_in_user.profile.demographic_data ||= {}
         logged_in_user.profile.demographic_data.merge! JSON.parse(@demographic_data_str)
         logged_in_user.profile.save

@@ -1,17 +1,21 @@
 - content_for :main do
-  = "Do you have an ongoing condition? "
+  = "Are there any medical procedures you need? "
   %input{id: 'ongoing_condition', name: 'ongoing_condition', type: 'hidden'}
   = render 'dropdown', {dropdown_id: 'ongoing_condition_choices', dropdown_title: '-select-', options_list: ['Yes', 'No']}
   %p
-  %input.largetextarea.autocomplete#procedure_names{name: 'procedure_names[]', type: 'text', disabled: 'true', placeholder: 'Enter your condition (optional)'}
+  %input.largetextarea.procedure-autocomplete#procedure_names{name: 'procedure_names[]', type: 'text', disabled: 'true', placeholder: 'Enter the procedure name'}
+  %input#procedure_ids{name: 'procedure_ids[]', type: 'hidden'}
   %hr    
 
   = "Do you take prescription medication? "
   %input{id: 'take_prescription', name: 'take_prescription', type: 'hidden'}
   = render 'dropdown', {dropdown_id: 'take_prescription_choices', dropdown_title: '-select-', options_list: ['Yes', 'No']}
   %p
-  %input.largetextarea{type: 'text', disabled: 'true', placeholder: 'Enter the medicines you take (optional)'}
-  %hr
+  .medication-info
+    %input.largetextarea.drugname-autocomplete{name: 'drugnames[]', type: 'text',  placeholder: 'Enter the drug name'}
+    %input.zipinput{name: 'drugdosage', type: 'text',  placeholder: 'Dosage per order'}
+    %input.zipinput{name: 'drugorders', type: 'text',  placeholder: 'Annual orders'}
+    %hr
 
   %button.btn.btn-default.submit
     Go  

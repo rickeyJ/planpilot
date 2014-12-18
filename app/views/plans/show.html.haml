@@ -1,9 +1,52 @@
-%h1
-  = @plan.plan_identifier
+.results-top-bg
+  // Need this here to allow interaction of checkboxes with clicks
+  #current_info{type: 'hidden', 'data-value' => @page_data[:current_info].to_json}  
 
-%ul
-  - @plan.deflate_map_keys.each do |cell|
-    - desc_keys=cell[0]; val=cell[1]
-    %li
-      = "#{display_desc_keys(desc_keys)}: #{val}"
-%hr
+  .row.results-row
+    .col-xs-2
+    .col-xs-8.info-box
+      .large-text.bold-text
+        = @plan.payload_data['plan_marketing_name']
+      .plan-deets
+        %span.plan-deet-box
+          = "County: #{@plan.county}"
+        %span.plan-deet-box
+          = "State: #{@plan.state}"
+    .col-xs-2
+
+.results-bottom-bg      
+  .row.results-row
+    .col-xs-2
+    .col-xs-8.info-box
+      .section-title.large-text
+        Your Plan Costs
+      .section-content
+        %ul  
+          %li
+            = "#{@cms_data[:labels_subsidy]}: #{@plan_data[:subsidy]}"
+          %li
+            = "#{@cms_data[:labels_final_monthly_premium]}: #{@plan_data[:final_monthly_premium]}"
+          %li
+            = "#{@cms_data[:labels_ann_premium]}: #{@plan_data[:ann_premium]}"
+          %li
+            = "#{@cms_data[:labels_annual_subsidy]}: #{@plan_data[:annual_subsidy]}"
+          %li
+            = "#{@cms_data[:labels_subsidized_premium]}: $#{number_with_delimiter(@plan_data[:ann_premium_in_num] - @plan_data[:annual_subsidy_in_num])}"
+          %li
+            = "#{@cms_data[:labels_true_annual_cost]}: #{@plan_data[:true_annual_cost]}"
+
+      .section-title
+        = link_to 'Purchase Now', @plan.payload_data['link']
+        
+      %a{href: '/users/sign_up'}
+        .section-title.buttonbox.large-text
+          Sign up to save this information and come back to it later!
+  
+    .col-xs-2
+
+  .row.results-row
+    .col-xs-2
+    .col-xs-8.info-box
+    .col-xs-2
+
+

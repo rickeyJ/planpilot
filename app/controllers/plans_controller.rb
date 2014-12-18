@@ -1,8 +1,10 @@
 class PlansController < ApplicationController
   def show
-    state = params[:state].gsub(/\+/, ' ')
-    county = params[:county].gsub(/\+/, ' ')
-    @plan = (Plan.where plan_identifier: params[:id], state: state, county: county)[0]
+    @plan = Plan.find_by_id params[:id]
+    puts ">>> got back #{session}"
+
+    @cms_data = CmsData.make_hash
+    @plan_data = @plan.extract_data_for_person(session[:consumer_info], session[:drug_info], session[:pd_info])
   end
 
 end

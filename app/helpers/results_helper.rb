@@ -1,6 +1,6 @@
 module ResultsHelper
   def results_refine_selection target_id, curr_info_h
-    if curr_info_h[target_id]!=''
+    if curr_info_h[target_id]=='Yes'
       'selected'
     else
       'unselected'

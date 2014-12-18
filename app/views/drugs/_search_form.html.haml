@@ -1,4 +1,4 @@
 .container
-  = form_tag '/drug_search', method: 'post' do
+  = form_tag '/drug_search', method: 'get' do
     = text_field_tag 'q', nil, placeholder: 'Query'
     = submit_tag 'Search on GoodRX!'
