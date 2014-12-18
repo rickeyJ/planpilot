@@ -18,7 +18,7 @@
               &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 
         .plan-name{'data-plan-id'=> res['plan_id']}
-          = res[:plan_name]
+          = link_to res[:plan_name], plan_path(res[:plan_db_id])
 
       .col-xs-4.innercol.rescol
         .bold-text

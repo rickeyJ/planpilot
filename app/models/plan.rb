@@ -32,7 +32,8 @@ class Plan < ActiveRecord::Base
     end      
     JSON.parse keys
   end
-
+  alias :payload_data :deflate_payload
+  
   def decode_map_keys
     keys=self.deflate_map_keys
     decoded_keys=keys.map do |cell_pair|
@@ -62,8 +63,6 @@ class Plan < ActiveRecord::Base
     plan_payload = self.deflate_payload
     plan_keys = self.decode_map_keys
 
-    puts ">>> looking at plan keys:\n\t#{plan_keys}"
-    
     name=plan_payload["plan_marketing_name"]
     monthly_premium = calculate_premium(plan_keys, consumer_info)
 
@@ -84,10 +83,11 @@ class Plan < ActiveRecord::Base
     true_cost = (monthly_premium - subsidy)*12 + drug_hit + procedure_hit
 
     puts ">>> Analyzed #{consumer_info}"
-    data={'state' => self.state, 'county' => self.county, 'plan_id' => self.plan_identifier, plan_name: name, image: "",
-          monthly_premium: "$#{dp2(monthly_premium)}", subsidy: "$#{subsidy}",
+    data={plan_db_id: self.id, 'state' => self.state, 'county' => self.county, 'plan_id' => self.plan_identifier,
+          plan_name: name, image: "", monthly_premium: "$#{dp2(monthly_premium)}", subsidy: "$#{subsidy}",
           final_monthly_premium: "$#{dp2(monthly_premium - subsidy)}", ann_premium: "$#{dp2(ann_premium)}",
           annual_subsidy: '$' + (12*subsidy).to_s, true_annual_cost: "$" + number_with_delimiter(true_cost.ceil, delimiter: ','),
+          :ann_premium_in_num => ann_premium, :annual_subsidy_in_num => 12*subsidy,
          }
     data
   end

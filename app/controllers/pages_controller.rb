@@ -51,7 +51,9 @@ class PagesController < ApplicationController
 
     puts ">>> session data = #{@page_data[:current_info]}"
     if @page_data[:is_results_page]
-      info=@page_data[:current_info]
+      # Initialize the session here ... this could go further up in the forms workflow too.
+      session[:consumer_info] = info = @page_data[:current_info]
+      
       state = info["state"].gsub(/\+/, ' ')
       info["age"] = info["age"]=='' ? 35 : info['age']
 
@@ -63,6 +65,7 @@ class PagesController < ApplicationController
         goodrx_prices[:drug_base_cost] = drug_expense(goodrx_prices, info)[:actual_cost]
         goodrx_prices[:is_specialty] = SpecialtyDrug.is_drug?(info['drugnames'][0])
         puts ">>> Base cost is #{goodrx_prices[:drug_base_cost]}"
+        session[:drug_info] = goodrx_prices
       end
 
       pokitdok_prices = nil
@@ -70,6 +73,7 @@ class PagesController < ApplicationController
         info['procedure_orders']='1'
         cpt_code = CptCodeMap.find_by_procedure_name(info['procedure_names'][0]).cpt_code
         pokitdok_prices = PokitdokApi::ApiWrappers.price_search(cpt_code, info['zip'])
+        session[:pd_info] = pokitdok_prices
       end
 
       # The data from HC.gov had county names in both up and down case. :)
