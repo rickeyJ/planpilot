@@ -1,8 +1,0 @@
-%h1
-  = @plan.plan_identifier
-
-%ul
-  = @plan.deflate_map_keys.each do |cell|
-    - desc_keys=cell[0]; val=cell[1]
-    %li
-      = "#{display_desc_keys(desc_keys)}: #{val}"

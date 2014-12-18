@@ -11,7 +11,12 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20141212051527) do
+ActiveRecord::Schema.define(version: 20141217225629) do
+
+  create_table "cms_data", force: true do |t|
+    t.string "key"
+    t.text   "value"
+  end
 
   create_table "cost_maps", force: true do |t|
     t.string   "consumer_type"
