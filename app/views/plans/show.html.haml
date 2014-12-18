@@ -5,42 +5,55 @@
   .row.results-row
     .col-xs-2
     .col-xs-8.info-box
-      .large-text.bold-text
-        = @plan.payload_data['plan_marketing_name']
-      .plan-deets
-        %span.plan-deet-box
-          = "County: #{@plan.county}"
-        %span.plan-deet-box
-          = "State: #{@plan.state}"
+      .col-xs-6
+        .large-text.bold-text
+          = @plan.payload_data['plan_marketing_name']
+        .plan-deets
+          %span.plan-deet-box
+            = "County: #{@plan.county}"
+          %span.plan-deet-box
+            = "State: #{@plan.state}"
+      .col-xs-6.offset-xs-3
+        %a{href: '/users/sign_up'}
+          .section-title.buttonbox.large-text
+            Sign up to save this information!      
+
     .col-xs-2
 
 .results-bottom-bg      
   .row.results-row
     .col-xs-2
     .col-xs-8.info-box
-      .section-title.large-text
-        Your Plan Costs
-      .section-content
-        %ul  
-          %li
-            = "#{@cms_data[:labels_subsidy]}: #{@plan_data[:subsidy]}"
-          %li
-            = "#{@cms_data[:labels_final_monthly_premium]}: #{@plan_data[:final_monthly_premium]}"
-          %li
-            = "#{@cms_data[:labels_ann_premium]}: #{@plan_data[:ann_premium]}"
-          %li
-            = "#{@cms_data[:labels_annual_subsidy]}: #{@plan_data[:annual_subsidy]}"
-          %li
-            = "#{@cms_data[:labels_subsidized_premium]}: $#{number_with_delimiter(@plan_data[:ann_premium_in_num] - @plan_data[:annual_subsidy_in_num])}"
-          %li
-            = "#{@cms_data[:labels_true_annual_cost]}: #{@plan_data[:true_annual_cost]}"
+      .col-xs-6
+        .section-title.large-text
+          Your Plan Costs
+        .section-content
+          %ul  
+            %li
+              = "#{@cms_data[:labels_subsidy]}: #{@plan_data[:subsidy]}"
+            %li
+              = "#{@cms_data[:labels_final_monthly_premium]}: #{@plan_data[:final_monthly_premium]}"
+            %li
+              = "#{@cms_data[:labels_ann_premium]}: #{@plan_data[:ann_premium]}"
+            %li
+              = "#{@cms_data[:labels_annual_subsidy]}: #{@plan_data[:annual_subsidy]}"
+            %li
+              = "#{@cms_data[:labels_subsidized_premium]}: #{@plan_data[:premium_after_subsidy]}"
+            %li
+              = "#{@cms_data[:labels_true_annual_cost]}: #{@plan_data[:true_annual_cost]}"
 
-      .section-title
-        = link_to 'Purchase Now', @plan.payload_data['link']
-        
-      %a{href: '/users/sign_up'}
-        .section-title.buttonbox.large-text
-          Sign up to save this information and come back to it later!
+        .section-title
+          .bold-text
+            = "Customer Service Phone Number: #{@plan.payload_data['customer_service_phone_number_local']}"
+          .bold-text
+            = "Customer Service Phone Number: #{@plan.payload_data['customer_service_phone_number_toll_free']}"
+      .col-xs-6
+        %a{href: @plan.payload_data['network_url'], target: "_blank"}
+          .section-title.buttonbox
+            .large-text
+              Purchase Now
+            .fineprint-text
+              (This link will open a new tab and take you to a page outside Planpilot)
   
     .col-xs-2
 
