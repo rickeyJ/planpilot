@@ -38,3 +38,4 @@ bower.json
 
 data/*
 .DS_Store
+*.zip

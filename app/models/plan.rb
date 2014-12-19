@@ -218,13 +218,17 @@ class Plan < ActiveRecord::Base
 
   def calculate_premium(keys, consumer_info)
     age=consumer_info['age'].to_i
-    child_number = consumer_info['number_of_children'].to_i || 0
+    family_number = consumer_info['shop_for'].include?('other adults') ? consumer_info['number_of_adults'].to_i : 0
+    child_number = consumer_info['shop_for'].include?('children') ? consumer_info['number_of_children'].to_i : 0
+
+    household_size = 1 + family_number + child_number
+
     shop_for = consumer_info['shop_for']
     
     relevant_cell = keys.select do |cell|
       cell[0]["charge_type"]=='Premium' && age > cell[0]["age_threshold"].to_i &&
-        (shop_for == 'myself' && cell[0]['consumer_type']=='Individual' ||
-         shop_for == 'my family' && cell[0]['consumer_type']=='Couple' && cell[0]["child_number"] == child_number)
+        (family_number == 0 && cell[0]['consumer_type']=='Individual' ||
+         family_number > 0 && cell[0]['consumer_type']=='Couple') && cell[0]["child_number"] == child_number
     end.last
 
     relevant_cell[1].gsub(/[\$,]/, '').to_f

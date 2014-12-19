@@ -11,17 +11,28 @@
   .nextline
     .forms-checkbox
       Myself
-      = check_box_tag 'shop_for_choices[]', 'myself'
+      = check_box_tag 'shop_for[]', 'myself'
     .forms-checkbox
       My Children
-      = check_box_tag 'shop_for_choices[]', 'my children'
+      = check_box_tag 'shop_for[]', 'my children'
     .forms-checkbox
       Other Adults  
-      = check_box_tag 'shop_for_choices[]', 'other adults'
-    %input{name: 'number_of_adults', type: 'text', placeholder: 'Number of other adults'}
+      = check_box_tag 'shop_for[]', 'other adults'
+    .inputboxes
+      .boxset
+        .helpbox
+          Number of children
+        %div
+          %input.form-control{name: 'number_of_children', type: 'text', placeholder: '', style: 'line-height: 120%;'}
+      .boxset
+        .helpbox
+          Number of other adults
+        %div
+          %input.form-control{name: 'number_of_adults', type: 'text', placeholder: '', style: 'line-height: 120%;'}
       
-  //  = render 'dropdown', {dropdown_id: 'shop_for_choices', dropdown_title: '-select-', options_list: ['my family', 'myself']}
+  //  = render 'dropdown', {dropdown_id: 'shop_for', dropdown_title: '-select-', options_list: ['my family', 'myself']}
   //  %input{id: 'shop_for', name: 'shop_for', type: 'hidden'}
+  // This won't get rendered any more because there's no way to unhide it.
 
   %p
   .family-info
