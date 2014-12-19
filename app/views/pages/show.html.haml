@@ -3,14 +3,16 @@
     
   .col-xs-8.question-text
     .current-info
-      %span.pink-color About Me:
-      = show_current_info @page_data[:current_info]
+      %span.pink-color
+        = show_current_info @page_data[:current_info]
       
     .question-header
       = @page_data[:current_info][:question_header]
     
     - if @page_data[:current_page]==1
       = render partial: 'simple_form'
+    - elsif @page_data[:current_page]==6
+      = render partial: 'no_plans'  
     - else
       = render partial: "complex_form_#{@page_data[:current_page]}", layout: 'form_layout'
 

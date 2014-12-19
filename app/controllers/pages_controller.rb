@@ -50,6 +50,12 @@ class PagesController < ApplicationController
     @page_data[:current_info][:question_header] = @page_data[:question_header]
     @page_data[:current_info].merge! build_current_info(@page_data[:current_info])
 
+    if @page_data[:current_info]['number_of_plans'] == 0
+      # Bail out now.
+      @page_data[:current_page]=6
+      render 'show' and return
+    end
+
     puts ">>> session data = #{@page_data[:current_info]}"
     if @page_data[:is_results_page]
       # Initialize the session here ... this could go further up in the forms workflow too.
@@ -78,10 +84,13 @@ class PagesController < ApplicationController
       end
 
       # The data from HC.gov had county names in both up and down case. :)
-      plans=Plan.where state: state, county: [county, county.upcase]
-      @plans = plans.inject([]) do |acc, plan|
-        acc << plan.extract_data_for_person(info, goodrx_prices, pokitdok_prices)
-        acc
+      if !info['plan_number']
+        plans=Plan.where state: state, county: [county, county.upcase]
+        @plans = plans.inject([]) do |acc, plan|
+          acc << plan.extract_data_for_person(info, goodrx_prices, pokitdok_prices)
+          acc
+        end
+        info['plan_number']=@plans.size
       end
 
       @plans = sort_results(@plans)
@@ -92,7 +101,7 @@ class PagesController < ApplicationController
   private
   def build_current_info(h)
     [:zip, :shop_for, :marital_status, :number_of_children, :age, :smoker, :ongoing_condition, :fave_doctor, :take_prescription, :income, :procedure_names, :drugnames, :drugdosage, :drugorders ].each do |id|
-      if params[id]
+      if params[id] && !h[id.to_s]
         h[id.to_s]=params[id]
         if id == :number_of_children
           h[id.to_s] = params[id] == '3 or more' ? 3 : params[id].to_i
@@ -104,6 +113,7 @@ class PagesController < ApplicationController
 
           h['state']=ZipInfo.where(zip: params[:zip])[0].state
           h['number_of_plans']=Plan.where(state: h['state'], county: [h['county'], h['county'].upcase]).size
+
           h[:question_header]="#{number_with_delimiter(h['number_of_plans'])} #{h[:question_header]}"
         end
       end
