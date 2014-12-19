@@ -13,7 +13,7 @@ module PagesHelper
       
     end
     if current_info['shop_for']
-      str += "#{current_info['shop_for']} | "
+      str += "#{current_info['shop_for'].join(', ')} | "
     end
     if current_info['age']
       str += "#{current_info['age']} | "

@@ -167,23 +167,31 @@ class Plan < ActiveRecord::Base
 
   def calculate_procedure_hit(keys, consumer_info, pd_info)
     # Extract co pay (could be numerical, percentage of dosage cost, or could be included in some other column)
-    copay_str=''
-    total_hit = 0.0
-
 #    Obtained {"meta"=>{"rate_limit_amount"=>2, "rate_limit_reset"=>1418687175, "application_mode"=>"test", "processing_time"=>23, "rate_limit_cap"=>1000, "credits_remaining"=>9996, "activity_id"=>"548f64f7fba8eb4ce9ebd0a5", "credits_billed"=>1}, "data"=>[{"high_price"=>85.0, "cpt_code"=>"G0123", "low_price"=>25.0, "average_price"=>45.58, "geo_zip_area"=>"331", "standard_deviation"=>18.16, "median_price"=>42.0}]} for G0123, 33133
 
     pd_cost = (pd_info['data'][0]['high_price'].to_f + pd_info['data'][0]['low_price'].to_f)/2
+    deductible = calculate_deductible(keys, consumer_info)
     # We'll assume this is the right copay type for now.
-    copay_str = (keys.select { |c| c[0]['charge_type']=='Copay' and c[0]['service'] == 'Specialist' }).first[1]
-    puts ">>> copay value is #{copay_str}"
 
-    puts ">>> Starting with total_hit of #{total_hit} and cost of #{pd_cost}"
+    hits = (keys.select { |c| c[0]['charge_type']=='Copay' and (c[0]['service'] == 'Specialist' ||
+                                                                c[0]['service'] == 'Primary Care Physician' ||
+                                                                c[0]['service'] == 'Emergency' ||
+                                                                c[0]['service'] == 'Inpatient Facility' ||
+                                                                c[0]['service'] == 'Inpatient Physician')}).map do |str|
+      puts "Analyzing #{str}"
+      next if /^\s*$/.match str[1]
+
+      get_hit_value(str[1], consumer_info, pd_cost, deductible)
+    end
+
+    (hits.compact.inject(0.0) { |result, el| result + el })/hits.size.to_f
+  end
+
+  def get_hit_value(copay_str, consumer_info, pd_cost, deductible)
+    total_hit = 0.0
     if /deductible/i.match(copay_str)
     # For costs dependent on deductible, see if this will cause the deductible to be paid up, and then calculate cost above that
-      deductible = calculate_deductible(keys, consumer_info)
-      puts ">>> Deductible is #{deductible}"
       total_hit = [pd_cost, deductible].min
-      puts "Hit is now #{total_hit}"
       
       # If there's still something left over to pay, pay it using the copay
       if pd_cost - deductible > 0
@@ -198,10 +206,8 @@ class Plan < ActiveRecord::Base
           raise DataParseException, "Copay str #{copay_str} didn't make sense!"
         end
         total_hit += copay
-        puts "Hit is now #{total_hit}"
       end
     else # Nothing to do with deductible - For costs independent of deductible, calculate total cost
-      puts ">>> Starting with total_hit of #{total_hit}"
       if (matches=/^\s*(\d+)\%/.match(copay_str))
         total_hit = matches[1].to_f/100 * pd_cost
       elsif (matches=/^\s*\$(\d+)/.match(copay_str))
