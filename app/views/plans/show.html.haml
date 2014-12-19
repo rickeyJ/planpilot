@@ -46,7 +46,7 @@
           .bold-text
             = "Customer Service Phone Number: #{@plan.payload_data['customer_service_phone_number_local']}"
           .bold-text
-            = "Customer Service Phone Number: #{@plan.payload_data['customer_service_phone_number_toll_free']}"
+            = "Customer Service Toll Free: #{@plan.payload_data['customer_service_phone_number_toll_free']}"
       .col-xs-6
         %a{href: @plan.payload_data['network_url'], target: "_blank"}
           .section-title.buttonbox

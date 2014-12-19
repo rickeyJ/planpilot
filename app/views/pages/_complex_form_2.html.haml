@@ -1,16 +1,27 @@
 - content_for(:main) do 
   = "I am"
   %input.ageinput.inline.form-control{name: 'age',  type: 'text', placeholder: ''}
-  years old, and I'm looking to 
+  years old, and I
 
   %span.explain_text
-    provide coverage
+    need healthcare for
     .help_text
       This is where the help would go typically.
-  to
-
-  = render 'dropdown', {dropdown_id: 'shop_for_choices', dropdown_title: '-select-', options_list: ['my family', 'myself']}
-  %input{id: 'shop_for', name: 'shop_for', type: 'hidden'}
+  (check all that apply):
+  .nextline
+    .forms-checkbox
+      Myself
+      = check_box_tag 'shop_for_choices[]', 'myself'
+    .forms-checkbox
+      My Children
+      = check_box_tag 'shop_for_choices[]', 'my children'
+    .forms-checkbox
+      Other Adults  
+      = check_box_tag 'shop_for_choices[]', 'other adults'
+    %input{name: 'number_of_adults', type: 'text', placeholder: 'Number of other adults'}
+      
+  //  = render 'dropdown', {dropdown_id: 'shop_for_choices', dropdown_title: '-select-', options_list: ['my family', 'myself']}
+  //  %input{id: 'shop_for', name: 'shop_for', type: 'hidden'}
 
   %p
   .family-info
