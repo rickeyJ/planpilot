@@ -86,8 +86,9 @@ class Plan < ActiveRecord::Base
     data={plan_db_id: self.id, 'state' => self.state, 'county' => self.county, 'plan_id' => self.plan_identifier,
           plan_name: name, image: "", monthly_premium: "$#{dp2(monthly_premium)}", subsidy: "$#{subsidy}",
           final_monthly_premium: "$#{dp2(monthly_premium - subsidy)}", ann_premium: "$#{dp2(ann_premium)}",
-          annual_subsidy: '$' + (12*subsidy).to_s, true_annual_cost: "$" + number_with_delimiter(true_cost.ceil, delimiter: ','),
+          annual_subsidy: number_to_currency(12*subsidy), true_annual_cost: number_to_currency(true_cost.ceil),
           :ann_premium_in_num => ann_premium, :annual_subsidy_in_num => 12*subsidy,
+          :premium_after_subsidy => number_to_currency(ann_premium - 12*subsidy),
          }
     data
   end

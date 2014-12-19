@@ -1,3 +1,4 @@
+# coding: utf-8
 class PagesController < ApplicationController
   include PlanSorter
   include ActionView::Helpers::NumberHelper
@@ -18,7 +19,7 @@ class PagesController < ApplicationController
 
                      3 => {
                        question_header: "Plans Found",
-                       question_main: "You may be eligible for a subsidy.",
+                       question_main: "Some people can save money on their health insurance with a subsidy. Let’s see if you are eligible.",
                        next_page: 4,
                        step_index: 2,
                      },
