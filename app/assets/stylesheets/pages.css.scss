@@ -157,6 +157,20 @@ input[type=text] {
 	display: none; 
 }
 
+.inputboxes {
+	line-height: 1em;
+}
+.boxset {
+	display: inline-block;
+	margin-right: 10px;
+}
+
+.helpbox {
+	font-size: 0.9em;
+	color: #000;
+	margin-bottom: 3px;
+	font-weight: italic;
+}
 .family-info {
 	margin-left: 30px;
 	display: none;
