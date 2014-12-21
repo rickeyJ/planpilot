@@ -1,6 +1,6 @@
 - content_for(:main) do 
   = "I am"
-  %input.ageinput.inline.form-control{name: 'age',  type: 'text', placeholder: ''}
+  %input.ageinput.inline.form-control{name: 'age',  type: 'text', placeholder: '', value: @page_data[:current_info][:age]}
   years old, and I
 
   %span.explain_text
@@ -11,13 +11,13 @@
   .nextline
     .forms-checkbox
       Myself
-      = check_box_tag 'shop_for[]', 'myself'
+      = check_box_tag 'shop_for[]', 'myself', (@page_data[:current_info][:shop_for] && @page_data[:current_info][:shop_for].include?('myself'))
     .forms-checkbox
       My Children
-      = check_box_tag 'shop_for[]', 'my children'
+      = check_box_tag 'shop_for[]', 'my children', (@page_data[:current_info][:shop_for] && @page_data[:current_info][:shop_for].include?('my children'))
     .forms-checkbox
       Other Adults  
-      = check_box_tag 'shop_for[]', 'other adults'
+      = check_box_tag 'shop_for[]', 'other adults', (@page_data[:current_info][:shop_for] && @page_data[:current_info][:shop_for].include?('other adults'))
     .inputboxes
       .boxset
         .helpbox

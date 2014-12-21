@@ -6,7 +6,7 @@ class ProfilesController < ApplicationController
       @plans = @profile.plans.map do |plan_keys|
         county = plan_keys["county"]
         p=Plan.where(state: plan_keys['state'], county: [county, county.upcase], plan_identifier: plan_keys['plan_id']).first
-        p.extract_data_for_person(@profile.demographic_data)
+        p.extract_data_for_person(@profile.demographic_data, @profile.drug_info, @profile.pd_info)
       end
     else
       raise CanCan::AccessDenied
