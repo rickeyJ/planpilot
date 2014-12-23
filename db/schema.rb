@@ -11,7 +11,14 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20141217225629) do
+ActiveRecord::Schema.define(version: 20141223220659) do
+
+  create_table "caps", force: true do |t|
+    t.float    "fpl_income"
+    t.float    "premium_cap"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
 
   create_table "cms_data", force: true do |t|
     t.string "key"
@@ -33,6 +40,20 @@ ActiveRecord::Schema.define(version: 20141217225629) do
   create_table "cpt_code_maps", force: true do |t|
     t.string   "cpt_code"
     t.string   "procedure_name"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  create_table "fpls", force: true do |t|
+    t.integer  "household_size"
+    t.integer  "fpl_amt"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  create_table "medicaids", force: true do |t|
+    t.string   "state"
+    t.float    "fpl_floor"
     t.datetime "created_at"
     t.datetime "updated_at"
   end

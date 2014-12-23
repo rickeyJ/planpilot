@@ -41,7 +41,6 @@ module Subsidy
       
     # 3) subsidy payout = montly_premium - max_premium
     subsidy = monthly_premium - max_premium
+    subsidy
   end
-
-  subsidy
 end
