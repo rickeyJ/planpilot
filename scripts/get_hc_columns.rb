@@ -1,20 +1,25 @@
 class ColumnKey
-  attr_reader :payload_keys
+  attr_reader :payload_keys, :keys
   attr_accessor :key_sets
   
   def initialize(f)
     @payload_keys=nil
     @keys=[]
     @fh=File.open(f)
-    @filters = {price_type: ['medical', 'drug', 'specialist', 'emergency', 'Primary Care Physician', 'Inpatient Facility', 'Generic Drugs', 'Preferred Brand Drugs', 'Non-preferred Brand Drugs', 'Specialty Drugs', 'Inpatient Physician'],
-                services: ['dental', 'medical', 'specialist', 'emergency', 'Primary Care Physician', 'Inpatient Facility', 'Generic Drugs', 'Preferred Brand Drugs', 'Non-preferred Brand Drugs', 'Specialty Drugs', 'Inpatient Physician', 'drug'],
+    @filters = {price_type: ['medical', 'drug', 'specialist', 'emergency', 'Primary Care Physician', 'Inpatient Facility', 'Generic Drugs', 'Preferred Brand Drugs', 'Non-preferred Brand Drugs', 'Specialty Drugs', 'Inpatient Physician', 'Outpatient Facility'],
+                services: ['dental', 'medical', 'specialist', 'emergency', 'Primary Care Physician', 'Inpatient Facility', 'Generic Drugs', 'Preferred Brand Drugs', 'Non-preferred Brand Drugs', 'Specialty Drugs', 'Inpatient Physician', 'drug', 'Outpatient Facility'],
                 consumer_type: ['individual', 'couple', 'child', 'family', 'adult'],
                 #           child_number: 0-3
                 charge_type: ['premium', 'deductible', 'Out Of Pocket'],}
   end
 
   def payload_keys=(list)
-    @payload_keys = list.map { |x| x.downcase.gsub(/ /, '_').to_sym }
+    @payload_keys = list.map do |x|
+      if x == 'Plan ID - Standard Component'
+        x='plan identifier'
+      end
+      x.downcase.gsub(/ /, '_').to_sym
+    end
   end
   
   def key_values(i=-1)
@@ -28,15 +33,16 @@ class ColumnKey
     end
   end
 
-  def set_keys
+  def set_keys(payload_threshold)
     filters=@filters
     @fh.readlines.each_with_index do |l, line_no|
       @keys[line_no] = {}
-      if line_no<17 or /Premium Scenario/.match l or /Standard Plan Cost Sharing/.match(l) or /Actuarial Value Silver Plan Cost Sharing/.match l
+      if line_no < payload_threshold or /Premium Scenario/.match l or /Standard Plan Cost Sharing/.match(l) or /Actuarial Value Silver Plan Cost Sharing/.match l
+        #$stderr.write("Skipping #{l}\n")
         next
       end
-      
-      property_string = ''
+
+      type = property_string = ''
 
       matched=false
       filters[:charge_type].each do |ct|
@@ -48,19 +54,23 @@ class ColumnKey
         end
 
       end
-      if !matched
+      if !matched # not a premium, deductible or out of pocket expense description match via regexp
+        # if it's dental service, or not a known service, it's still a premium; 
         type = (is_service?(l) and service(l)!='dental') ? "copay" : "premium"
         @keys[line_no]["charge_type"]=type
         property_string += "\"charge_type\" => #{type}"
       end
-      matched=false
 
-      if type != 'copay'
+      if @keys[line_no]["charge_type"] != 'copay'
+        # Everything except copay has a consumer type
         types = (filters[:consumer_type].map do |ct|
                    Regexp.new(Regexp.escape(ct), Regexp::IGNORECASE).match l
                  end).compact
 
-        if types.size != 1 && !subsumed?(types[0][0], types[1..-1])
+        if types.nil? or types.size == 0
+          byebug
+          $stderr.write("#{l} barfed when reading against consumertype filters"); exit -1
+        elsif types.size > 1 && !subsumed?(types[0][0], types[1..-1])
           $stderr.write("#{l}, #{types} matched not 1 consumer type.\n"); exit -1;
         end
 
@@ -83,15 +93,20 @@ class ColumnKey
       @keys[line_no]["service"]="#{svc}"
       property_string += "\t\"service\" => #{svc}"
 
+      # puts property_string
     end
     @key_sets = @keys.inject({}) do |acc, collection|
       collection.each do |k, v|
         if !acc.keys.include? k
           acc[k]=[]
         end
-        acc[k] |= [v]
+        acc[k] |= [(v.is_a?(String) ? v.downcase : v)]
       end
       acc
+    end
+
+    @key_sets.each do |k, v|
+      @key_sets[k]=v.sort
     end
   end
   

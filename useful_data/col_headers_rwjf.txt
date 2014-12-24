@@ -1,0 +1,44 @@
+State
+Issuer Name
+Plan ID - Standard Component
+Plan Marketing Name
+Plan Type
+Rating Area
+Premium Adult Individual Age 27
+Premium Adult Individual Age 50
+Premium Couple+2 children Age 30
+Premium Individual+2 children Age 30
+Medical Deductible - individual - in-network
+Drug Deductible - individual - in-network
+Medical Deductible - individual - out-of-network
+Drug Deductible - individual - out-of-network
+Medical Deductible -family - in-network
+Drug Deductible - family - in-network
+Medical Deductible -family - out-of-network
+Drug Deductible - family - out-of-network
+Medical Maximum Out Of Pocket - individual - in-network
+Drug Maximum Out of Pocket - individual - in-network
+Medical Maximum Out Of Pocket - individual - out-of-network
+Drug Maximum Out of Pocket - individual - out-of-network
+Medical Maximum Out of Pocket - family - in-network
+Drug Maximum Out of Pocket - Family - in-network
+Medical Maximum Out of Pocket - family - out-of-network
+Drug Maximum Out of Pocket - Family - out-of-network
+Primary Care Physician - in-network
+Primary Care Physician - out-of-network
+Specialist - in-network
+Specialist - out-of-network
+Emergency Room - in-network
+Emergency Room - out-of-network
+Inpatient Facility - in-network
+Inpatient Facility - out-of-network
+Outpatient Facility - in-network
+Outpatient Facility - out-of-network
+Generic Drugs - in-network
+Generic Drugs - out-of-network
+Preferred Brand Drugs - in-network
+Preferred Brand Drugs - out-of-network
+Non-preferred Brand Drugs - in-network
+Non-preferred Brand Drugs - out-of-network
+Specialty Drugs - in-network
+Specialty Drugs - out-of-network

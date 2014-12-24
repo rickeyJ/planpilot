@@ -2,14 +2,22 @@ require_relative './get_hc_columns'
 require 'zlib'
 require 'base64'
 
-ini_keys = ['State', 'County', 'Metal Level', 'Issuer Name', 'Plan_IDENTIFIER', 'Plan_Marketing_Name', 'Plan_Type', 'Rating_Area', 'Child_Only_Offering', 'Source', 'Customer_Service_Phone_Number_Local', 'Customer_Service_Phone_Number_Toll_Free', 'Customer_Service_Phone_Number_TTY', 'Network_URL', 'Plan_Brochure_URL', 'Summary_of_Benefits_URL', 'Drug_Formulary_URL']
+ini_keys = {hc: ['State', 'County', 'Metal Level', 'Issuer Name', 'Plan_IDENTIFIER', 'Plan_Marketing_Name', 'Plan_Type', 'Rating_Area', 'Child_Only_Offering', 'Source', 'Customer_Service_Phone_Number_Local', 'Customer_Service_Phone_Number_Toll_Free', 'Customer_Service_Phone_Number_TTY', 'Network_URL', 'Plan_Brochure_URL', 'Summary_of_Benefits_URL', 'Drug_Formulary_URL'],
+            rwjf: ['State', 'Issuer Name', 'Plan ID - Standard Component', 'Plan Marketing Name', 'Plan Type', 'Rating Area']
+           }
 
 index=0
 
-# Supply the analyzed column list as the 2nd cmd line arg
+# Supply the analyzed column list as the 2nd cmd line arg, and the source as 'rwjf' or as 'hc' as the second
+exit if ARGV.size < 3
 ck=ColumnKey.new ARGV[1]
-start_plan = ARGV[2] || 0
-end_plan = ARGV[3] || 5000
+
+data_source = ARGV[2]
+
+payload_threshold = (data_source.downcase=='rwjf' ? 6 : 17)
+
+start_plan = ARGV[3] || 0
+end_plan = ARGV[4] || 5000
 
 def base64ify(str)
   Base64.encode64(Zlib::Deflate.deflate(str)).split("\n").inject('') do |acc, l|
@@ -75,13 +83,18 @@ end
 
 File.open(ARGV[0]).readlines.each_with_index do |l, index|
   if index == 0
-    ck.set_keys
-    ck.payload_keys=ini_keys
+    ck.set_keys payload_threshold
+    ck.payload_keys=ini_keys[data_source.downcase.to_sym]
   else
     next if index < start_plan.to_i
-
+    l.chomp!
+    
     vals = l.split "\t"
-    next if vals.size != 128
+    
+    if vals.size != ck.keys.size
+      $stderr.write("Not enough keys (#{vals.size}) when compared to\n\n #{ck.keys.size}\n\n in #{vals}")
+      exit -1;
+    end
 
     plan_var = map_keys = plan_id_str = ''
     state_and_county_arr= []
