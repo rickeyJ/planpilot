@@ -5,19 +5,24 @@ module Subsidy
     income = consumer_info['income'].to_f
     household = consumer_info['household_size'].to_i
     state = consumer_info['state']
-    fpl_amt = Fpl.where(household: household).pluck(:fpl_amt)
+    fpl_amt = Fpl.where(household_size: household).pluck(:fpl_amt)
     tier = Cap.pluck(:fpl_income, :premium_cap)
     fpl_floor = Medicaid.where(state: state).pluck(:fpl_floor)
     monthly_premium = calculate_premium(plan_keys, consumer_info)
 
     # 1) Calculate the fpl_income for premium_cap lookup
     fpl_income = income / fpl_amt[0].to_f
+    puts fpl_income
+    puts fpl_floor[0]
 
     # if consumer's FPL is <= their state's fpl_floor, they're eligible for medicaid
     # and we should redirect them to their state's medicaid site
-    if fpl_income <= fpl_floor[0]
-      flash[:notice] = "Some people can save money on their health insurance with a subsidy. Let's see if you are eligible."
-    end
+    
+    # if fpl_income <= fpl_floor[0]
+    #   flash[:notice] = "Some people can save money on their health insurance with a subsidy. Let's see if you are eligible."
+    # end
+
+    # fpl_income <= fpl_floor[0] ? flash[:notice] = "medicaid message" : calculate_subsidy(plan_keys, consumer_info)
 
     # 2) lookup premium cap by fpl_income range 
     # => uses low-end premium_cap to give underestimates

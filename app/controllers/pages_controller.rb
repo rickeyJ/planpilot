@@ -87,8 +87,8 @@ class PagesController < ApplicationController
       state = info["state"].gsub(/\+/, ' ')
       info["age"] = info["age"]=='' ? 35 : info['age']
 
-      # county = info['county']
-      county = info['county'] === nil ? info['county'] = default : info['county']
+      county = info['county']
+      # county = info['county'] === nil ? info['county'] = default : info['county']
 
       goodrx_prices=nil
       if info['take_prescription'] == 'Yes'
