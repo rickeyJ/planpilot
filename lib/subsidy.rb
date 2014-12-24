@@ -1,3 +1,9 @@
+
+# notes:
+#   1)  giving inaccurate number for subsidy...currently matching the premium amount...why?
+#   2)  Medicaid evaluation currently throwing error: ArgumentError in PagesController#show, "comparison of Float with nil failed", lines 26-28
+#       if commented out, the module works with the exception of 1) ...test coverage...
+
 module Subsidy
   def calculate_subsidy(plan_keys, consumer_info)
 
@@ -17,7 +23,7 @@ module Subsidy
 
     # if consumer's FPL is <= their state's fpl_floor, they're eligible for medicaid
     # and we should redirect them to their state's medicaid site
-    
+
     # if fpl_income <= fpl_floor[0]
     #   flash[:notice] = "Some people can save money on their health insurance with a subsidy. Let's see if you are eligible."
     # end
