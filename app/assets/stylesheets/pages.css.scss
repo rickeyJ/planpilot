@@ -27,10 +27,13 @@
 }
 
 .hero {
+	&.row {
+		margin-left: 0px;
+	}
 	width: 100%;
 	min-height: 500px;
 	background-color: peach;
-	background:  asset-url("hero01.jpg") no-repeat scroll top left ;
+	background:  asset-url("hero04.jpg") no-repeat scroll top left ;
 	overflow: hidden;
 	
 }

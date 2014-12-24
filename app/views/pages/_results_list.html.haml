@@ -17,7 +17,7 @@
             %span
               &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 
-        .plan-name{'data-plan-id'=> res['plan_id']}
+        .plan-name{'data-plan-db-id'=> res[:plan_db_id]}
           = link_to res[:plan_name], plan_path(res[:plan_db_id])
 
       .col-xs-4.innercol.rescol
@@ -41,6 +41,6 @@
           = "#{page_data[:labels][:true_annual_cost]}: #{res[:true_annual_cost]}"
 
       .col-xs-1.rescol
-        - unless current_user and current_user.has_plan?(res.slice('state', 'county', 'plan_id'))
+        - if !in_profile_list
           .action-box
             Save For Later

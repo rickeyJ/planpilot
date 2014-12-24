@@ -9,10 +9,14 @@ module Api
           return
         end
 
+        puts ">> add_plan got #{params} params"
         current_user.build_profile unless current_user.profile
-        current_user.profile.plans << params['plan'] unless current_user.profile.plans.include?(params['plan'])
 
-        # Bad overloading - we are saving demo data in a call to add plans
+        new_plan = Plan.find params['db_id']
+        
+        current_user.profile.plans << new_plan unless current_user.profile.plans.include?(new_plan)
+
+        # Bad overloading - we are saving demographic data in a call to add plans
         if params['demo_data']
           current_user.profile.demographic_data = params['demo_data']
           ret = current_user.profile.save

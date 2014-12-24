@@ -60,7 +60,7 @@ class PagesController < ApplicationController
     if @page_data[:is_results_page]
       # Initialize the session here ... this could go further up in the forms workflow too.
       session[:consumer_info] = info = @page_data[:current_info]
-      
+
       state = info["state"].gsub(/\+/, ' ')
       info["age"] = info["age"]=='' ? 35 : info['age']
 
