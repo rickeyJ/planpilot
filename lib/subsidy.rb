@@ -1,7 +1,7 @@
 
 # notes:
 #   1)  giving inaccurate number for subsidy...currently matching the premium amount...why?
-#   2)  Medicaid evaluation currently throwing error: ArgumentError in PagesController#show, "comparison of Float with nil failed", lines 26-28
+#   2)  Medicaid evaluation currently throwing error: ArgumentError in PagesController#show, "comparison of Float with nil failed", lines 27-29
 #       if commented out, the module works with the exception of 1) ...test coverage...
 
 module Subsidy
@@ -18,8 +18,6 @@ module Subsidy
 
     # 1) Calculate the fpl_income for premium_cap lookup
     fpl_income = income / fpl_amt[0].to_f
-    puts fpl_income
-    puts fpl_floor[0]
 
     # if consumer's FPL is <= their state's fpl_floor, they're eligible for medicaid
     # and we should redirect them to their state's medicaid site
@@ -51,7 +49,7 @@ module Subsidy
     max_premium = (income * premium_cap) / 12
       
     # 3) subsidy payout = montly_premium - max_premium
-    subsidy = monthly_premium - max_premium
-    subsidy
+    subsidy = monthly_premium.to_f - max_premium.to_f
+    subsidy.to_f
   end
 end
