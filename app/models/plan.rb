@@ -41,15 +41,13 @@ class Plan < ActiveRecord::Base
         val=''
         k=code_pair[0]; v=code_pair[1]
         if k=="charge_type"
-          val=(["Premium", "Deductible", "Out Of Pocket", "Copay"].sort)[v]
+          val=([''] + ["premium", "deductible", "out of pocket", "copay"].sort)[v]
         elsif k=="consumer_type"
-          val=(["Adult", "Child", "Individual", "Couple", "Individual", "Family", "Family"].sort)[v]
-        elsif k=="child_number"
-          val=[0, 1, 2, 3][v]
-        elsif k=="age_threshold"
-          val=[-1, 21, 27, 30, 40, 50, 60][v]
+          val=([''] + ["adult", "child", "couple", "family", "individual"].sort)[v]
+        elsif k=="child_number" || k=="age_threshold"
+          val=v
         elsif k=="service"
-          val=(["Dental", "", "Medical", "Drug", "Primary Care Physician", "Specialist", "Emergency", "Inpatient Facility", "Inpatient Physician", "Generic Drugs", "Preferred Brand Drugs", "Non-preferred Brand Drugs", "Specialty Drugs"].sort)[v]
+          val=([''] + ["dental", "drug", "emergency", "generic drugs", "inpatient facility", "inpatient physician", "medical", "non-preferred brand drugs", "outpatient facility", "preferred brand drugs", "primary care physician", "specialist", "specialty drugs"])[v]
         end
         acc.merge({k => val})
       end
@@ -107,12 +105,12 @@ class Plan < ActiveRecord::Base
     drug_price = drug_info[:brand_prices][0].to_f
     if drug_info[:generic_name] == consumer_info['drugname']
       drug_price = drug_info[:generic_prices][0].to_f
-      copay_str = (keys.select { |c| c[0]['charge_type']=='Copay' and c[0]['service'] == 'Generic Drugs' }).first[1]
+      copay_str = (keys.select { |c| c[0]['charge_type']=='copay' and c[0]['service'] == 'generic drugs' }).first[1]
     elsif drug_info[:is_specialty]
-      copay_str = (keys.select { |c| c[0]['charge_type']=='Copay' and c[0]['service'] == 'Specialty Drugs' }).first[1]
+      copay_str = (keys.select { |c| c[0]['charge_type']=='copay' and c[0]['service'] == 'specialty drugs' }).first[1]
     else
       # We'll assume this is a preferred brand
-      copay_str = (keys.select { |c| c[0]['charge_type']=='Copay' and c[0]['service'] == 'Preferred Brand Drugs' }).first[1]
+      copay_str = (keys.select { |c| c[0]['charge_type']=='copay' and c[0]['service'] == 'preferred brand drugs' }).first[1]
     end
 
     drug_cost = consumer_info['drugdosage'].to_f * consumer_info['drugorders'].to_f * drug_price
@@ -140,6 +138,8 @@ class Plan < ActiveRecord::Base
           copay = matches[1].to_f/100 * (drug_cost - deductible)
         elsif (matches=/\$(\d+) [cC]/.match(copay_str))
           copay=matches[1].to_f * consumer_info['drugorders'].to_f
+        elsif (matches=/\$(\d+) after deductible/i.match(copay_str))
+          copay=matches[1].to_f * consumer_info['drugorders'].to_f 
         elsif (matches=/No charge/i.match(copay_str))
           copay=0
         else
@@ -173,11 +173,11 @@ class Plan < ActiveRecord::Base
     deductible = calculate_deductible(keys, consumer_info)
     # We'll assume this is the right copay type for now.
 
-    hits = (keys.select { |c| c[0]['charge_type']=='Copay' and (c[0]['service'] == 'Specialist' ||
-                                                                c[0]['service'] == 'Primary Care Physician' ||
-                                                                c[0]['service'] == 'Emergency' ||
-                                                                c[0]['service'] == 'Inpatient Facility' ||
-                                                                c[0]['service'] == 'Inpatient Physician')}).map do |str|
+    hits = (keys.select { |c| c[0]['charge_type']=='copay' and (c[0]['service'] == 'specialist' ||
+                                                                c[0]['service'] == 'primary care physician' ||
+                                                                c[0]['service'] == 'emergency' ||
+                                                                c[0]['service'] == 'inpatient facility' ||
+                                                                c[0]['service'] == 'inpatient physician')}).map do |str|
       puts "Analyzing #{str}"
       next if /^\s*$/.match str[1]
 
@@ -224,36 +224,37 @@ class Plan < ActiveRecord::Base
 
   def calculate_premium(keys, consumer_info)
     age=consumer_info['age'].to_i
-    family_number = consumer_info['shop_for'].include?('other adults') ? consumer_info['number_of_adults'].to_i : 0
-    child_number = consumer_info['shop_for'].include?('children') ? consumer_info['number_of_children'].to_i : 0
-
-    household_size = 1 + family_number + child_number
-
     shop_for = consumer_info['shop_for']
+    family_number = (shop_for && shop_for.include?('other adults')) ?
+                      consumer_info['number_of_adults'].to_i : 0
+    child_number = (shop_for && shop_for.include?('my children')) ?
+                     consumer_info['number_of_children'].to_i : 0
+    household_size = 1 + family_number + child_number
 
     puts ">>> Checking #{age}, #{family_number}, #{child_number} with keys #{keys}"
     
     relevant_cell = keys.select do |cell|
-      cell[0]["charge_type"]=='Premium' && age > cell[0]["age_threshold"].to_i &&
-        (family_number == 0 && cell[0]['consumer_type']=='Individual' ||
-         family_number > 0 && cell[0]['consumer_type']=='Couple') && cell[0]["child_number"] == child_number
+      cell[0]["charge_type"]=='premium' && age < cell[0]["age_threshold"].to_i &&
+        (family_number == 0 && cell[0]['consumer_type'] == 'individual' ||
+         family_number > 0 && cell[0]['consumer_type']=='couple') && cell[0]["child_number"].to_i == child_number
     end.last
 
     relevant_cell[1].gsub(/[\$,]/, '').to_f
   end
   def calculate_deductible(keys, consumer_info)
     age=consumer_info['age'].to_i
-    family_number = consumer_info['shop_for'].include?('other adults') ? consumer_info['number_of_adults'].to_i : 0
-    child_number = consumer_info['shop_for'].include?('children') ? consumer_info['number_of_children'].to_i : 0
+    shop_for = consumer_info['shop_for']
+    family_number = shop_for.include?('other adults') ? consumer_info['number_of_adults'].to_i : 0
+    child_number = shop_for.include?('my children') ? consumer_info['number_of_children'].to_i : 0
 
     household_size = 1 + family_number + child_number
-
-    shop_for = consumer_info['shop_for']
+    
+    puts ">>> Checking #{age}, #{family_number}, #{child_number} with keys #{keys}"
     
     relevant_cell = keys.select do |cell|
-      cell[0]["charge_type"]=='Deductible' &&
-        (family_number == 0 && cell[0]['consumer_type']=='Individual' ||
-         family_number > 0 && cell[0]['consumer_type']=='Couple') && cell[0]["child_number"] == child_number
+      cell[0]["charge_type"]=='deductible' &&
+        (family_number == 0 && cell[0]['consumer_type']=='individual' ||
+         family_number > 0 && (cell[0]['consumer_type']=='couple' || cell[0]['consumer_type']=='family'))
     end.last
 
     relevant_cell[1].gsub(/[\$,]/, '').to_f
