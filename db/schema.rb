@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20141222070457) do
+ActiveRecord::Schema.define(version: 20141227023729) do
 
   create_table "cms_data", force: true do |t|
     t.string "key"
@@ -95,6 +95,7 @@ ActiveRecord::Schema.define(version: 20141222070457) do
     t.text     "map_keys_string"
     t.text     "payload_string"
     t.integer  "profile_id"
+    t.string   "rating_area"
   end
 
   create_table "profiles", force: true do |t|
@@ -104,6 +105,15 @@ ActiveRecord::Schema.define(version: 20141222070457) do
     t.datetime "updated_at"
     t.text     "pd_data"
     t.text     "drug_data"
+  end
+
+  create_table "rating_areas", force: true do |t|
+    t.string   "zip_code"
+    t.string   "county"
+    t.string   "state"
+    t.string   "rating_area"
+    t.datetime "created_at"
+    t.datetime "updated_at"
   end
 
   create_table "saved_plans", force: true do |t|

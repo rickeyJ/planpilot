@@ -1,3 +1,5 @@
+require 'byebug'
+
 class ColumnKey
   attr_reader :payload_keys, :keys
   attr_accessor :key_sets
@@ -6,11 +8,18 @@ class ColumnKey
     @payload_keys=nil
     @keys=[]
     @fh=File.open(f)
-    @filters = {price_type: ['medical', 'drug', 'specialist', 'emergency', 'Primary Care Physician', 'Inpatient Facility', 'Generic Drugs', 'Preferred Brand Drugs', 'Non-preferred Brand Drugs', 'Specialty Drugs', 'Inpatient Physician', 'Outpatient Facility'],
-                services: ['dental', 'medical', 'specialist', 'emergency', 'Primary Care Physician', 'Inpatient Facility', 'Generic Drugs', 'Preferred Brand Drugs', 'Non-preferred Brand Drugs', 'Specialty Drugs', 'Inpatient Physician', 'drug', 'Outpatient Facility'],
-                consumer_type: ['individual', 'couple', 'child', 'family', 'adult'],
-                #           child_number: 0-3
-                charge_type: ['premium', 'deductible', 'Out Of Pocket'],}
+    @filters = {services: [/emergency/i, /primary care physician/i, /inpatient facility/i, /generic drugs/i, /non.preferred brand drugs/i, /^\s*preferred brand drugs/i, /specialty drugs/i, /inpatient physician/i, /outpatient facility/i, /dental/i, /medical/i, /specialist/i, /drug/i],
+                # Don't change the filter order here! Child should have least priority!
+                consumer_type: ["adult", "couple", "family", "individual", 'child'],
+                charge_type: ['premium', 'deductible', 'out of pocket', 'copay']
+               }
+
+    @filters[:services_to_str] = services_to_str(@filters[:services])
+    # Key sets will contain all the known keys, plus a blank to account for no key
+    @key_sets = @filters.select { |k,v| k!=:services }.inject({}) do |acc, pair|
+      acc[pair[0]] = [''] + pair[1].sort
+      acc
+    end
   end
 
   def payload_keys=(list)
@@ -22,17 +31,6 @@ class ColumnKey
     end
   end
   
-  def key_values(i=-1)
-    if i!=-1
-      @keys[i].inject({}) do |acc, pair|
-        acc[pair[0]]=@key_sets[pair[0]].index pair[1]
-        acc
-      end
-    else
-      @keys
-    end
-  end
-
   def set_keys(payload_threshold)
     filters=@filters
     @fh.readlines.each_with_index do |l, line_no|
@@ -48,20 +46,20 @@ class ColumnKey
       filters[:charge_type].each do |ct|
         r=Regexp.new Regexp.escape(ct), Regexp::IGNORECASE
         if r.match l
-          @keys[line_no]["charge_type"]=ct
+          @keys[line_no]["charge_type"]=@key_sets[:charge_type].index(ct)
           property_string += "\"charge_type\" => #{ct}"
           matched=true
         end
-
       end
+
       if !matched # not a premium, deductible or out of pocket expense description match via regexp
         # if it's dental service, or not a known service, it's still a premium; 
         type = (is_service?(l) and service(l)!='dental') ? "copay" : "premium"
-        @keys[line_no]["charge_type"]=type
+        @keys[line_no]["charge_type"]=@key_sets[:charge_type].index(type)
         property_string += "\"charge_type\" => #{type}"
       end
 
-      if @keys[line_no]["charge_type"] != 'copay'
+      if @keys[line_no]["charge_type"] != @key_sets[:charge_type].index('copay')
         # Everything except copay has a consumer type
         types = (filters[:consumer_type].map do |ct|
                    Regexp.new(Regexp.escape(ct), Regexp::IGNORECASE).match l
@@ -74,8 +72,11 @@ class ColumnKey
           $stderr.write("#{l}, #{types} matched not 1 consumer type.\n"); exit -1;
         end
 
-        @keys[line_no]["consumer_type"]="#{types[0]}"
-
+        consumer_type=types[0][0].downcase
+        # Canonicalize
+        consumer_type='individual' if consumer_type.downcase == 'adult'
+        @keys[line_no]["consumer_type"]=@key_sets[:consumer_type].index(consumer_type)
+        
         property_string += "\t\"consumer_type\" => #{types[0]}"
 
         @keys[line_no]["child_number"]=child_number l
@@ -83,46 +84,58 @@ class ColumnKey
       end
 
       svcs = filters[:services].map do |svc|
-        Regexp.new(Regexp.escape(svc), Regexp::IGNORECASE).match l
+        svc.match l
       end.compact
-      if svcs.size > 1 and !(svcs[0][0]=='preferred Brand Drugs' and svcs[1][0]=='Non-preferred Brand Drugs') and !subsumed?(svcs[0][0], svcs[1..-1])
+
+      if svcs.size > 1 and !(svcs[0][0]=~/generic drugs/i and svcs[1][0]=~/^drug/i) \
+        and !(svcs[0][0]=~/preferred brand drugs/i and svcs[1][0]=~/^drug/i) and 
+        !(svcs[0][0]=~/specialty drugs/i and svcs[1][0]=~/^drug/i) # and !subsumed?(svcs[0][0], svcs[1..-1])
         $stderr.write("#{l}: not matched 1 svc (#{svcs}).\n"); exit -1;
       end    
 
-      svc = svcs.size > 0 ? svcs[0] : ''
-      @keys[line_no]["service"]="#{svc}"
-      property_string += "\t\"service\" => #{svc}"
-
-      # puts property_string
-    end
-    @key_sets = @keys.inject({}) do |acc, collection|
-      collection.each do |k, v|
-        if !acc.keys.include? k
-          acc[k]=[]
-        end
-        acc[k] |= [(v.is_a?(String) ? v.downcase : v)]
+      if svcs.size > 0
+        $stderr.write(">>> for #{l}, trying to find #{svcs[0][0].downcase} in #{@key_sets[:services_to_str]}, found at #{@key_sets[:services_to_str].index(svcs[0][0].downcase)}\n")
+        @keys[line_no]["service"] = @key_sets[:services_to_str].index(svcs[0][0].downcase)
+      else
+        @keys[line_no]["service"] = 0
       end
-      acc
-    end
-
-    @key_sets.each do |k, v|
-      @key_sets[k]=v.sort
     end
   end
   
   private
+
+  def services_to_str(arr)
+    arr.map do |reg|
+      service_regex_to_str reg
+    end
+  end
+  
+  def service_regex_to_str(reg)
+    if reg == /^\s*preferred brand drugs/i
+      'preferred brand drugs'
+    elsif reg == /non.preferred brand drugs/i
+      'non-preferred brand drugs'
+    else
+      str = reg.to_s
+      str.gsub! '?i-mx', ''
+      str.gsub! /^\(:/, ''
+      str.gsub! /\)$/, ''
+    end
+  end
+  
+  def down_if_string(str)
+    str.is_a?(String) ? str.downcase : str
+  end
   def is_service?(l)
   (@filters[:services].map do |svc|
-     r=Regexp.new Regexp.escape(svc), Regexp::IGNORECASE
-     r.match l
+     svc.match l
    end
   ).compact.size > 0
   end
 
   def service(l)
     (@filters[:services].map do |svc|
-       r=Regexp.new Regexp.escape(svc), Regexp::IGNORECASE
-       r.match l
+       svc.match l
      end
     ).compact[0][0].downcase
   end
@@ -137,7 +150,7 @@ class ColumnKey
   def child_number(line)
     m=/\+(\d) .*hild/.match line
     if m.nil?
-      -1
+      0
     else
       m[1].to_i
     end

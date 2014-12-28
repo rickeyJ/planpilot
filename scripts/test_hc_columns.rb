@@ -7,4 +7,4 @@ ck.keys.each_with_index do |e, i|
   puts "#{i}: #{e}"
 end
 
-# puts ck.key_sets
+puts ck.key_sets

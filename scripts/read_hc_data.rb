@@ -8,7 +8,11 @@ ini_keys = {hc: ['State', 'County', 'Metal Level', 'Issuer Name', 'Plan_IDENTIFI
 
 index=0
 
-# Supply the analyzed column list as the 2nd cmd line arg, and the source as 'rwjf' or as 'hc' as the second
+# Supply
+# arg 1: the data as the first cmd line arg,
+# arg 2: analyzed column list as the 2nd cmd line arg,
+# arg 3: and the source as 'rwjf' or as 'hc' as the last
+
 exit if ARGV.size < 3
 ck=ColumnKey.new ARGV[1]
 
@@ -20,6 +24,7 @@ start_plan = ARGV[3] || 0
 end_plan = ARGV[4] || 5000
 
 def base64ify(str)
+#  puts ">>> #{str}"
   Base64.encode64(Zlib::Deflate.deflate(str)).split("\n").inject('') do |acc, l|
       acc += "#{l}\\n"
       acc
@@ -81,7 +86,9 @@ def gen_code(code_name, options={})
   end
 end
 
+na_id_counter=0
 File.open(ARGV[0]).readlines.each_with_index do |l, index|
+  
   if index == 0
     ck.set_keys payload_threshold
     ck.payload_keys=ini_keys[data_source.downcase.to_sym]
@@ -91,41 +98,46 @@ File.open(ARGV[0]).readlines.each_with_index do |l, index|
     
     vals = l.split "\t"
     
-    if vals.size != ck.keys.size
+    if vals.size != ck.keys.size && (vals.size != 74 || ck.keys.size != 128)
       $stderr.write("Not enough keys (#{vals.size}) when compared to\n\n #{ck.keys.size}\n\n in #{vals}")
-      exit -1;
     end
 
     plan_var = map_keys = plan_id_str = ''
-    state_and_county_arr= []
+    plan_id_keys_arr= []
     payload={}
     struct_attrs={}
     
     vals.each_with_index do |val, idx|
 
-      if ck.key_values(idx).empty? and ck.payload_keys[idx].nil?
+      if ck.keys[idx].empty? and ck.payload_keys[idx].nil?
         unless /^\s*$/.match(val)
           $stderr.write("#{idx} value #{val} has no parent key."); exit -1
         end
         next
       end
 
-      if ck.key_values(idx).empty?
+      if ck.keys[idx].empty?
         # This is a payload key so add to the plan's payload
         payload[ck.payload_keys[idx]]=val
-        if ck.payload_keys[idx]==:state || ck.payload_keys[idx]==:county || ck.payload_keys[idx]==:plan_identifier
-          state_and_county_arr << "#{ck.payload_keys[idx]}: \"#{val}\""
+        if ck.payload_keys[idx]==:state || ck.payload_keys[idx]==:county || ck.payload_keys[idx]==:plan_identifier ||
+           ck.payload_keys[idx]==:rating_area
+          val.downcase! if [:state, :county].include?(ck.payload_keys[idx])
+          if ck.payload_keys[idx] == :plan_identifier and /not available/i.match val
+            val = val + " #{na_id_counter}"
+            na_id_counter += 1
+          end
+          
+          plan_id_keys_arr << "#{ck.payload_keys[idx]}: \"#{val}\""
         end
       else # This is a structured key value
-        #        gen_code :create_costmap_assoc, plan_var: plan_var, info_attrs: ck.key_values(idx), val: val
         val.chomp!
         val="\"#{val}\"" unless /^"/.match val
-        map_keys += "[#{ck.key_values(idx)}, #{val}], "
+        map_keys += "[#{ck.keys[idx]}, #{val}], "
       end
 
     end
 
-    plan_var = gen_code :create_plan, search_attrs: state_and_county_arr.join(", ")
+    plan_var = gen_code :create_plan, search_attrs: plan_id_keys_arr.join(", ")
 
     gen_code :other_plan_attrs, attr_str: plan_id_str, plan_var: plan_var
     map_keys.gsub! /, $/, ""
@@ -140,7 +152,4 @@ File.open(ARGV[0]).readlines.each_with_index do |l, index|
   exit if index>end_plan.to_i
 end
 
-ck.key_values.each do |k|
-#  puts k
-end
 

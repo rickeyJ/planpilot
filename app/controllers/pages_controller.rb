@@ -55,6 +55,7 @@ class PagesController < ApplicationController
     @page_data[:current_info]=params[:current_info] ? (params[:current_info].is_a?(String) ?
                                                          JSON.parse(params[:current_info]) : params[:current_info]) : {}
     @page_data[:current_info][:question_header] = @page_data[:question_header]
+    @page_data[:current_info][:page_id] = @page_data[:current_page]
     @page_data[:current_info].merge! build_current_info(@page_data[:current_info])
 
     if @page_data[:current_info]['number_of_plans'] == 0
@@ -107,15 +108,11 @@ class PagesController < ApplicationController
       end
 
       # The data from HC.gov had county names in both up and down case. :)
-      if !info['plan_number']
-        plans=Plan.where state: state, county: [county, county.upcase]
-        @plans = plans.inject([]) do |acc, plan|
-          acc << plan.extract_data_for_person(info, goodrx_prices, pokitdok_prices)
-          acc
-        end
-        info['plan_number']=@plans.size
+      plans=session[:plans]
+      @plans = plans.inject([]) do |acc, plan|
+        acc << plan.extract_data_for_person(info, goodrx_prices, pokitdok_prices)
+        acc
       end
-
       @plans = sort_results(@plans)
       render 'pages/results'
     end
@@ -127,7 +124,7 @@ class PagesController < ApplicationController
       if params[id]
         h[id.to_s]=params[id]
         if id == :number_of_children
-          h[id.to_s] = params[id] == '3 or more' ? 3 : params[id].to_i
+          h[id.to_s] = params[id].to_i
         elsif id == :zip && @page_data[:current_page]==2 # only recompute state when reaching the second form page
           
           h['county']=ZipInfo.where(zip: params['zip'])[0].county
@@ -136,17 +133,34 @@ class PagesController < ApplicationController
           h['county'] = (h["county"].gsub(/\+/, ' ')).gsub(/ BOROUGH\s*$/i, '')
 
           h['state']=ZipInfo.where(zip: params[:zip])[0].state
-          h['number_of_plans']=Plan.where(state: h['state'], county: [h['county'], h['county'].upcase]).size
-
+          if h[:page_id]==2
+            session[:plans] = get_plans_from_zip(h)
+            h['number_of_plans']=session[:plans].size 
+          end          
+          h[:question_header]="#{number_with_delimiter(h['number_of_plans'])} #{h[:question_header]}"
         end
       end
 
     end
 
-    h[:question_header]="#{number_with_delimiter(h['number_of_plans'])} #{h[:question_header]}"
     h
   end
 
+  def get_plans_from_zip(info)
+    ps=Plan.where(state: info['state'].downcase, county: (info['county'].downcase))
+    if ps.size > 0
+      # Found plans in the original data with the county information
+      puts ">>> Found #{ps.size} in HC plans"
+      return ps
+    end
+
+    puts ">>> trying rating area"
+    # Let's try getting it from rating area
+    ras = RatingArea.where(zip_code: info['zip'])
+    ps=Plan.where(rating_area: ras.pluck(:rating_area), state: info['state'].downcase)
+    ps
+  end
+  
   def drug_expense(drug_info, consumer_info)
     generic_cost = drug_info[:generic_prices][0].to_f * consumer_info['drugdosage'].to_f * consumer_info['drugorders'].to_f
     if drug_info[:generic_name] != consumer_info['drugnames'][0]

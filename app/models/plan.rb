@@ -41,15 +41,15 @@ class Plan < ActiveRecord::Base
         val=''
         k=code_pair[0]; v=code_pair[1]
         if k=="charge_type"
-          val=["Premium", "Deductible", "Out Of Pocket", "Copay"][v]
+          val=(["Premium", "Deductible", "Out Of Pocket", "Copay"].sort)[v]
         elsif k=="consumer_type"
-          val=["Adult", "Child", "Individual", "Couple", "Individual", "Family", "Family"][v]
+          val=(["Adult", "Child", "Individual", "Couple", "Individual", "Family", "Family"].sort)[v]
         elsif k=="child_number"
           val=[0, 1, 2, 3][v]
         elsif k=="age_threshold"
-          val=['N/A', 21, 27, 30, 40, 50, 60][v]
+          val=[-1, 21, 27, 30, 40, 50, 60][v]
         elsif k=="service"
-          val=["Dental", "", "Medical", "Drug", "Primary Care Physician", "Specialist", "Emergency", "Inpatient Facility", "Inpatient Physician", "Generic Drugs", "Preferred Brand Drugs", "Non-preferred Brand Drugs", "Specialty Drugs"][v]
+          val=(["Dental", "", "Medical", "Drug", "Primary Care Physician", "Specialist", "Emergency", "Inpatient Facility", "Inpatient Physician", "Generic Drugs", "Preferred Brand Drugs", "Non-preferred Brand Drugs", "Specialty Drugs"].sort)[v]
         end
         acc.merge({k => val})
       end
@@ -230,6 +230,8 @@ class Plan < ActiveRecord::Base
     household_size = 1 + family_number + child_number
 
     shop_for = consumer_info['shop_for']
+
+    puts ">>> Checking #{age}, #{family_number}, #{child_number} with keys #{keys}"
     
     relevant_cell = keys.select do |cell|
       cell[0]["charge_type"]=='Premium' && age > cell[0]["age_threshold"].to_i &&
