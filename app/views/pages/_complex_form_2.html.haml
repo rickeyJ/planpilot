@@ -34,12 +34,5 @@
   //  %input{id: 'shop_for', name: 'shop_for', type: 'hidden'}
   // This won't get rendered any more because there's no way to unhide it.
 
-  %p
-  .family-info
-    In our family, we have 
-    = render 'dropdown', {dropdown_id: 'number_of_children_choices', dropdown_title: '0', options_list: ['0', '1', '2' , '3 or more']}
-    children.
-    %input{id: 'family_other_adult', name: 'number_of_children', value: '0', type: 'hidden'}
-    %p
   %button.btn.btn-default.submit
     Go  
