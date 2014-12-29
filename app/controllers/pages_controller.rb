@@ -93,7 +93,7 @@ class PagesController < ApplicationController
       goodrx_prices=nil
       if info['take_prescription'] == 'Yes'
         goodrx_prices = GoodRx::ApiWrappers.compare_price(info['drugnames'][0])
-        goodrx_prices[:drug_base_cost] = drug_expense(goodrx_prices, info)[:actual_cost]
+        goodrx_prices[:drug_base_cost] = drug_expense(goodrx_prices, info)
         goodrx_prices[:is_specialty] = SpecialtyDrug.is_drug?(info['drugnames'][0])
         puts ">>> Base cost is #{goodrx_prices[:drug_base_cost]}"
         session[:drug_info] = goodrx_prices
@@ -162,14 +162,15 @@ class PagesController < ApplicationController
   end
   
   def drug_expense(drug_info, consumer_info)
-    generic_cost = drug_info[:generic_prices][0].to_f * consumer_info['drugdosage'].to_f * consumer_info['drugorders'].to_f
+
+    # If the consumer gave a brand name, then the actual cost is the brand cost, else it's the generic cost.
     if drug_info[:generic_name] != consumer_info['drugnames'][0]
       actual_cost = drug_info[:brand_prices][0].to_f * consumer_info['drugdosage'].to_f * consumer_info['drugorders'].to_f
     else
-      actual_cost = generic_cost
+      # We might get here if the consumer gave us a generic name, but Goodrx failed to give us a generic price
+      actual_cost = drug_info[:generic_prices][0].to_f * consumer_info['drugdosage'].to_f * consumer_info['drugorders'].to_f
     end
 
-    {actual_cost: actual_cost, generic_cost: generic_cost}
-
+    actual_cost
   end  
 end

@@ -24,7 +24,7 @@ start_plan = ARGV[3] || 0
 end_plan = ARGV[4] || 5000
 
 def base64ify(str)
-#  puts ">>> #{str}"
+  $stderr.write ">>> #{str}\n"
   Base64.encode64(Zlib::Deflate.deflate(str)).split("\n").inject('') do |acc, l|
       acc += "#{l}\\n"
       acc
