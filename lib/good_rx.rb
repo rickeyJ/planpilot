@@ -71,6 +71,7 @@ module GoodRx
 
         # the_error.message is the numeric code and text in a string
         @http_error = "Whoops got a bad status code #{the_error.message}"
+        puts ">> error in response: #{@http_error}"
       end
 
 #      @resp_strings.merge!({api_method => resp})
