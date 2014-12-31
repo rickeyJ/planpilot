@@ -45,6 +45,8 @@ class PagesController < ApplicationController
   
   def show
     @page_data[:current_page]=params[:page_id].to_i
+
+    puts ">>> looking at page #{@page_data[:current_page]}"
     @page_data.merge! (@@page_data_table[@page_data[:current_page]])
 
     @page_data[:random_person_index]=rand(3)+1
@@ -56,6 +58,13 @@ class PagesController < ApplicationController
                                                          JSON.parse(params[:current_info]) : params[:current_info]) : {}
     @page_data[:current_info][:question_header] = @page_data[:question_header]
     @page_data[:current_info][:page_id] = @page_data[:current_page]
+
+    # Second page - error handling for tricky zips
+    if @page_data[:current_page] == 2 && ZipInfo.none_or_no_county?(params['zip'])
+      redirect_to "#{root_path}&page_id=1", flash: {my_notice: 'Zip code incorrect or for the US territories'}
+      return
+    end
+
     @page_data[:current_info].merge! build_current_info(@page_data[:current_info])
 
     if @page_data[:current_info]['number_of_plans'] == 0
@@ -102,9 +111,11 @@ class PagesController < ApplicationController
       pokitdok_prices = nil
       if info['procedure_names']
         info['procedure_orders']='1'
-        cpt_code = CptCodeMap.find_by_procedure_name(info['procedure_names'][0]).cpt_code
-        pokitdok_prices = PokitdokApi::ApiWrappers.price_search(cpt_code, info['zip'])
-        session[:pd_info] = pokitdok_prices
+        cpt_code = CptCodeMap.find_by_procedure_name(info['procedure_names'][0]).try(:cpt_code)
+        if cpt_code
+          pokitdok_prices = PokitdokApi::ApiWrappers.price_search(cpt_code, info['zip'])
+          session[:pd_info] = pokitdok_prices
+        end
       end
 
       # The data from HC.gov had county names in both up and down case. :)

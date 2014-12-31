@@ -29,7 +29,7 @@
           .col-xs-2
             = text_field_tag :age, @page_data[:current_info]['age'], class: 'zipinput'
           .col-xs-2
-            = render 'dropdown', {dropdown_id: 'shop_for_choices', dropdown_title: @page_data[:current_info]['shop_for'], options_list: ['my family', 'myself']}
+            = render 'dropdown', {dropdown_id: 'shop_for_choices', dropdown_title: (@page_data[:current_info]['shop_for']=='' ? 'myself' : @page_data[:current_info]['shop_for']), options_list: ['my children', 'other adults', 'myself']}
             %input{id: 'shop_for', name: 'shop_for', type: 'hidden', value: @page_data[:current_info]['shop_for']}
 
           .col-xs-2

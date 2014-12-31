@@ -1,8 +1,16 @@
-heroku run rake db:migrate:make_plans_1
-heroku run rake db:migrate:make_plans_2
-heroku run rake db:migrate:make_plans_3
-heroku run rake db:migrate:make_plans_4
-heroku run rake db:migrate:make_plans_5
-heroku run rake db:migrate:make_plans_6
-heroku run rake db:migrate:make_plans_7
-heroku run rake db:migrate:make_plans_8
+rake db:seed:make_navbar_entries
+rake db:seed:make_users
+rake db:seed:add_zips
+rake db:seed:make_cms_data
+rake db:seed:make_cpt_code_maps
+rake db:seed:make_rating_areas
+rake db:seed:make_specialty_drugs
+rake db:seed:make_plans_hc_1
+rake db:seed:make_plans_hc_2
+rake db:seed:make_plans_hc_3
+rake db:seed:make_plans_hc_4
+rake db:seed:make_plans_hc_5
+rake db:seed:make_plans_hc_6
+rake db:seed:make_plans_hc_7
+rake db:seed:make_plans_hc_8
+rake db:seed:make_plans_rwjf_1    

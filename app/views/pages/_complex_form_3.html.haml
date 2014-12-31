@@ -1,5 +1,5 @@
 = content_for :main do 
-  = "What is your annual family income? "
+  = "What is your annual family income?"
   %input#income.zipinput.inline.form-control{name: 'income',  type: 'text', placeholder: '', value: @page_data[:current_info][:income]}
   %button.btn.btn-default.submit
     Go  

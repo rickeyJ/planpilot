@@ -17,4 +17,5 @@
 //= require turbolinks
 //= require underscore
 //= require nav
+//= require autoNumeric
 //= require_tree .
