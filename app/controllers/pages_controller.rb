@@ -118,6 +118,10 @@ class PagesController < ApplicationController
         end
       end
 
+      # If the user is logged in, let's put all this data into their profile
+      if current_user
+        current_user.profile.update_data(session)
+      end
       # The data from HC.gov had county names in both up and down case. :)
       plans=session[:plans]
       @plans = plans.inject([]) do |acc, plan|

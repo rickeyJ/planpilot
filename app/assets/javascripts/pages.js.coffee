@@ -71,7 +71,7 @@ $ ->
 
 $ -> 
 	# do this because input elements don't take a pseudo element specifier
-	$("#income").before("<div class='dollar-sign'>$</div>")
+	$(".hero #income").before("<div class='dollar-sign'>$</div>")
 
 	# Let income button be commafied
 	$("#income").autoNumeric('init')

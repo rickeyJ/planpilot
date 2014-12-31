@@ -61,19 +61,19 @@ class Plan < ActiveRecord::Base
     plan_payload = self.deflate_payload
     plan_keys = self.decode_map_keys
 
-    puts ">>> Analyzing plan #{self.plan_identifier} for #{self.state}, #{self.county}"
+#    puts ">>> Analyzing plan #{self.plan_identifier} for #{self.state}, #{self.county}"
 
     name=plan_payload["plan_marketing_name"]
     monthly_premium = calculate_premium(plan_keys, consumer_info)
 
     if drug_info
-      puts ">>> Extracting drug hit"
+#      puts ">>> Extracting drug hit"
       drug_hit = calculate_drug_hit(plan_keys, consumer_info, drug_info)
     else
       drug_hit = 0.0
     end
     if pd_info
-      puts ">>> Extracting procedure hit"
+#      puts ">>> Extracting procedure hit"
       procedure_hit = calculate_procedure_hit(plan_keys, consumer_info, pd_info)
     else
       procedure_hit = 0.0
@@ -84,7 +84,7 @@ class Plan < ActiveRecord::Base
     ann_premium= (monthly_premium)*12
     true_cost = (monthly_premium - subsidy)*12 + drug_hit + procedure_hit
 
-    puts ">>> cost params: #{monthly_premium}, #{drug_hit}, #{procedure_hit}"
+#    puts ">>> cost params: #{monthly_premium}, #{drug_hit}, #{procedure_hit}"
 
     data={plan_db_id: self.id, 'state' => self.state, 'county' => self.county, 'plan_id' => self.plan_identifier,
           plan_name: name, image: "", monthly_premium: "$#{dp2(monthly_premium)}", subsidy: "$#{subsidy}",
@@ -120,7 +120,7 @@ class Plan < ActiveRecord::Base
 
     drug_cost = consumer_info['drugdosage'].to_f * consumer_info['drugorders'].to_f * drug_price
 
-    puts ">>> copay value is #{copay_str}"
+#    puts ">>> copay value is #{copay_str}"
     
     # 20% Coinsurance after deductible
     # No Charge after Deductible
@@ -129,13 +129,13 @@ class Plan < ActiveRecord::Base
     # 45%
     # $75 Copay after deductible
 
-    puts ">>> Starting with total_hit of #{total_hit} and cost of #{drug_cost}"
+#    puts ">>> Starting with total_hit of #{total_hit} and cost of #{drug_cost}"
     if /deductible/i.match(copay_str)
     # For costs dependent on deductible, see if this will cause the deductible to be paid up, and then calculate cost above that
       deductible = calculate_deductible(keys, consumer_info, :drug)
-      puts ">>> Deductible is #{deductible}"
+#      puts ">>> Deductible is #{deductible}"
       total_hit = [drug_cost, deductible].min
-      puts "Hit is now #{total_hit}"
+#      puts "Hit is now #{total_hit}"
       
       # If there's still something left over to pay, pay it using the copay
       if drug_cost - deductible > 0
@@ -152,10 +152,10 @@ class Plan < ActiveRecord::Base
           raise DataParseException, "Copay str #{copay_str} didn't make sense!"
         end
         total_hit += copay
-        puts "Hit is now #{total_hit}"
+#        puts "Hit is now #{total_hit}"
       end
     else # Nothing to do with deductible - For costs independent of deductible, calculate total cost
-      puts ">>> Starting with total_hit of #{total_hit}"
+#      puts ">>> Starting with total_hit of #{total_hit}"
       if (matches=/^\s*(\d+)\%/.match(copay_str))
         total_hit = matches[1].to_f/100 * drug_cost
       elsif (matches=/^\s*\$(\d+)/.match(copay_str)) || matches=/^\s*(\d+)\s*$/.match(copay_str)
@@ -183,7 +183,7 @@ class Plan < ActiveRecord::Base
                                                                 c[0]['service'] == 'emergency' ||
                                                                 c[0]['service'] == 'inpatient facility' ||
                                                                 c[0]['service'] == 'inpatient physician')}).map do |str|
-      puts "Analyzing #{str}"
+#      puts "Analyzing #{str}"
       next if /^\s*$/.match str[1]
 
       get_hit_value(str[1], consumer_info, pd_cost, deductible)
@@ -240,7 +240,7 @@ class Plan < ActiveRecord::Base
                      consumer_info['number_of_children'].to_i : 0
     household_size = 1 + family_number + child_number
 
-    puts ">>> Checking #{age}, #{family_number}, #{child_number} with keys #{keys}"
+#    puts ">>> Checking #{age}, #{family_number}, #{child_number} with keys #{keys}"
     
     relevant_cell = keys.select do |cell|
       cell[0]["charge_type"]=='premium' && age < cell[0]["age_threshold"].to_i &&
@@ -261,7 +261,7 @@ class Plan < ActiveRecord::Base
 
     household_size = 1 + family_number + child_number
     
-    puts ">>> Checking #{age}, #{family_number}, #{child_number} with keys #{keys} for type #{deductible_type}"
+#    puts ">>> Checking #{age}, #{family_number}, #{child_number} with keys #{keys} for type #{deductible_type}"
     
     relevant_cell = keys.select do |cell|
       cell[0]["charge_type"]=='deductible' &&

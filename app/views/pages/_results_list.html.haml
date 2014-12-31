@@ -41,6 +41,6 @@
           = "#{page_data[:labels][:true_annual_cost]}: #{res[:true_annual_cost]}"
 
       .col-xs-1.rescol
-        - if !in_profile_list
+        - if !current_user or current_user.profile.saved_plans.where(plan_id: res[:plan_db_id]).empty?
           .action-box
             Save For Later

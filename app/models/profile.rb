@@ -8,4 +8,17 @@ class Profile < ActiveRecord::Base
   serialize :pd_data, Hash
   
   belongs_to :user
+
+  def update_data(session_hash)
+    if session_hash[:consumer_info]
+      self.demographic_data = session_hash[:consumer_info]
+    end
+    if session_hash[:drug_info]
+      self.drug_data = session_hash[:drug_info]
+    end
+    if session_hash[:pd_info]
+      self.pd_data = session_hash[:pd_info]
+    end
+    self.save if self.changed?
+  end    
 end

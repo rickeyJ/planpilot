@@ -3,10 +3,12 @@ class ProfilesController < ApplicationController
 
   def show
     if current_user
-      @plans = @profile.plans.map do |plan_keys|
-        county = plan_keys["county"]
-        p=Plan.where(state: plan_keys['state'].downcase, county: county.downcase, plan_identifier: plan_keys['plan_id']).first
-        p.extract_data_for_person(@profile.demographic_data, session[:drug_info], session[:pd_info])
+      if @profile 
+        @plans = @profile.plans.map do |plan_rec|
+          plan_rec.extract_data_for_person(@profile.demographic_data, session[:drug_info], session[:pd_info])
+        end
+      else
+        @plans=[]
       end
     else
       raise CanCan::AccessDenied
