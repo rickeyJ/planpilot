@@ -65,6 +65,11 @@ class PagesController < ApplicationController
       return
     end
 
+    if @page_data[:current_page] == 3 && @page_data[:current_info]['shop_for'].nil?
+      # User forgot to click at least one checkbox - in that case, let's fill it for them.
+      @page_data[:current_info]['shop_for']=['myself']
+    end
+    
     @page_data[:current_info].merge! build_current_info(@page_data[:current_info])
 
     if @page_data[:current_info]['number_of_plans'] == 0
@@ -111,9 +116,12 @@ class PagesController < ApplicationController
       pokitdok_prices = nil
       if info['procedure_names']
         info['procedure_orders']='1'
-        cpt_code = CptCodeMap.find_by_procedure_name(info['procedure_names'][0]).try(:cpt_code)
-        if cpt_code
-          pokitdok_prices = PokitdokApi::ApiWrappers.price_search(cpt_code, info['zip'])
+        cpt_codes = info['procedure_names'].split(',').map do |cpt_id|
+          # Some maps don't have a code? Maybe.
+          CptCodeMap.find(cpt_id.to_i).try(:cpt_code)
+        end
+        if !cpt_codes.compact.empty?
+          pokitdok_prices = cpt_codes.map { |code| PokitdokApi::ApiWrappers.price_search(code, info['zip']) }
           session[:pd_info] = pokitdok_prices
         end
       end
@@ -129,6 +137,13 @@ class PagesController < ApplicationController
         acc
       end
       @plans = sort_results(@plans)
+
+      if current_user
+        @current_profile = { plan_ids: current_user.profile.plans.pluck(:id)}
+      else
+        @current_profile = nil
+      end
+      
       render 'pages/results'
     end
   end

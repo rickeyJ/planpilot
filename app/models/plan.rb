@@ -73,8 +73,7 @@ class Plan < ActiveRecord::Base
       drug_hit = 0.0
     end
     if pd_info
-#      puts ">>> Extracting procedure hit"
-      procedure_hit = calculate_procedure_hit(plan_keys, consumer_info, pd_info)
+      procedure_hit = calculate_multiple_procedure_hits(plan_keys, consumer_info, pd_info)
     else
       procedure_hit = 0.0
     end
@@ -170,9 +169,19 @@ class Plan < ActiveRecord::Base
     total_hit
   end
 
-  def calculate_procedure_hit(keys, consumer_info, pd_info)
+  def calculate_multiple_procedure_hits(keys, consumer_info, pd_info)
+    # Get an amount per procedure
+    pd_info.inject(0.0) do |sum, pd_resp|
+      puts ">>> Extracting procedure hit for #{pd_resp}"
+      sum += calculate_procedure_hit(keys, consumer_info, pd_resp, sum)
+      puts ">>> cost was #{sum}"
+      sum
+    end
+
+  end
+  
+  def calculate_procedure_hit(keys, consumer_info, pd_info, already_paid)
     # Extract co pay (could be numerical, percentage of dosage cost, or could be included in some other column)
-#    Obtained {"meta"=>{"rate_limit_amount"=>2, "rate_limit_reset"=>1418687175, "application_mode"=>"test", "processing_time"=>23, "rate_limit_cap"=>1000, "credits_remaining"=>9996, "activity_id"=>"548f64f7fba8eb4ce9ebd0a5", "credits_billed"=>1}, "data"=>[{"high_price"=>85.0, "cpt_code"=>"G0123", "low_price"=>25.0, "average_price"=>45.58, "geo_zip_area"=>"331", "standard_deviation"=>18.16, "median_price"=>42.0}]} for G0123, 33133
 
     pd_cost = (pd_info['data'][0]['high_price'].to_f + pd_info['data'][0]['low_price'].to_f)/2
     deductible = calculate_deductible(keys, consumer_info, :medical)
@@ -186,7 +195,7 @@ class Plan < ActiveRecord::Base
 #      puts "Analyzing #{str}"
       next if /^\s*$/.match str[1]
 
-      get_hit_value(str[1], consumer_info, pd_cost, deductible)
+      get_hit_value(str[1], consumer_info, pd_cost, [0, deductible - already_paid].max)
     end
 
     (hits.compact.inject(0.0) { |result, el| result + el })/hits.size.to_f

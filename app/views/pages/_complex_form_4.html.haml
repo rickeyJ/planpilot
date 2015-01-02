@@ -3,7 +3,7 @@
   %input{id: 'ongoing_condition', name: 'ongoing_condition', type: 'hidden'}
   = render 'dropdown', {dropdown_id: 'ongoing_condition_choices', dropdown_title: '-select-', options_list: ['Yes', 'No']}
   %p
-  %input.largetextarea.procedure-autocomplete#procedure_names{name: 'procedure_names[]', type: 'text', disabled: 'true', placeholder: 'Enter the procedure name'}
+  %input.largetextarea.procedure-autocomplete#procedure_names{name: 'procedure_names', type: 'text', disabled: 'true', placeholder: 'Enter the procedure name'}
   %input#procedure_ids{name: 'procedure_ids[]', type: 'hidden'}
   %hr    
 

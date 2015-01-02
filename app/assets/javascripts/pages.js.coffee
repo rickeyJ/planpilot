@@ -47,12 +47,13 @@ $ ->
 		$("#" + target_id).val(val)
 		null
 
-	$(".procedure-autocomplete").autocomplete({
+	# comment out later
+	$(".procedure-autocomplete_1").autocomplete({
 		minLength: 3,
 		source: (req, resp) ->
 			$.ajax({
 				url: '/api/v1/procedures/procedure_names',
-				method: 'post',
+				method: 'get',
 				data: {q: req.term},
 				success: resp,
 				error: resp})
@@ -75,3 +76,6 @@ $ ->
 
 	# Let income button be commafied
 	$("#income").autoNumeric('init')
+
+	$("#procedure_names").tokenInput('/api/v1/procedures/procedure_names?response_format=tokeninput', 
+		{hintText: 'Type in a procedure'})

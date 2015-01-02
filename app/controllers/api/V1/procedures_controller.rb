@@ -11,7 +11,15 @@ module Api
         end
 
         CptCodeMap.where('procedure_name like ?', "%#{params[:q]}%").each do |cpt_map|
-          set_response_element({id: cpt_map.id, label: cpt_map.procedure_name})
+          h = {id: cpt_map.id}
+          # Maintaining backward compatibility...
+          if params[:response_format] and params[:response_format]=='tokeninput'
+            key = :name
+          else
+            key = :label
+          end
+          h[key] = cpt_map.procedure_name
+          set_response_element h
         end
 
         # success!

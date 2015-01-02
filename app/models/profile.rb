@@ -5,7 +5,7 @@ class Profile < ActiveRecord::Base
 
   serialize :demographic_data, Hash
   serialize :drug_data, Hash
-  serialize :pd_data, Hash
+  serialize :pd_data, Array
   
   belongs_to :user
 

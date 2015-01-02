@@ -18,4 +18,5 @@
 //= require underscore
 //= require nav
 //= require autoNumeric
+//= require jquery.tokeninput
 //= require_tree .
