@@ -1,4 +1,5 @@
 class Plan < ActiveRecord::Base
+  include Subsidy
   include ActionView::Helpers::NumberHelper
   class DataParseException < Exception
   end
@@ -79,7 +80,7 @@ class Plan < ActiveRecord::Base
     end
 
     # we will substitute this with Nick's subsidy calculation eventually.
-    subsidy=300
+    subsidy = calculate_subsidy(plan_keys, consumer_info)
     ann_premium= (monthly_premium)*12
     true_cost = (monthly_premium - subsidy)*12 + drug_hit + procedure_hit
 
