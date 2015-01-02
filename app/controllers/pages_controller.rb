@@ -103,6 +103,7 @@ class PagesController < ApplicationController
       info["age"] = info["age"]=='' ? 35 : info['age']
 
       county = info['county']
+      # county = info['county'] === nil ? info['county'] = default : info['county']
 
       goodrx_prices=nil
       if info['take_prescription'] == 'Yes'
@@ -161,6 +162,9 @@ class PagesController < ApplicationController
           # Clean up the county name, so we use it more consistently in the rest of the app
           h['county'] = (h["county"].gsub(/\+/, ' ')).gsub(/ COUNTY\s*$/i, '')
           h['county'] = (h["county"].gsub(/\+/, ' ')).gsub(/ BOROUGH\s*$/i, '')
+          h['county'] = (h["county"].gsub(/\+/, ' ')).gsub(/ PARISH\s*$/i, '')
+          h['county'] = (h["county"].gsub(/\+/, ' ')).gsub(/ CENSUS AREA\s*$/i, '')
+          h['county'] = (h["county"].gsub(/\+/, ' ')).gsub(/ DISTRICT OF COLUMBIA\s*$/i, '')
 
           h['state']=ZipInfo.where(zip: params[:zip])[0].state
           if h[:page_id]==2
