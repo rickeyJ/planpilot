@@ -32,7 +32,7 @@ RSpec.configure do |config|
   # Hooking Capybara into rspec myself, to avoid reset_sessions - https://github.com/jnicklas/capybara/pull/419
   config.include Capybara::DSL, type: :feature
   config.include Capybara::RSpecMatchers
-
+  config.include PremiumCap
 end
 
 Warden.test_mode!
