@@ -1,5 +1,4 @@
 class Plan < ActiveRecord::Base
-  include Subsidy
   include ActionView::Helpers::NumberHelper
   class DataParseException < Exception
   end
@@ -80,14 +79,14 @@ class Plan < ActiveRecord::Base
     end
 
     # we will substitute this with Nick's subsidy calculation eventually.
-    subsidy = calculate_subsidy(plan_keys, consumer_info)
+    subsidy = consumer_info['subsidy_perc']*monthly_premium
     ann_premium= (monthly_premium)*12
     true_cost = (monthly_premium - subsidy)*12 + drug_hit + procedure_hit
 
 #    puts ">>> cost params: #{monthly_premium}, #{drug_hit}, #{procedure_hit}"
 
     data={plan_db_id: self.id, 'state' => self.state, 'county' => self.county, 'plan_id' => self.plan_identifier,
-          plan_name: name, image: "", monthly_premium: "$#{dp2(monthly_premium)}", subsidy: "$#{subsidy}",
+          plan_name: name, image: "", monthly_premium: "$#{dp2(monthly_premium)}", subsidy: "$#{dp2(subsidy)}",
           final_monthly_premium: "$#{dp2(monthly_premium - subsidy)}", ann_premium: "$#{dp2(ann_premium)}",
           annual_subsidy: number_to_currency(12*subsidy), true_annual_cost: number_to_currency(true_cost.ceil),
           :ann_premium_in_num => ann_premium, :annual_subsidy_in_num => 12*subsidy,
@@ -243,12 +242,8 @@ class Plan < ActiveRecord::Base
 
   def calculate_premium(keys, consumer_info)
     age=consumer_info['age'].to_i
-    shop_for = consumer_info['shop_for']
-    family_number = (shop_for && shop_for.include?('other adults')) ?
-                      consumer_info['number_of_adults'].to_i : 0
-    child_number = (shop_for && shop_for.include?('my children')) ?
-                     consumer_info['number_of_children'].to_i : 0
-    household_size = 1 + family_number + child_number
+    family_number = consumer_info['family_number']
+    child_number = consumer_info['child_number']
 
 #    puts ">>> Checking #{age}, #{family_number}, #{child_number} with keys #{keys}"
     
@@ -265,12 +260,9 @@ class Plan < ActiveRecord::Base
     # Type is either :medical or :drug
     
     age=consumer_info['age'].to_i
-    shop_for = consumer_info['shop_for']
-    family_number = shop_for.include?('other adults') ? consumer_info['number_of_adults'].to_i : 0
-    child_number = shop_for.include?('my children') ? consumer_info['number_of_children'].to_i : 0
+    family_number = consumer_info['family_number']
+    child_number = consumer_info['child_number']
 
-    household_size = 1 + family_number + child_number
-    
 #    puts ">>> Checking #{age}, #{family_number}, #{child_number} with keys #{keys} for type #{deductible_type}"
     
     relevant_cell = keys.select do |cell|

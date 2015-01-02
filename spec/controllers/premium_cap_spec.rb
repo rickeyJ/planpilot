@@ -9,13 +9,13 @@ describe 'Premium cap testing' do
   end
 
   let(:a) do
-    wrapper.calculate_premium_cap(4000.0, 2, 'ca')
+    wrapper.calculate_premium_cap(16000.0, 1, 'ca')
   end
   let(:b) do
-    wrapper.calculate_premium_cap(6000.0, 2, 'ca')
+    wrapper.calculate_premium_cap(25000.0, 2, 'ca')
   end
   let(:c) do
-    wrapper.calculate_premium_cap(8000.0, 2, 'ca')
+    wrapper.calculate_premium_cap(36000.0, 2, 'ca')
   end
 
   it "return float" do 

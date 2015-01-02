@@ -2,6 +2,7 @@
 class PagesController < ApplicationController
   include PlanSorter
   include ActionView::Helpers::NumberHelper
+  include PremiumCap
   
   @@page_data_table={
                      1 =>
@@ -102,8 +103,17 @@ class PagesController < ApplicationController
       state = info["state"].gsub(/\+/, ' ')
       info["age"] = info["age"]=='' ? 35 : info['age']
 
+      # Do some conversions from browser-entered data to internal formats
+      shop_for = info['shop_for']
+      info['family_number'] = (shop_for && shop_for.include?('other adults')) ?
+                                consumer_info['number_of_adults'].to_i : 0
+      info['child_number'] = (shop_for && shop_for.include?('my children')) ?
+                               consumer_info['number_of_children'].to_i : 0
+      info['household_size'] = 1 + info['family_number'] + info['child_number']
+      info['subsidy_perc'] = 1 - calculate_premium_cap(info['income'].to_f, info['household_size'],
+                                                       info['state'])
+
       county = info['county']
-      # county = info['county'] === nil ? info['county'] = default : info['county']
 
       goodrx_prices=nil
       if info['take_prescription'] == 'Yes'
@@ -131,6 +141,7 @@ class PagesController < ApplicationController
       if current_user
         current_user.profile.update_data(session)
       end
+
       # The data from HC.gov had county names in both up and down case. :)
       plans=session[:plans]
       @plans = plans.inject([]) do |acc, plan|
