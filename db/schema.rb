@@ -12,6 +12,7 @@
 # It's strongly recommended that you check this file into your version control system.
 
 ActiveRecord::Schema.define(version: 20141227023729) do
+
   create_table "caps", force: true do |t|
     t.float    "fpl_income"
     t.float    "premium_cap"

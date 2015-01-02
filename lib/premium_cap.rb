@@ -1,11 +1,10 @@
-
 # notes:
 #   1)  giving inaccurate number for subsidy...currently matching the premium amount...why?
 #       is it possible that sub calc is fine(premium_cap or prior calc),
 #       and is instead pulling 0 for household size by default, resulting in nil? What would this do to everything else?
 #       if using to_f on nil will get 0.0 value, which could explain why subsidy value always matches premium...
 
-module Subsidy
+module PremiumCap
 
   # determine if eligible for medicaid before calculating subsidy
   def medicaid_referral(consumer_info)
@@ -28,42 +27,28 @@ module Subsidy
     eligible
   end
 
-  def calculate_subsidy(plan_keys, consumer_info)
-
-    # Define variables
-    income = consumer_info['income'].to_f
-    household = consumer_info['household_size'].to_i
-    state = consumer_info['state']
-    fpl_amt = Fpl.where(household_size: household).pluck(:fpl_amt)
-    tier = Cap.pluck(:fpl_income, :premium_cap)
-    fpl_floor = Medicaid.where(state: state).pluck(:fpl_floor)
-    monthly_premium = calculate_premium(plan_keys, consumer_info)
+  def calculate_premium_cap(income, household_size, state)
+    # inputs should be: float, integer and string (lower case state abbrev)
+    premium_cap = 0.0
+    fpl_amt = Fpl.find_by_household_size(household_size).fpl_amt.to_f
+    tier = Cap.order(fpl_income: :desc).pluck(:fpl_income, :premium_cap)
 
     # 1) Calculate the fpl_income for premium_cap lookup
-    fpl_income = income / fpl_amt[0].to_f
+    fpl_income_ratio = fpl_amt/income
 
     # 2) lookup premium cap by fpl_income range 
-    # => uses low-end premium_cap to give underestimates
-    if ((tier[0][0]..tier[1][0]) === fpl_income)
-      premium_cap = tier[0][1]
-    elsif ((tier[1][0]..tier[2][0]) === fpl_income)
-      premium_cap = tier[1][1]
-    elsif ((tier[2][0]..tier[3][0]) === fpl_income)
-      premium_cap = tier[2][1]
-    elsif ((tier[3][0]..tier[4][0]) === fpl_income)
-      premium_cap = tier[3][1]
-    elsif ((tier[4][0]..tier[6][0]) === fpl_income)
-      premium_cap = tier[4][1]
-    # if consumer's FPL is above 400% they get no subsidy
-    elsif fpl_income > tier[6][0]
-      premium_cap = 0
+    tier_index = tier.size
+    tier.each_with_index do |map, index|
+      if map[0] < fpl_income_ratio
+        tier_index = index
+        premium_cap = map[1].to_f
+        break
+      end
+    end
+    if tier_index == tier.size
+      premium_cap = 0.0
     end
 
-    # calculate max monthly premium 
-    max_premium = (income.to_f * premium_cap.to_f) / 12
-      
-    # 3) subsidy payout = montly_premium - max_premium
-    subsidy = monthly_premium.to_f - max_premium.to_f
-    subsidy.to_f
+    premium_cap
   end
 end
