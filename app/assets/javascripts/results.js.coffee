@@ -28,7 +28,7 @@ $ ->
 				action_box.css 'background-color', 'grey'
 				action_box.css 'cursor', 'initial'
 
-	$(".action-box").click( (eventObject) ->
+	$(".save-plan").click( (eventObject) ->
 		curr_info_hash = $('#current_info').data('value')
 		plan_data = {db_id: $(this).parent().parent().find('.plan-name').data('plan-db-id')}
 		$.ajax({ 

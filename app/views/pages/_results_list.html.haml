@@ -42,5 +42,5 @@
 
       .col-xs-1.rescol
         - if !@current_profile or !@current_profile[:plan_ids].include? res[:plan_db_id]
-          .action-box
+          .action-box.save-plan
             Save For Later
