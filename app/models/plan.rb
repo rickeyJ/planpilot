@@ -240,20 +240,37 @@ class Plan < ActiveRecord::Base
     total_hit
   end
 
+  def currency_to_number(string)
+    string.gsub(/[\$,]/, '').to_f
+  end 
   def calculate_premium(keys, consumer_info)
     age=consumer_info['age'].to_i
     family_number = consumer_info['family_number']
     child_number = consumer_info['child_number']
 
 #    puts ">>> Checking #{age}, #{family_number}, #{child_number} with keys #{keys}"
+
+    # Fallback to the largest premium, that's not a dental premium
+    fallback_premium_list = keys.select do |cell|
+      cell[0]['charge_type'] == 'premium' and cell[1]!='' and cell[1] !='X'
+    end
+    fallback_premium = fallback_premium_list.sort do |a,b|
+      currency_to_number(a[1]) <=> currency_to_number(b[1])
+    end.last
     
     relevant_cell = keys.select do |cell|
       cell[0]["charge_type"]=='premium' && age < cell[0]["age_threshold"].to_i &&
         (family_number == 0 && cell[0]['consumer_type'] == 'individual' ||
          family_number > 0 && cell[0]['consumer_type']=='couple') && cell[0]["child_number"].to_i == child_number
-    end.last
+    end.first
 
-    relevant_cell[1].gsub(/[\$,]/, '').to_f
+    if relevant_cell.nil?
+      puts ">>> using fb prem #{fallback_premium}"
+      currency_to_number(fallback_premium[1])
+    else
+#      puts ">>> using prem cell #{relevant_cell}"
+      currency_to_number(relevant_cell[1])
+    end
   end
   def calculate_deductible(keys, consumer_info, deductible_type)
 
@@ -263,7 +280,13 @@ class Plan < ActiveRecord::Base
     family_number = consumer_info['family_number']
     child_number = consumer_info['child_number']
 
-#    puts ">>> Checking #{age}, #{family_number}, #{child_number} with keys #{keys} for type #{deductible_type}"
+    # Fallback to the largest deductible, that's not empty
+    fallback_list = keys.select do |cell|
+      cell[0]['charge_type'] == 'deductible' and cell[1]!=''
+    end
+    fallback = fallback_list.sort do |a,b|
+      currency_to_number(a[1]) <=> currency_to_number(b[1])
+    end.last    
     
     relevant_cell = keys.select do |cell|
       cell[0]["charge_type"]=='deductible' &&
@@ -272,24 +295,27 @@ class Plan < ActiveRecord::Base
          family_number > 0 && (cell[0]['consumer_type']=='couple' || cell[0]['consumer_type']=='family'))
     end.last
 
-    if deductible_type == :drug && ((/included in medical/i.match relevant_cell[1]) ||
-       /no drug deductible/i.match(relevant_cell[1]))
-      return calculate_deductible(keys, consumer_info, :medical)
-    end
+    if relevant_cell.nil?
+      puts ">>> using fb deductible #{fallback}"
+      currency_to_number(fallback[1])
+    else
+      #      puts ">>> using prem cell #{relevant_cell}"
+      if deductible_type == :drug && ((/included in medical/i.match relevant_cell[1]) ||
+                                      /no drug deductible/i.match(relevant_cell[1]))
+        return calculate_deductible(keys, consumer_info, :medical)
+      end
 
-    if /^\s*\$?0\.?(0*)\s*$/i.match(relevant_cell[1])
-      return 0
+      if /^\s*\$?0\.?(0*)\s*$/i.match(relevant_cell[1])
+        return 0
+      end
+      
+      dollar_value = relevant_cell[1].gsub(/[\$,]/, '').to_f
+      if dollar_value == 0
+        raise DataParseException, "Dollar key #{relevant_cell[0]} with value #{relevant_cell[1]} for deductible couldn't be understood!"
+      end
+      
+      dollar_value
     end
-    
-    dollar_value = relevant_cell[1].gsub(/[\$,]/, '').to_f
-    if dollar_value == 0
-      raise DataParseException, "Dollar key #{relevant_cell[0]} with value #{relevant_cell[1]} for deductible couldn't be understood!"
-    end
-    
-    dollar_value
   end
   
 end
-
-
-# [[{"charge_type"=>"Premium", "consumer_type"=>"Adult", "child_number"=>0, "age_threshold"=>"N/A", "service"=>"Dental"}, ""], [{"charge_type"=>"Premium", "consumer_type"=>"Child", "child_number"=>0, "age_threshold"=>"N/A", "service"=>"Dental"}, ""], [{"charge_type"=>"Premium", "consumer_type"=>"Child", "child_number"=>0, "age_threshold"=>"N/A", "service"=>""}, "$155.28"], [{"charge_type"=>"Premium", "consumer_type"=>"Individual", "child_number"=>0, "age_threshold"=>21, "service"=>""}, "$244.54"], [{"charge_type"=>"Premium", "consumer_type"=>"Individual", "child_number"=>0, "age_threshold"=>27, "service"=>""}, "$256.27"], [{"charge_type"=>"Premium", "consumer_type"=>"Individual", "child_number"=>0, "age_threshold"=>30, "service"=>""}, "$277.54"], [{"charge_type"=>"Premium", "consumer_type"=>"Individual", "child_number"=>0, "age_threshold"=>40, "service"=>""}, "$312.51"], [{"charge_type"=>"Premium", "consumer_type"=>"Individual", "child_number"=>0, "age_threshold"=>50, "service"=>""}, "$436.73"], [{"charge_type"=>"Premium", "consumer_type"=>"Individual", "child_number"=>0, "age_threshold"=>60, "service"=>""}, "$663.66"], [{"charge_type"=>"Premium", "consumer_type"=>"Couple", "child_number"=>0, "age_threshold"=>21, "service"=>""}, "$489.08"], [{"charge_type"=>"Premium", "consumer_type"=>"Couple", "child_number"=>0, "age_threshold"=>30, "service"=>""}, "$555.08"], [{"charge_type"=>"Premium", "consumer_type"=>"Couple", "child_number"=>0, "age_threshold"=>40, "service"=>""}, "$625.02"], [{"charge_type"=>"Premium", "consumer_type"=>"Couple", "child_number"=>0, "age_threshold"=>50, "service"=>""}, "$873.46"], [{"charge_type"=>"Premium", "consumer_type"=>"Couple", "child_number"=>0, "age_threshold"=>60, "service"=>""}, "$1327.32"], [{"charge_type"=>"Premium", "consumer_type"=>"Couple", "child_number"=>1, "age_threshold"=>21, "service"=>""}, "$644.36"], [{"charge_type"=>"Premium", "consumer_type"=>"Couple", "child_number"=>1, "age_threshold"=>30, "service"=>""}, "$710.36"], [{"charge_type"=>"Premium", "consumer_type"=>"Couple", "child_number"=>1, "age_threshold"=>40, "service"=>""}, "$780.30"], [{"charge_type"=>"Premium", "consumer_type"=>"Couple", "child_number"=>1, "age_threshold"=>50, "service"=>""}, "$1028.74"], [{"charge_type"=>"Premium", "consumer_type"=>"Couple", "child_number"=>2, "age_threshold"=>21, "service"=>""}, "$799.64"], [{"charge_type"=>"Premium", "consumer_type"=>"Couple", "child_number"=>2, "age_threshold"=>30, "service"=>""}, "$865.64"], [{"charge_type"=>"Premium", "consumer_type"=>"Couple", "child_number"=>2, "age_threshold"=>40, "service"=>""}, "$935.57"], [{"charge_type"=>"Premium", "consumer_type"=>"Couple", "child_number"=>2, "age_threshold"=>50, "service"=>""}, "$1184.02"], [{"charge_type"=>"Premium", "consumer_type"=>"Couple", "child_number"=>3, "age_threshold"=>21, "service"=>""}, "$954.92"], [{"charge_type"=>"Premium", "consumer_type"=>"Couple", "child_number"=>3, "age_threshold"=>30, "service"=>""}, "$1020.92"], [{"charge_type"=>"Premium", "consumer_type"=>"Couple", "child_number"=>3, "age_threshold"=>40, "service"=>""}, "$1090.86"], [{"charge_type"=>"Premium", "consumer_type"=>"Couple", "child_number"=>3, "age_threshold"=>50, "service"=>""}, "$1339.30"], [{"charge_type"=>"Premium", "consumer_type"=>"Individual", "child_number"=>1, "age_threshold"=>21, "service"=>""}, "$399.82"], [{"charge_type"=>"Premium", "consumer_type"=>"Individual", "child_number"=>1, "age_threshold"=>30, "service"=>""}, "$432.82"], [{"charge_type"=>"Premium", "consumer_type"=>"Individual", "child_number"=>1, "age_threshold"=>40, "service"=>""}, "$467.78"], [{"charge_type"=>"Premium", "consumer_type"=>"Individual", "child_number"=>1, "age_threshold"=>50, "service"=>""}, "$592.01"], [{"charge_type"=>"Premium", "consumer_type"=>"Individual", "child_number"=>2, "age_threshold"=>21, "service"=>""}, "$555.10"], [{"charge_type"=>"Premium", "consumer_type"=>"Individual", "child_number"=>2, "age_threshold"=>30, "service"=>""}, "$588.10"], [{"charge_type"=>"Premium", "consumer_type"=>"Individual", "child_number"=>2, "age_threshold"=>40, "service"=>""}, "$623.06"], [{"charge_type"=>"Premium", "consumer_type"=>"Individual", "child_number"=>2, "age_threshold"=>50, "service"=>""}, "$747.29"], [{"charge_type"=>"Premium", "consumer_type"=>"Individual", "child_number"=>3, "age_threshold"=>21, "service"=>""}, "$710.38"], [{"charge_type"=>"Premium", "consumer_type"=>"Individual", "child_number"=>3, "age_threshold"=>30, "service"=>""}, "$743.38"], [{"charge_type"=>"Premium", "consumer_type"=>"Individual", "child_number"=>3, "age_threshold"=>40, "service"=>""}, "$778.35"], [{"charge_type"=>"Premium", "consumer_type"=>"Individual", "child_number"=>3, "age_threshold"=>50, "service"=>""}, "$902.57"], [{"charge_type"=>"Deductible", "consumer_type"=>"Individual", "child_number"=>0, "age_threshold"=>"N/A", "service"=>"Medical"}, "$4,000"], [{"charge_type"=>"Deductible", "consumer_type"=>"Individual", "child_number"=>0, "age_threshold"=>"N/A", "service"=>"Drug"}, "Included in Medical"], [{"charge_type"=>"Deductible", "consumer_type"=>"Family", "child_number"=>0, "age_threshold"=>"N/A", "service"=>"Medical"}, "$8,000"], [{"charge_type"=>"Deductible", "consumer_type"=>"Family", "child_number"=>0, "age_threshold"=>"N/A", "service"=>"Drug"}, "Included in Medical"], [{"charge_type"=>"Out Of Pocket", "consumer_type"=>"Individual", "child_number"=>0, "age_threshold"=>"N/A", "service"=>"Medical"}, "$6,350"], [{"charge_type"=>"Out Of Pocket", "consumer_type"=>"Individual", "child_number"=>0, "age_threshold"=>"N/A", "service"=>"Drug"}, "Included in Medical"], [{"charge_type"=>"Out Of Pocket", "consumer_type"=>"Family", "child_number"=>0, "age_threshold"=>"N/A", "service"=>"Medical"}, "$12,700"], [{"charge_type"=>"Out Of Pocket", "consumer_type"=>"Family", "child_number"=>0, "age_threshold"=>"N/A", "service"=>"Drug"}, "Included in Medical"], [{"charge_type"=>"Copay", "service"=>"Primary Care Physician"}, "40% Coinsurance after deductible"], [{"charge_type"=>"Copay", "service"=>"Specialist"}, "40% Coinsurance after deductible"], [{"charge_type"=>"Copay", "service"=>"Emergency"}, "40% Coinsurance after deductible"], [{"charge_type"=>"Copay", "service"=>"Inpatient Facility"}, "40% Coinsurance after deductible"], [{"charge_type"=>"Copay", "service"=>"Inpatient Physician"}, "40% Coinsurance after deductible"], [{"charge_type"=>"Copay", "service"=>"Generic Drugs"}, "$25"], [{"charge_type"=>"Copay", "service"=>"Preferred Brand Drugs"}, "$100 Copay after deductible"], [{"charge_type"=>"Copay", "service"=>"preferred Brand Drugs"}, "$150 Copay after deductible"], [{"charge_type"=>"Copay", "service"=>"Specialty Drugs"}, "30% Coinsurance after deductible"], [{"charge_type"=>"Deductible", "consumer_type"=>"Individual", "child_number"=>0, "age_threshold"=>"N/A", "service"=>"Medical"}, ""], [{"charge_type"=>"Deductible", "consumer_type"=>"Individual", "child_number"=>0, "age_threshold"=>"N/A", "service"=>"Drug"}, ""], [{"charge_type"=>"Deductible", "consumer_type"=>"Family", "child_number"=>0, "age_threshold"=>"N/A", "service"=>"Medical"}, ""], [{"charge_type"=>"Deductible", "consumer_type"=>"Family", "child_number"=>0, "age_threshold"=>"N/A", "service"=>"Drug"}, ""], [{"charge_type"=>"Out Of Pocket", "consumer_type"=>"Individual", "child_number"=>0, "age_threshold"=>"N/A", "service"=>"Medical"}, ""], [{"charge_type"=>"Out Of Pocket", "consumer_type"=>"Individual", "child_number"=>0, "age_threshold"=>"N/A", "service"=>"Drug"}, ""], [{"charge_type"=>"Out Of Pocket", "consumer_type"=>"Family", "child_number"=>0, "age_threshold"=>"N/A", "service"=>"Medical"}, ""], [{"charge_type"=>"Out Of Pocket", "consumer_type"=>"Family", "child_number"=>0, "age_threshold"=>"N/A", "service"=>"Drug"}, ""], [{"charge_type"=>"Copay", "service"=>"Primary Care Physician"}, ""], [{"charge_type"=>"Copay", "service"=>"Specialist"}, ""], [{"charge_type"=>"Copay", "service"=>"Emergency"}, ""], [{"charge_type"=>"Copay", "service"=>"Inpatient Facility"}, ""], [{"charge_type"=>"Copay", "service"=>"Inpatient Physician"}, ""], [{"charge_type"=>"Copay", "service"=>"Generic Drugs"}, ""], [{"charge_type"=>"Copay", "service"=>"Preferred Brand Drugs"}, ""], [{"charge_type"=>"Copay", "service"=>"preferred Brand Drugs"}, ""], [{"charge_type"=>"Copay", "service"=>"Specialty Drugs"}, ""], [{"charge_type"=>"Deductible", "consumer_type"=>"Individual", "child_number"=>0, "age_threshold"=>"N/A", "service"=>"Medical"}, ""], [{"charge_type"=>"Deductible", "consumer_type"=>"Individual", "child_number"=>0, "age_threshold"=>"N/A", "service"=>"Drug"}, ""], [{"charge_type"=>"Deductible", "consumer_type"=>"Family", "child_number"=>0, "age_threshold"=>"N/A", "service"=>"Medical"}, ""], [{"charge_type"=>"Deductible", "consumer_type"=>"Family", "child_number"=>0, "age_threshold"=>"N/A", "service"=>"Drug"}, ""], [{"charge_type"=>"Out Of Pocket", "consumer_type"=>"Individual", "child_number"=>0, "age_threshold"=>"N/A", "service"=>"Medical"}, ""], [{"charge_type"=>"Out Of Pocket", "consumer_type"=>"Individual", "child_number"=>0, "age_threshold"=>"N/A", "service"=>"Drug"}, ""], [{"charge_type"=>"Out Of Pocket", "consumer_type"=>"Family", "child_number"=>0, "age_threshold"=>"N/A", "service"=>"Medical"}, ""], [{"charge_type"=>"Out Of Pocket", "consumer_type"=>"Family", "child_number"=>0, "age_threshold"=>"N/A", "service"=>"Drug"}, ""], [{"charge_type"=>"Copay", "service"=>"Primary Care Physician"}, ""], [{"charge_type"=>"Copay", "service"=>"Specialist"}, ""], [{"charge_type"=>"Copay", "service"=>"Emergency"}, ""], [{"charge_type"=>"Copay", "service"=>"Inpatient Facility"}, ""], [{"charge_type"=>"Copay", "service"=>"Inpatient Physician"}, ""], [{"charge_type"=>"Copay", "service"=>"Generic Drugs"}, ""], [{"charge_type"=>"Copay", "service"=>"Preferred Brand Drugs"}, ""], [{"charge_type"=>"Copay", "service"=>"preferred Brand Drugs"}, ""], [{"charge_type"=>"Copay", "service"=>"Specialty Drugs"}, ""], [{"charge_type"=>"Deductible", "consumer_type"=>"Individual", "child_number"=>0, "age_threshold"=>"N/A", "service"=>"Medical"}, ""], [{"charge_type"=>"Deductible", "consumer_type"=>"Individual", "child_number"=>0, "age_threshold"=>"N/A", "service"=>"Drug"}, ""], [{"charge_type"=>"Deductible", "consumer_type"=>"Family", "child_number"=>0, "age_threshold"=>"N/A", "service"=>"Medical"}, ""], [{"charge_type"=>"Deductible", "consumer_type"=>"Family", "child_number"=>0, "age_threshold"=>"N/A", "service"=>"Drug"}, ""], [{"charge_type"=>"Out Of Pocket", "consumer_type"=>"Individual", "child_number"=>0, "age_threshold"=>"N/A", "service"=>"Medical"}, ""], [{"charge_type"=>"Out Of Pocket", "consumer_type"=>"Individual", "child_number"=>0, "age_threshold"=>"N/A", "service"=>"Drug"}, ""], [{"charge_type"=>"Out Of Pocket", "consumer_type"=>"Family", "child_number"=>0, "age_threshold"=>"N/A", "service"=>"Medical"}, ""], [{"charge_type"=>"Out Of Pocket", "consumer_type"=>"Family", "child_number"=>0, "age_threshold"=>"N/A", "service"=>"Drug"}, ""], [{"charge_type"=>"Copay", "service"=>"Primary Care Physician"}, ""], [{"charge_type"=>"Copay", "service"=>"Specialist"}, ""], [{"charge_type"=>"Copay", "service"=>"Emergency"}, ""], [{"charge_type"=>"Copay", "service"=>"Inpatient Facility"}, ""], [{"charge_type"=>"Copay", "service"=>"Inpatient Physician"}, ""], [{"charge_type"=>"Copay", "service"=>"Generic Drugs"}, ""], [{"charge_type"=>"Copay", "service"=>"Preferred Brand Drugs"}, ""], [{"charge_type"=>"Copay", "service"=>"preferred Brand Drugs"},

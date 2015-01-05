@@ -110,7 +110,7 @@ class PagesController < ApplicationController
       info['child_number'] = (shop_for && shop_for.include?('my children')) ?
                                consumer_info['number_of_children'].to_i : 0
       info['household_size'] = 1 + info['family_number'] + info['child_number']
-      info['subsidy_perc'] = 1 - calculate_premium_cap(info['income'].to_f, info['household_size'],
+      info['subsidy_perc'] = 1 - calculate_premium_cap(info['income'].gsub(',', '').to_f, info['household_size'],
                                                        info['state'])
 
       county = info['county']
@@ -143,6 +143,7 @@ class PagesController < ApplicationController
       end
 
       # The data from HC.gov had county names in both up and down case. :)
+      puts ">>> using in extraction = #{info}"
       plans=session[:plans]
       @plans = plans.inject([]) do |acc, plan|
         acc << plan.extract_data_for_person(info, goodrx_prices, pokitdok_prices)
