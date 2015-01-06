@@ -106,9 +106,9 @@ class PagesController < ApplicationController
       # Do some conversions from browser-entered data to internal formats
       shop_for = info['shop_for']
       info['family_number'] = (shop_for && shop_for.include?('other adults')) ?
-                                consumer_info['number_of_adults'].to_i : 0
+                                info['number_of_adults'].to_i : 0
       info['child_number'] = (shop_for && shop_for.include?('my children')) ?
-                               consumer_info['number_of_children'].to_i : 0
+                               info['number_of_children'].to_i : 0
       info['household_size'] = 1 + info['family_number'] + info['child_number']
       info['subsidy_perc'] = 1 - calculate_premium_cap(info['income'].gsub(',', '').to_f, info['household_size'],
                                                        info['state'])

@@ -305,7 +305,7 @@ class Plan < ActiveRecord::Base
         return calculate_deductible(keys, consumer_info, :medical)
       end
 
-      if /^\s*\$?0\.?(0*)\s*$/i.match(relevant_cell[1])
+      if /^\s*\$?0\.?(0*)\s*$/i.match(relevant_cell[1]) or /not covered/i.match(relevant_cell[1])
         return 0
       end
       
