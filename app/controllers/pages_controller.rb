@@ -147,6 +147,10 @@ class PagesController < ApplicationController
 
       # If the user is logged in, let's put all this data into their profile
       if current_user
+        if !current_user.profile
+          current_user.build_profile
+        end
+        # This will save the user's profile
         current_user.profile.update_data(session)
       end
 
