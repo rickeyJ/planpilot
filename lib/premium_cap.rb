@@ -40,11 +40,11 @@ module PremiumCap
       end
     end
     if tier_index == -1
-      premium_cap = 1.0
+      max_monthly_premium = -1
     else
-      premium_cap=tier[tier_index][1]
+      max_monthly_prem=tier[tier_index][1] * income /12
     end
 
-    premium_cap
+    max_monthly_prem
   end
 end

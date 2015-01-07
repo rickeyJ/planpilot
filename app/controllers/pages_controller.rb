@@ -110,8 +110,16 @@ class PagesController < ApplicationController
       info['child_number'] = (shop_for && shop_for.include?('my children')) ?
                                info['number_of_children'].to_i : 0
       info['household_size'] = 1 + info['family_number'] + info['child_number']
-      info['subsidy_perc'] = 1 - calculate_premium_cap(info['income'].gsub(',', '').to_f, info['household_size'],
-                                                       info['state'])
+
+
+      subsidy_cap = calculate_premium_cap(info['income'].gsub(',', '').to_f, info['household_size'], info['state'])
+      if subsidy_cap == -1
+        info['subsidy'] = 0
+      else
+        silver_plan_2 = Plan.subsidy_cap_plan_premium(session[:plans], info)
+        puts ">>> you shdn't get charged more than #{subsidy_cap} when you try to pay for #{silver_plan_2}"
+        info['subsidy'] = (silver_plan_2 - subsidy_cap < 0) ? silver_plan_2 : (silver_plan_2 - subsidy_cap)
+      end
 
       county = info['county']
 

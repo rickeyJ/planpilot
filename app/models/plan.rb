@@ -1,7 +1,57 @@
 class Plan < ActiveRecord::Base
   include ActionView::Helpers::NumberHelper
+
   class DataParseException < Exception
   end
+
+  def self.sort_by_premium(l, consumer_info)
+    # Sort by premium, ascending - so cheapest is first
+    #     monthly_premium = calculate_premium(plan_keys, consumer_info)
+
+    # l is an active relation - turn it into an array
+    l.sort do |p1, p2|
+      p1.calculate_premium(consumer_info) <=> p2.calculate_premium(consumer_info)
+    end
+  end
+  def self.silver_plans(relation)
+    relation.all.select { |p| p.payload_value(:metal_level) == 'Silver' }
+  end
+  
+  def self.subsidy_cap_plan_premium(plan_list, consumer_info)
+    # find the second cheapest silver plan or the second cheapest plan if there are no silver plans, by premium (based on consumer info
+    l = silver_plans(plan_list)
+    l = l.empty? ? plan_list.all : l
+    plans = sort_by_premium(l, consumer_info)
+
+    if plans.size == 0
+      ret_val = plans[0].calculate_premium(consumer_info)
+    else
+      # More than one plan might have the lowest premium
+      uniqed = (plans.map { |p| p.calculate_premium(consumer_info) }).uniq
+      if uniqed.size == 0
+        ret_val = uniqed[0]
+      else
+        ret_val = uniqed[1]
+      end
+    end
+
+    ret_val
+  end
+  
+  def payload_value(k)
+    columned_keys = [:county, :state, :plan_identifier, :metal_level]
+    if columned_keys.include? k
+      if self.send(k).nil?
+        # This record doesn't already have this key saved; let's save it now.
+        self.send("#{k}=", self.payload_data[k.to_s])
+        self.save
+      end
+      return self.send(k)
+    else
+      self.payload_data[k.to_s]
+    end
+  end
+
   def deflate_map_keys
     if self.map_keys_string
       keys=self.map_keys_string
@@ -59,40 +109,74 @@ class Plan < ActiveRecord::Base
 
   def extract_data_for_person(consumer_info, drug_info, pd_info)
     plan_payload = self.deflate_payload
-    plan_keys = self.decode_map_keys
-
 #    puts ">>> Analyzing plan #{self.plan_identifier} for #{self.state}, #{self.county}"
 
     name=plan_payload["plan_marketing_name"]
-    monthly_premium = calculate_premium(plan_keys, consumer_info)
+    monthly_premium = calculate_premium(consumer_info)
 
     if drug_info
 #      puts ">>> Extracting drug hit"
-      drug_hit = calculate_drug_hit(plan_keys, consumer_info, drug_info)
+      drug_hit = calculate_drug_hit(consumer_info, drug_info)
     else
       drug_hit = 0.0
     end
     if pd_info
-      procedure_hit = calculate_multiple_procedure_hits(plan_keys, consumer_info, pd_info)
+      procedure_hit = calculate_multiple_procedure_hits(consumer_info, pd_info)
     else
       procedure_hit = 0.0
     end
 
-    # we will substitute this with Nick's subsidy calculation eventually.
-    subsidy = consumer_info['subsidy_perc']*monthly_premium
+    # Substituted with Nick's subsidy calculation.
+    subsidy = consumer_info['subsidy']
     ann_premium= (monthly_premium)*12
-    true_cost = (monthly_premium - subsidy)*12 + drug_hit + procedure_hit
+    actual_subsidy = [subsidy, monthly_premium].min
+    true_cost = (monthly_premium - actual_subsidy)*12 + drug_hit + procedure_hit
 
 #    puts ">>> cost params: #{monthly_premium}, #{drug_hit}, #{procedure_hit}"
 
+    puts ">>> compared #{subsidy} and #{monthly_premium}"
     data={plan_db_id: self.id, 'state' => self.state, 'county' => self.county, 'plan_id' => self.plan_identifier,
-          plan_name: name, image: "", monthly_premium: "$#{dp2(monthly_premium)}", subsidy: "$#{dp2(subsidy)}",
-          final_monthly_premium: "$#{dp2(monthly_premium - subsidy)}", ann_premium: "$#{dp2(ann_premium)}",
-          annual_subsidy: number_to_currency(12*subsidy), true_annual_cost: number_to_currency(true_cost.ceil),
-          :ann_premium_in_num => ann_premium, :annual_subsidy_in_num => 12*subsidy,
-          :premium_after_subsidy => number_to_currency(ann_premium - 12*subsidy),
+          plan_name: name, image: "", monthly_premium: "$#{dp2(monthly_premium)}", subsidy: "$#{dp2(actual_subsidy)}",
+          final_monthly_premium: "$#{dp2(monthly_premium - actual_subsidy)}", ann_premium: "$#{dp2(ann_premium)}",
+          annual_subsidy: number_to_currency(12*actual_subsidy),
+          true_annual_cost: number_to_currency(true_cost.ceil),
+          :ann_premium_in_num => ann_premium, :annual_subsidy_in_num => 12*actual_subsidy,
+          :premium_after_subsidy => number_to_currency(ann_premium - 12*actual_subsidy),
          }
     data
+  end
+
+  def calculate_premium(consumer_info)
+    keys = self.decode_map_keys
+
+    age=consumer_info['age'].to_i
+    family_number = consumer_info['family_number']
+    child_number = consumer_info['child_number']
+
+#    puts ">>> Checking #{consumer_info}"
+#    puts ">>> Checking #{age}, #{family_number}, #{child_number} with keys #{keys}"
+
+    # Fallback to the largest premium, that's not a dental premium
+    fallback_premium_list = keys.select do |cell|
+      cell[0]['charge_type'] == 'premium' and cell[1]!='' and cell[1] !='X'
+    end
+    fallback_premium = fallback_premium_list.sort do |a,b|
+      currency_to_number(a[1]) <=> currency_to_number(b[1])
+    end.last
+    
+    relevant_cell = keys.select do |cell|
+      cell[0]["charge_type"]=='premium' && age < cell[0]["age_threshold"].to_i &&
+        (family_number == 0 && cell[0]['consumer_type'] == 'individual' ||
+         family_number > 0 && cell[0]['consumer_type']=='couple') && cell[0]["child_number"].to_i == child_number
+    end.first
+
+    if relevant_cell.nil?
+      puts ">>> using fb prem #{fallback_premium}"
+      currency_to_number(fallback_premium[1])
+    else
+#      puts ">>> using prem cell #{relevant_cell}"
+      currency_to_number(relevant_cell[1])
+    end
   end
 
   private
@@ -101,8 +185,9 @@ class Plan < ActiveRecord::Base
     sprintf("%0.2f", flt)
   end
   
-  def calculate_drug_hit(keys, consumer_info, drug_info)
+  def calculate_drug_hit(consumer_info, drug_info)
     # Extract co pay (could be numerical, percentage of dosage cost, or could be included in some other column)
+    keys = self.decode_map_keys
     copay_str=''
     total_hit = 0.0
 
@@ -180,11 +265,12 @@ class Plan < ActiveRecord::Base
 
   end
   
-  def calculate_procedure_hit(keys, consumer_info, pd_info, already_paid)
+  def calculate_procedure_hit(consumer_info, pd_info, already_paid)
     # Extract co pay (could be numerical, percentage of dosage cost, or could be included in some other column)
+    keys = self.decode_map_keys
 
     pd_cost = (pd_info['data'][0]['high_price'].to_f + pd_info['data'][0]['low_price'].to_f)/2
-    deductible = calculate_deductible(keys, consumer_info, :medical)
+    deductible = calculate_deductible(consumer_info, :medical)
     # We'll assume this is the right copay type for now.
 
     hits = (keys.select { |c| c[0]['charge_type']=='copay' and (c[0]['service'] == 'specialist' ||
@@ -243,36 +329,8 @@ class Plan < ActiveRecord::Base
   def currency_to_number(string)
     string.gsub(/[\$,]/, '').to_f
   end 
-  def calculate_premium(keys, consumer_info)
-    age=consumer_info['age'].to_i
-    family_number = consumer_info['family_number']
-    child_number = consumer_info['child_number']
-
-#    puts ">>> Checking #{age}, #{family_number}, #{child_number} with keys #{keys}"
-
-    # Fallback to the largest premium, that's not a dental premium
-    fallback_premium_list = keys.select do |cell|
-      cell[0]['charge_type'] == 'premium' and cell[1]!='' and cell[1] !='X'
-    end
-    fallback_premium = fallback_premium_list.sort do |a,b|
-      currency_to_number(a[1]) <=> currency_to_number(b[1])
-    end.last
-    
-    relevant_cell = keys.select do |cell|
-      cell[0]["charge_type"]=='premium' && age < cell[0]["age_threshold"].to_i &&
-        (family_number == 0 && cell[0]['consumer_type'] == 'individual' ||
-         family_number > 0 && cell[0]['consumer_type']=='couple') && cell[0]["child_number"].to_i == child_number
-    end.first
-
-    if relevant_cell.nil?
-      puts ">>> using fb prem #{fallback_premium}"
-      currency_to_number(fallback_premium[1])
-    else
-#      puts ">>> using prem cell #{relevant_cell}"
-      currency_to_number(relevant_cell[1])
-    end
-  end
-  def calculate_deductible(keys, consumer_info, deductible_type)
+  def calculate_deductible(consumer_info, deductible_type)
+    keys = self.decode_map_keys
 
     # Type is either :medical or :drug
     
@@ -302,7 +360,7 @@ class Plan < ActiveRecord::Base
       #      puts ">>> using prem cell #{relevant_cell}"
       if deductible_type == :drug && ((/included in medical/i.match relevant_cell[1]) ||
                                       /no drug deductible/i.match(relevant_cell[1]))
-        return calculate_deductible(keys, consumer_info, :medical)
+        return calculate_deductible(consumer_info, :medical)
       end
 
       if /^\s*\$?0\.?(0*)\s*$/i.match(relevant_cell[1]) or /not covered/i.match(relevant_cell[1])
