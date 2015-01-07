@@ -216,7 +216,7 @@ class Plan < ActiveRecord::Base
 #    puts ">>> Starting with total_hit of #{total_hit} and cost of #{drug_cost}"
     if /deductible/i.match(copay_str)
     # For costs dependent on deductible, see if this will cause the deductible to be paid up, and then calculate cost above that
-      deductible = calculate_deductible(keys, consumer_info, :drug)
+      deductible = calculate_deductible(consumer_info, :drug)
 #      puts ">>> Deductible is #{deductible}"
       total_hit = [drug_cost, deductible].min
 #      puts "Hit is now #{total_hit}"
