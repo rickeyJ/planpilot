@@ -27,5 +27,12 @@ module PlansHelper
 
     str.gsub /, Medical Category/, " "
   end
+
+  def CountyCapitalize(name)
+    # county names can have various ways of arranging multiple words. Trying to handle smart camelcasing
+
+    words = name.split(/[^a-zA-Z]+/)
+    words.map { |w| w.capitalize }.join(' ')
+  end
 end
 

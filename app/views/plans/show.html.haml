@@ -10,9 +10,9 @@
           = @plan.payload_data['plan_marketing_name']
         .plan-deets
           %span.plan-deet-box
-            = "County: #{@plan.county}"
+            = "County: #{CountyCapitalize(@plan.county)}"
           %span.plan-deet-box
-            = "State: #{@plan.state}"
+            = "State: #{@plan.state.upcase}"
       .col-xs-6.offset-xs-3
         %a{href: '/users/sign_up'}
           .section-title.buttonbox.large-text
