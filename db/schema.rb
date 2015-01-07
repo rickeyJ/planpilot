@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20141227023729) do
+ActiveRecord::Schema.define(version: 20150107005027) do
 
   create_table "caps", force: true do |t|
     t.float    "fpl_income"
@@ -117,6 +117,7 @@ ActiveRecord::Schema.define(version: 20141227023729) do
     t.text     "payload_string"
     t.integer  "profile_id"
     t.string   "rating_area"
+    t.string   "metal_level"
   end
 
   create_table "profiles", force: true do |t|
