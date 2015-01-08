@@ -14,9 +14,7 @@
           = link_to "Back", "#{@page_data[:prev_link]}", method: :post
     %span
       
-    - if @page_data[:current_page]==1
-      = render partial: 'simple_form'
-    - elsif @page_data[:current_page]==6
+    - if @page_data[:current_page]==6
       = render partial: 'no_plans'  
     - else
       = render partial: "complex_form_#{@page_data[:current_page]}", layout: 'form_layout'

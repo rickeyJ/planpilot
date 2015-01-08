@@ -6,9 +6,10 @@ class PagesController < ApplicationController
   
   @@page_data_table={
                      1 =>
-                     {question_header: 'We\'ve Got You Covered', question_main: 'Your location is the first piece of information you will need to enter.',
+                     {question_header: 'We\'ve Got You Covered', question_main: 'Please give us your zipcode.',
                       next_page: 2,
                       step_index: 0,
+                      icon_array: ['', '', '', '', 'zip.png'],
                      },
 
                      2 =>
@@ -17,14 +18,16 @@ class PagesController < ApplicationController
                       prev_page: 1,
                       next_page: 3,
                       step_index: 1,
+                      icon_array: ['zip.png', '', '', '', 'household.png'],
                      },
 
                      3 => {
                        question_header: "Plans Found",
-                       question_main: "Some people can save money on their health insurance with a subsidy. Let’s see if you are eligible.",
+                       question_main: "Save money on health insurance with a subsidy - let’s see if you qualify.",
                        prev_page: 2,
                        next_page: 4,
                        step_index: 2,
+                       icon_array: ['zip.png', 'household.png', '', '', 'income.png'],
                      },
 
                      4 => {
@@ -34,7 +37,7 @@ class PagesController < ApplicationController
                        prev_page: 3,
                        next_page: 5,
                        step_index: 3,
-                       
+                       icon_array: ['zip.png', 'household.png', 'income.png', '', 'procedures.png'],                       
                      },
                      
                      5 => {

@@ -1,0 +1,10 @@
+- content_for(:main) do 
+  = form_tag('/page', id: 'pageform') do
+    %input{name: 'page_id', type: 'hidden', value: @page_data[:next_page]}  
+    - if flash[:my_notice]
+      .notice-box
+        = flash[:my_notice]
+
+    %input.zipinput.inline.form-control{name: 'zip',  type: 'text', placeholder: 'ZIP Code', value: @page_data[:current_info][:zip]}
+    %button.btn.btn-default.submit
+      Go  

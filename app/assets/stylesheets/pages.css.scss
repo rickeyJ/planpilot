@@ -74,14 +74,14 @@
 	margin: auto;
 }
 .question-text {
-	padding-top: 80px;
-	color: white;
-	width: 50%;
+	padding: 0px 0px 30px;
+	display: inline-block;
+
 }
 
 .question-header {
 	font-size: 2em;
-	margin-bottom: 20px;
+	margin-bottom: 40px;
 	.back-button-box {
 		margin-left: 10px;
 		font-size: 0.5em;
@@ -100,6 +100,11 @@
 	font-size: 1.2em;
 	font-weight: bold;
 	margin-bottom: 15px;
+
+	.icon-box {
+		position: absolute;
+		top: 20px;
+	}
 }
 .drop-arrow {
 	margin-top: 25px;
@@ -122,6 +127,37 @@
 	color: black;
 	border-top: 5px solid $pink-color;
 	display: inline-block;
+	position: relative;
+	padding-top: 30px;
+	min-width: 350px;
+
+	.icon-row {
+		width: 100%;
+		display: block;
+		position: absolute;
+		top: -30px;
+	}
+	.current-icon-line {
+		margin: 10px 0px;
+	}
+
+	.icon-box {
+		display: inline-block;
+		width: 60px;
+		height: 60px;
+		border: 1px solid green;
+		border-radius: 50%;
+		margin-right: 10px;
+		background-color: white;
+		position: relative;
+		img {
+			position: absolute;
+			top: 16%;
+			left: 16%;
+			max-height: 40px;
+		}
+
+	}
 }
 
 .forms-checkbox {
