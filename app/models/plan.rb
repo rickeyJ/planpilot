@@ -254,11 +254,12 @@ class Plan < ActiveRecord::Base
     total_hit
   end
 
-  def calculate_multiple_procedure_hits(keys, consumer_info, pd_info)
+  def calculate_multiple_procedure_hits(consumer_info, pd_info)
     # Get an amount per procedure
+    keys = self.decode_map_keys
     pd_info.inject(0.0) do |sum, pd_resp|
       puts ">>> Extracting procedure hit for #{pd_resp}"
-      sum += calculate_procedure_hit(keys, consumer_info, pd_resp, sum)
+      sum += calculate_procedure_hit(consumer_info, pd_resp, sum)
       puts ">>> cost was #{sum}"
       sum
     end
