@@ -59,7 +59,8 @@ class PagesController < ApplicationController
                                                          JSON.parse(params[:current_info]) : params[:current_info]) : {}
     @page_data[:current_info][:question_header] = @page_data[:question_header]
     @page_data[:current_info][:page_id] = @page_data[:current_page]
-
+    @page_data[:current_info].merge! build_current_info(@page_data[:current_info])
+    
     # Second page - error handling for tricky zips
     if @page_data[:current_page] == 2 && ZipInfo.none_or_no_county?(params['zip'])
       redirect_to "#{root_path}&page_id=1", flash: {my_notice: 'Zip code incorrect or for the US territories'}
@@ -70,17 +71,32 @@ class PagesController < ApplicationController
       # User forgot to click at least one checkbox - in that case, let's fill it for them.
       @page_data[:current_info]['shop_for']=['myself']
     end
-    
-    @page_data[:current_info].merge! build_current_info(@page_data[:current_info])
+
+    if @page_data[:current_page] == 4
+      # We have household size and income - we can now decide if we have a medicaid referral
+
+      # Do some math for the household size first, and update the :current_info hash value
+      update_household_data
+      if medicaid_referral(@page_data[:current_info]['income'].to_i, @page_data[:current_info]['household_size'],
+                           @page_data[:current_info]['state'])
+        # Bail out now.
+        @page_data[:prev_page]=nil
+        @page_data[:current_page]=6
+        @page_data[:stop_message]="You are eligible for Medicaid. Please use your state's Medicaid website to purchase health insurance instead."
+
+        render 'show' and return
+      end
+    end
 
     if @page_data[:current_info]['number_of_plans'] == 0
       # Bail out now.
       @page_data[:prev_page]=nil
       @page_data[:current_page]=6
+      @page_data[:stop_message]="Sorry, there are no plans for your state in the federal exchange - you have to use your state's exchange instead."
       render 'show' and return
     end
 
-    puts ">>> session data = #{@page_data[:current_info]} which is a #{@page_data[:current_info].class}"
+#    puts ">>> session data = #{@page_data[:current_info]} which is a #{@page_data[:current_info].class}"
 
     # Construct the back link.
     if @page_data[:prev_page]
@@ -103,16 +119,7 @@ class PagesController < ApplicationController
       state = info["state"].gsub(/\+/, ' ')
       info["age"] = info["age"]=='' ? 35 : info['age']
 
-      # Do some conversions from browser-entered data to internal formats
-      shop_for = info['shop_for']
-      info['family_number'] = (shop_for && shop_for.include?('other adults')) ?
-                                info['number_of_adults'].to_i : 0
-      info['child_number'] = (shop_for && shop_for.include?('my children')) ?
-                               info['number_of_children'].to_i : 0
-      info['household_size'] = 1 + info['family_number'] + info['child_number']
-
-
-      subsidy_cap = calculate_premium_cap(info['income'].gsub(',', '').to_f, info['household_size'], info['state'])
+      subsidy_cap = calculate_premium_cap(info['income'], info['household_size'], info['state'])
       if subsidy_cap == -1
         info['subsidy'] = 0
       else
@@ -230,5 +237,16 @@ class PagesController < ApplicationController
     end
 
     actual_cost
-  end  
+  end
+
+  def update_household_data
+    # Do some conversions from browser-entered data to internal formats
+    @page_data[:current_info]['income'] = @page_data[:current_info]['income'].gsub(',', '').to_f
+    shop_for = @page_data[:current_info]['shop_for']
+    @page_data[:current_info]['family_number'] = (shop_for && shop_for.include?('other adults')) ?
+                              @page_data[:current_info]['number_of_adults'].to_i : 0
+    @page_data[:current_info]['child_number'] = (shop_for && shop_for.include?('my children')) ?
+                             @page_data[:current_info]['number_of_children'].to_i : 0
+    @page_data[:current_info]['household_size'] = 1 + @page_data[:current_info]['family_number'] + @page_data[:current_info]['child_number']
+  end    
 end

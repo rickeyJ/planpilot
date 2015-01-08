@@ -10,15 +10,18 @@ module PremiumCap
   def medicaid_referral(income, household_size, state)
     # inputs should be: float, integer and string (lower case state abbrev)
 
+    puts ">>> checking #{income}, #{household_size}, #{state}"
     fpl_amt = Fpl.find_by_household_size(household_size).fpl_amt.to_f
-    fpl_floor = Medicaid.find_by_state(state).fpl_floor
+    fpl_floor = Medicaid.find_by_state(state.downcase).fpl_floor
 
     # calculate fpl_income level
     fpl_income_ratio = income / fpl_amt
 
     # if user income is equal to or less than state Medicaid thresholds, they're eligible
     #   and we should redirect them to the state's Medicaid site application
-    fpl_income_ratio <= fpl_floor[0].to_f
+
+    puts ">>> comparing #{fpl_income_ratio} to #{fpl_floor.to_f}"
+    fpl_income_ratio <= fpl_floor.to_f
   end
 
   def calculate_premium_cap(income, household_size, state)
