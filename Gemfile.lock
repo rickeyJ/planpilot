@@ -100,8 +100,6 @@ GEM
     debug_inspector (0.0.2)
     debugger-linecache (1.2.0)
     diff-lcs (1.2.5)
-    doorkeeper (1.4.0)
-      railties (>= 3.1)
     dotenv (1.0.2)
     dotenv-rails (1.0.2)
       dotenv (= 1.0.2)
@@ -350,7 +348,6 @@ DEPENDENCIES
   coffee-rails
   database_cleaner
   devise!
-  doorkeeper
   dotenv-rails
   email_spec
   factory_girl_rails
