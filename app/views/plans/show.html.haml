@@ -10,7 +10,7 @@
           = @plan.payload_data['plan_marketing_name']
         .plan-deets
           %span.plan-deet-box
-            = "County: #{CountyCapitalize(@plan.county)}"
+            = "County: #{CountyCapitalize(@plan_data['county'])}"
           %span.plan-deet-box
             = "State: #{@plan.state.upcase}"
       .col-xs-6.offset-xs-3
