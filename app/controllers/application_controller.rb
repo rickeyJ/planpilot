@@ -72,4 +72,10 @@ class ApplicationController < ActionController::Base
   def default_url_options(options={})
     { locale: I18n.locale }
   end
+
+  def null_session
+    session.keys.each do |k|
+      session.delete k
+    end
+  end
 end

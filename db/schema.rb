@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150107005027) do
+ActiveRecord::Schema.define(version: 20150109180918) do
 
   create_table "caps", force: true do |t|
     t.float    "fpl_income"
@@ -56,6 +56,12 @@ ActiveRecord::Schema.define(version: 20150107005027) do
     t.float    "fpl_floor"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.string   "address"
+    t.string   "city"
+    t.string   "zip"
+    t.string   "phone"
+    t.string   "url"
+    t.string   "agency"
   end
 
   create_table "navbar_entries", force: true do |t|

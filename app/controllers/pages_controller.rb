@@ -51,22 +51,38 @@ class PagesController < ApplicationController
     @page_data[:current_page]=params[:page_id].to_i
 
     puts ">>> looking at page #{@page_data[:current_page]} with session data #{session[:current_info]}"
-    @page_data.merge! (@@page_data_table[@page_data[:current_page]])
-
     @page_data[:random_person_index]=rand(3)+1
 
+    # We can destroy the session from the root page.
+    if @page_data[:current_page] == 1 && params[:null_session]
+      null_session
+    end
+    
+    @page_data.merge! (@@page_data_table[@page_data[:current_page]])
     # Put the current info into the session
     build_current_info
-    
+
     # Second page - error handling for tricky zips
     if @page_data[:current_page] == 2 && ZipInfo.none_or_no_county?(session[:current_info]['zip'])
       redirect_to "#{root_path}&page_id=1", flash: {my_notice: 'Zip code incorrect or for the US territories'}
       return
     end
 
-    if @page_data[:current_page] == 3 && session[:current_info]['shop_for'].nil?
-      # User forgot to click at least one checkbox - in that case, let's fill it for them.
-      session[:current_info]['shop_for']=['myself']
+    if @page_data[:current_page] == 3
+      # Bail to plain message page, if this user is old enough to qualify for Medicare.
+      
+      if session[:current_info]['age'].to_i > 65
+        @page_data[:prev_page]=nil
+        @page_data[:current_page]=6
+
+        @page_data[:stop_message]="You are eligible for Medicare. Please purchase your health insurance through Medicare."
+        render 'show' and return
+      end
+      
+      if session[:current_info]['shop_for'].nil?
+        # User forgot to click at least one checkbox - in that case, let's fill it for them.
+        session[:current_info]['shop_for']=['myself']
+      end
     end
 
     if @page_data[:current_page] == 4
@@ -79,8 +95,8 @@ class PagesController < ApplicationController
         # Bail out now: change the page supposed to be shown to the plain message page.
         @page_data[:prev_page]=nil
         @page_data[:current_page]=6
-        @page_data[:stop_message]="You are eligible for Medicaid. Please use your state's Medicaid website to purchase health insurance instead."
-
+        med_rec = Medicaid.find_by_state(session[:current_info]['state'].downcase)
+        @page_data[:stop_message]="You are eligible for Medicaid. Please use your <a href='#{med_rec.url}'>state's Medicaid website</a> to purchase health insurance instead. You can also contact them at <strong>#{med_rec.phone}</strong>."
         render 'show' and return
       end
     end
