@@ -75,7 +75,7 @@ class PagesController < ApplicationController
         @page_data[:prev_page]=nil
         @page_data[:current_page]=6
 
-        @page_data[:stop_message]="You are eligible for Medicare. Please purchase your health insurance through Medicare."
+        @page_data[:stop_message]="You are eligible for Medicare. Please purchase your health insurance through Medicare </strong><span class='fineprint-text'>(<a href='/?null_session=1'>start over</a>)</span>."
         render 'show' and return
       end
       
@@ -96,7 +96,7 @@ class PagesController < ApplicationController
         @page_data[:prev_page]=nil
         @page_data[:current_page]=6
         med_rec = Medicaid.find_by_state(session[:current_info]['state'].downcase)
-        @page_data[:stop_message]="You are eligible for Medicaid. Please use your <a href='#{med_rec.url}'>state's Medicaid website</a> to purchase health insurance instead. You can also contact them at <strong>#{med_rec.phone}</strong>."
+        @page_data[:stop_message]="You are eligible for Medicaid. Please use your <a href='#{med_rec.url}'>state's Medicaid website</a> to purchase health insurance instead. You can also contact them at <strong>#{med_rec.phone} </strong><span class='fineprint-text'>(<a href='/?null_session=1'>start over</a>)</span>."
         render 'show' and return
       end
     end
