@@ -36,6 +36,9 @@
 	background:  asset-url("hero04.jpg") no-repeat scroll top left ;
 	overflow: hidden;
 	
+	.top-container {
+		padding-top: 20px;
+	}
 }
 
 .testimonial-author {
@@ -76,7 +79,6 @@
 .question-text {
 	padding: 0px 0px 30px;
 	display: inline-block;
-
 }
 
 .question-header {

@@ -5,6 +5,6 @@
       .notice-box
         = flash[:my_notice]
 
-    %input.zipinput.inline.form-control{name: 'zip',  type: 'text', placeholder: 'ZIP Code', value: @page_data[:current_info][:zip]}
+    %input.zipinput.inline.form-control{name: 'zip',  type: 'text', placeholder: 'ZIP Code', value: session[:current_info]['zip']}
     %button.btn.btn-default.submit
       Go  

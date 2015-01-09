@@ -1,13 +1,13 @@
 .row.hero
   .col-xs-2
     
-  .col-xs-8.question-text
+  .col-xs-8.top-container
     .current-info
       %span.pink-color
-        = show_current_info @page_data[:current_info]
+        = show_current_info session[:current_info]
       
     .question-header
-      = @page_data[:current_info][:question_header]
+      = @page_data[:question_header]
       - if @page_data[:prev_page]
         %span.back-button-box
           &laquo;

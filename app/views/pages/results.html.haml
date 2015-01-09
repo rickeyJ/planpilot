@@ -1,12 +1,11 @@
 .results-top-bg
   // Need this here to allow interaction of checkboxes with clicks
-  #current_info{type: 'hidden', 'data-value' => @page_data[:current_info].to_json}  
+  #current_info{type: 'hidden', 'data-value' => session[:current_info].to_json}  
 
   .row.results-row
     .col-xs-2
     .col-xs-8.info-box
       = form_tag 'page', action: 'post' do
-        = hidden_field_tag :current_info, @page_data[:current_info].to_json
         = hidden_field_tag :page_id, @page_data[:next_page]
         .pull-right
           = submit_tag 'Refresh', class: 'action-box'
@@ -25,22 +24,22 @@
             Income:
         .row.demographic-data
           .col-xs-2
-            = text_field_tag :zip, @page_data[:current_info]['zip'], class: 'zipinput'
+            = text_field_tag :zip, session[:current_info]['zip'], class: 'zipinput'
           .col-xs-2
-            = text_field_tag :age, @page_data[:current_info]['age'], class: 'zipinput'
+            = text_field_tag :age, session[:current_info]['age'], class: 'zipinput'
           .col-xs-2
 
           .col-xs-2
-            = text_field_tag :number_of_children, @page_data[:current_info]['number_of_children'], class: 'zipinput'
+            = text_field_tag :number_of_children, session[:current_info]['number_of_children'], class: 'zipinput'
           .col-xs-2
-            = text_field_tag :income, @page_data[:current_info]['income'], class: 'zipinput'
+            = text_field_tag :income, session[:current_info]['income'], class: 'zipinput'
 
         .row.checkboxes
           - @page_data[:checkbox_list].each do |cb|  
             .col-xs-3.popupparent
               %span.popup
                 = raw(cb[:popup_html])
-              %span.box{id: cb[:id], class: results_refine_selection(cb[:id], @page_data[:current_info])}
+              %span.box{id: cb[:id], class: results_refine_selection(cb[:id], session[:current_info])}
                 &nbsp;X
               %span.box-label
                 = cb[:label]
@@ -48,13 +47,13 @@
             Shopping For:
             .forms-checkbox
               Myself
-              = check_box_tag 'shop_for[]', 'myself', (@page_data[:current_info]['shop_for'] && @page_data[:current_info]['shop_for'].include?('myself'))
+              = check_box_tag 'shop_for[]', 'myself', (session[:current_info]['shop_for'] && session[:current_info]['shop_for'].include?('myself'))
             .forms-checkbox
               My Children
-              = check_box_tag 'shop_for[]', 'my children', (@page_data[:current_info]['shop_for'] && @page_data[:current_info]['shop_for'].include?('my children')), class: 'togglebox'
+              = check_box_tag 'shop_for[]', 'my children', (session[:current_info]['shop_for'] && session[:current_info]['shop_for'].include?('my children')), class: 'togglebox'
             .forms-checkbox
               Other Adults  
-              = check_box_tag 'shop_for[]', 'other adults', (@page_data[:current_info]['shop_for'] && @page_data[:current_info]['shop_for'].include?('other adults')), class: 'togglebox'
+              = check_box_tag 'shop_for[]', 'other adults', (session[:current_info]['shop_for'] && session[:current_info]['shop_for'].include?('other adults')), class: 'togglebox'
 
         .row.additional_info
           .col-xs-6

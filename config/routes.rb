@@ -37,7 +37,7 @@ TestDk::Application.routes.draw do
       end
     end
   end
-  use_doorkeeper
+
 
   # Need a catch all to redirect to the errors controller, for catching 404s as an exception
   match "*path", to: "errors#catch_404", via: [:get, :post]

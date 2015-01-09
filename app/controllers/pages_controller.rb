@@ -50,29 +50,23 @@ class PagesController < ApplicationController
   def show
     @page_data[:current_page]=params[:page_id].to_i
 
-    puts ">>> looking at page #{@page_data[:current_page]}"
+    puts ">>> looking at page #{@page_data[:current_page]} with session data #{session[:current_info]}"
     @page_data.merge! (@@page_data_table[@page_data[:current_page]])
 
     @page_data[:random_person_index]=rand(3)+1
 
-    # Through the back button, current_info is already a hash; through the normal flow, it's a JSONified string
-    # Else, it's empty (on the root page)
-    
-    @page_data[:current_info]=params[:current_info] ? (params[:current_info].is_a?(String) ?
-                                                         JSON.parse(params[:current_info]) : params[:current_info]) : {}
-    @page_data[:current_info][:question_header] = @page_data[:question_header]
-    @page_data[:current_info][:page_id] = @page_data[:current_page]
-    @page_data[:current_info].merge! build_current_info(@page_data[:current_info])
+    # Put the current info into the session
+    build_current_info
     
     # Second page - error handling for tricky zips
-    if @page_data[:current_page] == 2 && ZipInfo.none_or_no_county?(params['zip'])
+    if @page_data[:current_page] == 2 && ZipInfo.none_or_no_county?(session[:current_info]['zip'])
       redirect_to "#{root_path}&page_id=1", flash: {my_notice: 'Zip code incorrect or for the US territories'}
       return
     end
 
-    if @page_data[:current_page] == 3 && @page_data[:current_info]['shop_for'].nil?
+    if @page_data[:current_page] == 3 && session[:current_info]['shop_for'].nil?
       # User forgot to click at least one checkbox - in that case, let's fill it for them.
-      @page_data[:current_info]['shop_for']=['myself']
+      session[:current_info]['shop_for']=['myself']
     end
 
     if @page_data[:current_page] == 4
@@ -80,9 +74,9 @@ class PagesController < ApplicationController
 
       # Do some math for the household size first, and update the :current_info hash value
       update_household_data
-      if medicaid_referral(@page_data[:current_info]['income'].to_i, @page_data[:current_info]['household_size'],
-                           @page_data[:current_info]['state'])
-        # Bail out now.
+      if medicaid_referral(session[:current_info]['income'].to_i, session[:current_info]['household_size'],
+                           session[:current_info]['state'])
+        # Bail out now: change the page supposed to be shown to the plain message page.
         @page_data[:prev_page]=nil
         @page_data[:current_page]=6
         @page_data[:stop_message]="You are eligible for Medicaid. Please use your state's Medicaid website to purchase health insurance instead."
@@ -91,33 +85,24 @@ class PagesController < ApplicationController
       end
     end
 
-    if @page_data[:current_info]['number_of_plans'] == 0
-      # Bail out now.
+    if session[:current_info]['number_of_plans'] == 0
+      # Bail out now: change the page supposed to be shown to the plain message page.
       @page_data[:prev_page]=nil
       @page_data[:current_page]=6
       @page_data[:stop_message]="Sorry, there are no plans for your state in the federal exchange - you have to use your state's exchange instead."
       render 'show' and return
     end
 
-#    puts ">>> session data = #{@page_data[:current_info]} which is a #{@page_data[:current_info].class}"
+#    puts ">>> session data = #{session[:current_info]} which is a #{session[:current_info].class}"
 
     # Construct the back link.
     if @page_data[:prev_page]
-      @page_data[:prev_link] = "/page?page_id=#{@page_data[:prev_page]}&"
-      @page_data[:prev_link] += (@page_data[:current_info].map do |k, v|
-                                   if v.is_a? Array
-                                     v.map do |multiparam_val|
-                                       "current_info[#{k}][]=#{multiparam_val}"
-                                     end.join('&')
-                                   else
-                                     "current_info[#{k}]=#{v}"
-                                   end
-                                 end.join('&'))
+      @page_data[:prev_link] = "/page?page_id=#{@page_data[:prev_page]}"
     end
     
     if @page_data[:is_results_page]
-      # Initialize the session here ... this could go further up in the forms workflow too.
-      session[:consumer_info] = info = @page_data[:current_info]
+      # This is a bit redundant but left over from old code. :(
+      session[:consumer_info] = info = session[:current_info]
 
       state = info["state"].gsub(/\+/, ' ')
       info["age"] = info["age"]=='' ? 35 : info['age']
@@ -184,34 +169,36 @@ class PagesController < ApplicationController
   end
 
   private
-  def build_current_info(h)
+  def build_current_info
+    # Update the session
+    session[:current_info] ||= {}
+    
     [:zip, :shop_for, :marital_status, :number_of_adults, :number_of_children, :age, :smoker, :ongoing_condition, :fave_doctor, :take_prescription, :income, :procedure_names, :drugnames, :drugdosage, :drugorders ].each do |id|
       if params[id]
-        h[id.to_s]=params[id]
+        session[:current_info][id.to_s]=params[id]
         if id == :number_of_children
-          h[id.to_s] = params[id].to_i
+          session[:current_info][id.to_s] = params[id].to_i
         elsif id == :zip && @page_data[:current_page]==2 # only recompute state when reaching the second form page
-          
-          h['county']=ZipInfo.where(zip: params['zip'])[0].county
-          # Clean up the county name, so we use it more consistently in the rest of the app
-          h['county'] = (h["county"].gsub(/\+/, ' ')).gsub(/ COUNTY\s*$/i, '')
-          h['county'] = (h["county"].gsub(/\+/, ' ')).gsub(/ BOROUGH\s*$/i, '')
-          h['county'] = (h["county"].gsub(/\+/, ' ')).gsub(/ PARISH\s*$/i, '')
-          h['county'] = (h["county"].gsub(/\+/, ' ')).gsub(/ CENSUS AREA\s*$/i, '')
-          h['county'] = (h["county"].gsub(/\+/, ' ')).gsub(/ DISTRICT OF COLUMBIA\s*$/i, '')
 
-          h['state']=ZipInfo.where(zip: params[:zip])[0].state
-          if h[:page_id]==2
-            session[:plans] = get_plans_from_zip(h)
-            h['number_of_plans']=session[:plans].size 
-          end          
-          h[:question_header]="#{number_with_delimiter(h['number_of_plans'])} #{h[:question_header]}"
+          zip_rec=ZipInfo.where(zip: params['zip'])[0]
+          session[:current_info]['county']=zip_rec.county
+          # Clean up the county name, so we use it more consistently in the rest of the app
+          session[:current_info]['county'] = (session[:current_info]["county"].gsub(/\+/, ' ')).gsub(/ COUNTY\s*$/i, '').
+                                             gsub(/ BOROUGH\s*$/i, '').
+                                             gsub(/ PARISH\s*$/i, '').
+                                             gsub(/ CENSUS AREA\s*$/i, '').
+                                             gsub(/ DISTRICT OF COLUMBIA\s*$/i, '')
+
+          session[:current_info]['state']=zip_rec.state
+          session[:plans] = get_plans_from_zip(session[:current_info])
+          session[:current_info]['number_of_plans']=session[:plans].size 
         end
       end
-
     end
 
-    h
+    unless @page_data[:current_page]==1
+      @page_data[:question_header]="#{number_with_delimiter(session[:current_info]['number_of_plans'])} #{@page_data[:question_header]}"
+    end
   end
 
   def get_plans_from_zip(info)
@@ -244,12 +231,12 @@ class PagesController < ApplicationController
 
   def update_household_data
     # Do some conversions from browser-entered data to internal formats
-    @page_data[:current_info]['income'] = @page_data[:current_info]['income'].gsub(',', '').to_f
-    shop_for = @page_data[:current_info]['shop_for']
-    @page_data[:current_info]['family_number'] = (shop_for && shop_for.include?('other adults')) ?
-                              @page_data[:current_info]['number_of_adults'].to_i : 0
-    @page_data[:current_info]['child_number'] = (shop_for && shop_for.include?('my children')) ?
-                             @page_data[:current_info]['number_of_children'].to_i : 0
-    @page_data[:current_info]['household_size'] = 1 + @page_data[:current_info]['family_number'] + @page_data[:current_info]['child_number']
+    session[:current_info]['income'] = session[:current_info]['income'].gsub(',', '').to_f
+    shop_for = session[:current_info]['shop_for']
+    session[:current_info]['family_number'] = (shop_for && shop_for.include?('other adults')) ?
+                              session[:current_info]['number_of_adults'].to_i : 0
+    session[:current_info]['child_number'] = (shop_for && shop_for.include?('my children')) ?
+                             session[:current_info]['number_of_children'].to_i : 0
+    session[:current_info]['household_size'] = 1 + session[:current_info]['family_number'] + session[:current_info]['child_number']
   end    
 end

@@ -1,6 +1,6 @@
 - content_for(:main) do 
   = "I am"
-  %input.ageinput.inline.form-control{name: 'age',  type: 'text', placeholder: '', value: @page_data[:current_info][:age]}
+  %input.ageinput.inline.form-control{name: 'age',  type: 'text', placeholder: '', value: session[:current_info]['age']}
   years old, and I
 
   %span.explain_text
@@ -11,28 +11,24 @@
   .nextline
     .forms-checkbox
       Myself
-      = check_box_tag 'shop_for[]', 'myself', (@page_data[:current_info][:shop_for] && @page_data[:current_info][:shop_for].include?('myself'))
+      = check_box_tag 'shop_for[]', 'myself', (session[:current_info]['shop_for'] && session[:current_info]['shop_for'].include?('myself'))
     .forms-checkbox
       My Children
-      = check_box_tag 'shop_for[]', 'my children', (@page_data[:current_info][:shop_for] && @page_data[:current_info][:shop_for].include?('my children'))
+      = check_box_tag 'shop_for[]', 'my children', (session[:current_info]['shop_for'] && session[:current_info]['shop_for'].include?('my children'))
     .forms-checkbox
       Other Adults  
-      = check_box_tag 'shop_for[]', 'other adults', (@page_data[:current_info][:shop_for] && @page_data[:current_info][:shop_for].include?('other adults'))
+      = check_box_tag 'shop_for[]', 'other adults', (session[:current_info]['shop_for'] && session[:current_info]['shop_for'].include?('other adults'))
     .inputboxes
       .boxset
         .helpbox
           Number of children
         %div
-          %input.form-control{name: 'number_of_children', type: 'text', placeholder: '', style: 'line-height: 120%;'}
+          %input.form-control{name: 'number_of_children', type: 'text', value: session[:current_info]['number_of_children'] == 0 ? '' : session[:current_info]['number_of_children'], placeholder: '', style: 'line-height: 120%;'}
       .boxset
         .helpbox
           Number of other adults
         %div
-          %input.form-control{name: 'number_of_adults', type: 'text', placeholder: '', style: 'line-height: 120%;'}
+          %input.form-control{name: 'number_of_adults', type: 'text', value: session[:current_info]['number_of_adults'] == 0 ? '' : session[:current_info]['number_of_adults'], placeholder: '', style: 'line-height: 120%;'}
       
-  //  = render 'dropdown', {dropdown_id: 'shop_for', dropdown_title: '-select-', options_list: ['my family', 'myself']}
-  //  %input{id: 'shop_for', name: 'shop_for', type: 'hidden'}
-  // This won't get rendered any more because there's no way to unhide it.
-
   %button.btn.btn-default.submit
     Go  
