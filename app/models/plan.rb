@@ -136,12 +136,12 @@ class Plan < ActiveRecord::Base
 
     puts ">>> compared #{subsidy} and #{monthly_premium}"
     data={plan_db_id: self.id, 'state' => self.state, 'county' => self.county, 'plan_id' => self.plan_identifier,
-          plan_name: name, image: "", monthly_premium: "$#{dp2(monthly_premium)}", subsidy: "$#{dp2(actual_subsidy)}",
-          final_monthly_premium: "$#{dp2(monthly_premium - actual_subsidy)}", ann_premium: "$#{dp2(ann_premium)}",
-          annual_subsidy: number_to_currency(12*actual_subsidy),
-          true_annual_cost: number_to_currency(true_cost.ceil),
-          :ann_premium_in_num => ann_premium, :annual_subsidy_in_num => 12*actual_subsidy,
-          :premium_after_subsidy => number_to_currency(ann_premium - 12*actual_subsidy),
+          plan_name: name, image: "", monthly_premium: number_to_currency(monthly_premium),
+          subsidy: number_to_currency(actual_subsidy), true_annual_cost: number_to_currency(true_cost.to_i, precision: 0),
+          final_monthly_premium: number_to_currency(monthly_premium - actual_subsidy),
+          ann_premium: number_to_currency(ann_premium), annual_subsidy: number_to_currency(12*actual_subsidy),
+          ann_premium_in_num: ann_premium, annual_subsidy_in_num: 12*actual_subsidy,
+          premium_after_subsidy: number_to_currency(ann_premium - 12*actual_subsidy),
          }
     data
   end
