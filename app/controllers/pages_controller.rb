@@ -50,7 +50,7 @@ class PagesController < ApplicationController
   def show
     @page_data[:current_page]=params[:page_id].to_i
 
-    puts ">>> looking at page #{@page_data[:current_page]} with session data #{session[:current_info]}"
+    puts ">>> looking at page #{@page_data[:current_page]} with session data before -- #{session[:current_info]}"
     @page_data[:random_person_index]=rand(3)+1
 
     # We can destroy the session from the root page.
@@ -61,6 +61,7 @@ class PagesController < ApplicationController
     @page_data.merge! (@@page_data_table[@page_data[:current_page]])
     # Put the current info into the session
     build_current_info
+    puts ">>> and after -- #{session[:current_info]}"
 
     # Second page - error handling for tricky zips
     if @page_data[:current_page] == 2 && ZipInfo.none_or_no_county?(session[:current_info]['zip'])
@@ -123,6 +124,9 @@ class PagesController < ApplicationController
       state = info["state"].gsub(/\+/, ' ')
       info["age"] = info["age"]=='' ? 35 : info['age']
 
+      # We might have reached here through a refresh of the results page, which would require household data math to be
+      # redone.
+      update_household_data
       subsidy_cap = calculate_premium_cap(info['income'], info['household_size'], info['state'])
       if subsidy_cap == -1
         info['subsidy'] = 0
