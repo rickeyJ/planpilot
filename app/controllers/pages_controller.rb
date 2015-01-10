@@ -201,17 +201,19 @@ class PagesController < ApplicationController
         elsif id == :zip && @page_data[:current_page]==2 # only recompute state when reaching the second form page
 
           zip_rec=ZipInfo.where(zip: params['zip'])[0]
-          session[:current_info]['county']=zip_rec.county
-          # Clean up the county name, so we use it more consistently in the rest of the app
-          session[:current_info]['county'] = (session[:current_info]["county"].gsub(/\+/, ' ')).gsub(/ COUNTY\s*$/i, '').
-                                             gsub(/ BOROUGH\s*$/i, '').
-                                             gsub(/ PARISH\s*$/i, '').
-                                             gsub(/ CENSUS AREA\s*$/i, '').
-                                             gsub(/ DISTRICT OF COLUMBIA\s*$/i, '')
+          unless zip_rec.nil?
+            session[:current_info]['county']=zip_rec.county
+            # Clean up the county name, so we use it more consistently in the rest of the app
+            session[:current_info]['county'] = (session[:current_info]["county"].gsub(/\+/, ' ')).gsub(/ COUNTY\s*$/i, '').
+                                               gsub(/ BOROUGH\s*$/i, '').
+                                               gsub(/ PARISH\s*$/i, '').
+                                               gsub(/ CENSUS AREA\s*$/i, '').
+                                               gsub(/ DISTRICT OF COLUMBIA\s*$/i, '')
 
-          session[:current_info]['state']=zip_rec.state
-          session[:plans] = get_plans_from_zip(session[:current_info])
-          session[:current_info]['number_of_plans']=session[:plans].size 
+            session[:current_info]['state']=zip_rec.state
+            session[:plans] = get_plans_from_zip(session[:current_info])
+            session[:current_info]['number_of_plans']=session[:plans].size
+          end
         end
       end
     end
