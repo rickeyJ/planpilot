@@ -251,7 +251,9 @@ class PagesController < ApplicationController
 
   def update_household_data
     # Do some conversions from browser-entered data to internal formats
-    session[:current_info]['income'] = session[:current_info]['income'].gsub(',', '').to_f
+    if session[:current_info]['income'].is_a? String
+      session[:current_info]['income'] = session[:current_info]['income'].gsub(',', '').to_f
+    end
     shop_for = session[:current_info]['shop_for']
     session[:current_info]['family_number'] = (shop_for && shop_for.include?('other adults')) ?
                               session[:current_info]['number_of_adults'].to_i : 0
