@@ -10,7 +10,7 @@ module Api
           return
         end
 
-        CptCodeMap.where('procedure_name like ?', "%#{params[:q]}%").each do |cpt_map|
+        CptCodeMap.where('procedure_name like ? or procedure_name like ?', "%#{params[:q]}%", "#{params[:q]}%").each do |cpt_map|
           h = {id: cpt_map.id}
           # Maintaining backward compatibility...
           if params[:response_format] and params[:response_format]=='tokeninput'

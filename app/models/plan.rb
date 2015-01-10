@@ -233,7 +233,8 @@ class Plan < ActiveRecord::Base
           copay=0
         else
           # We shouldn't get here.
-          raise DataParseException, "Copay str #{copay_str} didn't make sense!"
+          # raise DataParseException, "Copay str #{copay_str} didn't make sense!"
+          copay=500.00
         end
         total_hit += copay
 #        puts "Hit is now #{total_hit}"
@@ -247,7 +248,8 @@ class Plan < ActiveRecord::Base
       elsif (matches=/^\s*No charge/i.match(copay_str))
         total_hit=0
       else
-        raise DataParseException, "Copay str #{copay_str} didn't make sense!"
+        #        raise DataParseException, "Copay str #{copay_str} didn't make sense!"
+        total_hit = drug_cost
       end
     end
 
@@ -304,7 +306,8 @@ class Plan < ActiveRecord::Base
           copay=0
         else
           # We shouldn't get here.
-          raise DataParseException, "Copay str #{copay_str} didn't make sense!"
+          #          raise DataParseException, "Copay str #{copay_str} didn't make sense!"
+          copay=500.00
         end
         total_hit += copay
       end
@@ -320,7 +323,8 @@ class Plan < ActiveRecord::Base
       elsif matches=/not covered/i.match(copay_str)
         total_hit = pd_cost
       else
-        raise DataParseException, "Copay str #{copay_str} didn't make sense!"
+        #        raise DataParseException, "Copay str #{copay_str} didn't make sense!"
+        total_hit = pd_cost
       end
     end
 
@@ -364,13 +368,19 @@ class Plan < ActiveRecord::Base
         return calculate_deductible(consumer_info, :medical)
       end
 
-      if /^\s*\$?0\.?(0*)\s*$/i.match(relevant_cell[1]) or /not covered/i.match(relevant_cell[1])
+      if /^\s*\$?0\.?(0*)\s*$/i.match(relevant_cell[1]) 
         return 0
+      end
+
+      if /not covered/i.match(relevant_cell[1])
+        # That's equivalent to a very high deductible... you just have to pay everything - for relative purposes.
+        return 200000.0
       end
       
       dollar_value = relevant_cell[1].gsub(/[\$,]/, '').to_f
       if dollar_value == 0
-        raise DataParseException, "Dollar key #{relevant_cell[0]} with value #{relevant_cell[1]} for deductible couldn't be understood!"
+#        raise DataParseException, "Dollar key #{relevant_cell[0]} with value #{relevant_cell[1]} for deductible couldn't be understood!"
+        return 200000.0
       end
       
       dollar_value
