@@ -11,10 +11,6 @@
 
     .collapse.navbar-collapse{id: "bs-example-navbar-collapse-1"}
       %ul.nav.navbar-nav.navbar-right
-        // Let's put the first four entries outside the dropdown
-        - @navbar_entries[0..2].each do |entry|
-          %li
-            = link_to entry[:title], entry[:url]
         - if current_user
           %li
             = link_to "PROFILE", profile_path
@@ -27,6 +23,6 @@
 
           %li.orangetext
             %b
-              = link_to 'Sign Up'
-          %li{style: 'margin-left: 20px; font-size: 0.9em; line-height: 1.7em;'}
+              = link_to 'Sign Up', new_user_registration_path
+          %li{style: 'margin-left: 20px; line-height: 1.4em;'}
             En Espa&#241;ol
