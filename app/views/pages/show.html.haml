@@ -1,62 +1,36 @@
 .row.hero
-  .col-xs-2
+  .col-xs-4
     
-  .col-xs-8.top-container
+  .col-xs-7.top-container
     .current-info
       %span.pink-color
         = show_current_info session[:current_info]
-      
-    .question-header
-      = @page_data[:question_header]
-      - if @page_data[:prev_page]
-        %span.back-button-box
-          &laquo;
-          = link_to "Back", "#{@page_data[:prev_link]}", method: :post
-    %span
-      
-    - if @page_data[:current_page]==6
-      = render partial: 'no_plans'  
-    - else
-      = render partial: "complex_form_#{@page_data[:current_page]}", layout: 'form_layout'
+    .row
+      .col-xs-1
+      .col-xs-8
+        .question-header
+          = @page_data[:question_header]
+      .col-xs-3
+    .row
+      .col-xs-1
+      .col-xs-8
+        .question-subheader
+          = @page_data[:question_subheader]
+      .col-xs-3
+    .row
+      .col-xs-1
+      .col-xs-8
+        - if @page_data[:prev_page]
+          %span.back-button-box
+            &laquo;
+            = link_to "Back", "#{@page_data[:prev_link]}", method: :post
 
-    .steps-text
-      = "#{@page_data[:number_of_steps_in_words]} Easy Steps"
-      - (0..@page_data[:step_index]-1).each do |i|
-        %span.step-circle.step-done
-          = image_tag 'check-mark-hi.png', class: 'step-check img-responsive'
-      %span.step-circle.step-now
-        &nbsp;
-      - (@page_data[:step_index]+1..@page_data[:total_steps]-1).each do |i|
-        %span.step-circle.step-notdone
-          &nbsp;
+        - if @page_data[:current_page]==6
+          = render partial: 'no_plans'  
+        - elsif @page_data[:current_page]==1
+          = render partial: "complex_form_#{@page_data[:current_page]}", layout: 'simple_form_layout'
+        - else        
+          = render partial: "complex_form_#{@page_data[:current_page]}", layout: 'form_layout'
+      .col-xs-3
 
-  .col-xs-2
-
-    
-.row.testimonial
   .col-xs-1
-  .col-xs-1.drop-arrow
-    .glyphicon.glyphicon-chevron-left
-
-  .col-xs-8.testimonial-text.large
-    = @page_data[:testimonial]
-    
-  .col-xs-1.drop-arrow
-    .glyphicon.glyphicon-chevron-right
-      
-  .col-xs-1
-      
-.row.testimonial-author.large
-  .col-xs-4
-  .col-xs-4
-    = @page_data[:random_person_rec][@page_data[:random_person_index]][:name]
-  .col-xs-4
-
-.row.testimonial-picture-row
-  .col-xs-4.testimonial-picture
-  .col-xs-4.testimonial-picture.picture-middle
-    = image_tag @page_data[:random_person_rec][@page_data[:random_person_index]][:img], class: 'testimonial-image-holder img-responsive'
-  .col-xs-4.testimonial-picture
-      
-.row.healthcare-providers
-

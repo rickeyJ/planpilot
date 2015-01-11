@@ -31,15 +31,18 @@
 		margin-left: 0px;
 	}
 	width: 100%;
-	min-height: 500px;
+	min-height: 635px;
 	background-color: peach;
-	background:  asset-url("hero04.jpg") no-repeat scroll top left ;
+	background:  asset-url("new_background.jpg") no-repeat scroll top left ;
+	background-size: cover;
 	overflow: hidden;
 	
 	.top-container {
-		padding-top: 20px;
+		margin-top: 100px;
+		margin-left: -50px;
 	}
 }
+
 
 .testimonial-author {
 	color: $pink-color;
@@ -83,7 +86,7 @@
 
 .question-header {
 	font-size: 2em;
-	margin-bottom: 40px;
+	text-align: center;
 	.back-button-box {
 		margin-left: 10px;
 		font-size: 0.5em;
@@ -93,9 +96,13 @@
 	}
 }
 
+.question-subheader {
+	text-align: center;
+}
+
 .current-info {
 	color: white;
-	margin-bottom: 20px;
+	min-height: 50px;
 }
 
 .question-follow {
@@ -117,6 +124,15 @@
 	width: 150px;
 }
 
+.zipcodecontrol {
+	width: 300px;
+	border-radius: 5px;
+	background:  asset-url("zip_small.png") no-repeat scroll white 5px 5px;
+}
+.zipcodecontrol.form-control {
+	padding-left: 50px;
+}
+
 .dollar-sign {
 	display: inline-block;
 	font-size: 1.3em;
@@ -124,15 +140,12 @@
 }
 // For complex form box
 .complex-form-box {
-	padding: 10px 30px 10px 10px;
 	background-color: white;
 	color: black;
 	border-top: 5px solid $pink-color;
 	display: inline-block;
 	position: relative;
-	padding-top: 30px;
 	min-width: 350px;
-
 	.icon-row {
 		width: 100%;
 		display: block;
@@ -162,6 +175,12 @@
 	}
 }
 
+// Override stuff for first page
+.complex-form-box.homepage-override {
+	background-color: transparent;
+	border-top: none;
+
+}
 .forms-checkbox {
 	display: inline-block;
 	margin-right: 5px;
@@ -188,6 +207,7 @@ input[type=text] {
 
 .form-content {
 	line-height: 350%;
+	width: 150%;
 }
 
 // For testimonials

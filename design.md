@@ -26,3 +26,8 @@ rails g model CostMap consumer_type:string child_number:integer age_threshold:in
   * $75 Copay after deductible
 * For costs independent of deductible, calculate total cost
 * For costs dependent on deductible, see if this will cause the deductible to be paid up, and then calculate cost above that
+
+# Design discussion Jan 10
+
+* Make the "about me" text black
+* Make the pink bar above the form box orange

@@ -1,7 +1,9 @@
 @import 'variables';
 
 body {
-	font-family: 'Cabin', serif
+//	font-family: 'Helvetica', serif
+		font-family: 'Cabin', serif
+
 }
 
 .notice-box {
@@ -54,9 +56,27 @@ body {
 .navbar {
 	border: none;
 	margin-bottom: 5px;
+	li.bluetext, li.bluetext a, li.bluetext a:hover {
+		color: $new-blue-color;
+	}
+	li.orangetext, li.orangetext a, li.orangetext a:hover {
+		color: $new-orange-color;
+	}
+
+	ul.nav {
+		margin-top: 30px;
+		font-size: 1.3em;
+	}
+	.nav > li {
+		margin-right: 3px;
+		a {
+			display: inline-block;
+			
+		}
+	}
 }
 .btn-default {
-	background-color: $pink-color;	
+	background-color: $new-orange-color;	
 }
 
 .dropdown-toggle {
@@ -66,6 +86,7 @@ body {
 
 .main {
 	background-color: $lightgrey-color;
+	max-height: 750px;
 }
 
 .bold-text {
@@ -131,18 +152,49 @@ body {
 }
 
 .footer {
+	color: white;
+	background-color: black;
 	padding-top: 20px;
-	h5 {
-		color: $pink-color;
-	}
-
-	ul.unstyled-list {
-		list-style-type: none;
-		font-size: 0.8em;
-		margin: 0; padding: 0; 
+	padding-left: 50px;
+	.footer-element:after {
+		display: inline-block;
+		content: '|';
+		margin: 0px 5px;
 	}
 }
 
 .login-info-box {
 	margin-top: 10px;
+}
+
+.form-control:focus {
+	border-color: $new-orange-color;
+}
+
+
+*::-webkit-input-placeholder {
+    color: red;
+}
+*:-moz-placeholder {
+    /* FF 4-18 */
+    color: red;
+}
+*::-moz-placeholder {
+    /* FF 19+ */
+    color: red;
+}
+
+.input-group .form-control {
+	width: 100%;
+}
+.form-control::-webkit-input-placeholder {
+    color: $new-blue-color;
+}
+.form-control::-moz-placeholder {
+    /* FF 19+ */
+    color: $new-blue-color;
+}
+*:-ms-input-placeholder {
+    /* IE 10+ */
+    color: red;
 }

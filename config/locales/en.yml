@@ -20,8 +20,8 @@
 # available at http://guides.rubyonrails.org/i18n.html.
 
 en:
-  site_title: "PlanPilot"
-  site_brand: 'PlanPilot'
+  site_title: "Health Plan for You"
+  site_brand: 'Health Plan for You'
   successful_resource_creation: "Resource successfully created"
   successful_resource_update: "Resource successfully updated"
   errors_found: "Errors found"

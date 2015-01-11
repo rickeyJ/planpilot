@@ -1,0 +1,7 @@
+.complex-form-box{class: "#{@page_data[:current_page]==1?'homepage-override':''}"}
+  .question-follow
+  = form_tag('/page', id: 'pageform') do
+    .form-content
+      %input#page_id{name: 'page_id', type: 'hidden', value: @page_data[:next_page]}  
+      = content_for :main
+  = content_for :suffix_form_content

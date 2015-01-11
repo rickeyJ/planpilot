@@ -5,6 +5,9 @@
       .notice-box
         = flash[:my_notice]
 
-    %input.zipinput.inline.form-control{name: 'zip',  type: 'text', placeholder: 'ZIP Code', value: session[:current_info]['zip']}
-    %button.btn.btn-default.submit
-      Go  
+    .input-group
+      %input.form-control.zipinput.zipcodecontrol{name: 'zip',  type: 'text', placeholder: 'Enter your ZIP to begin your search', value: session[:current_info]['zip']}
+
+      %span.input-group-btn
+        %button.btn.btn-default.submit
+          Get Started

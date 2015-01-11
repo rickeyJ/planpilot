@@ -6,7 +6,8 @@ class PagesController < ApplicationController
   
   @@page_data_table={
                      1 =>
-                     {question_header: 'We\'ve Got You Covered', question_main: 'Please give us your zipcode.',
+                     {question_header: 'We\'ve Got You Covered', question_subheader: 'Find the best health plan for you.',
+                      question_main: 'Please give us your zipcode.',
                       next_page: 2,
                       step_index: 0,
                       icon_array: ['', '', '', '', 'zip.png'],
