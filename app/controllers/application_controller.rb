@@ -7,7 +7,7 @@ class ApplicationController < ActionController::Base
     # Quite a few things to do before the app starts...
     I18n.locale = set_locale
     insert_default_param_filter
-    create_navbar_data
+
 
     # The entire app gets to see these defaults - should really be in the DB though. :(
     @page_data = @@defaults = {
