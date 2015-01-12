@@ -65,7 +65,7 @@ body {
 
 	ul.nav {
 		margin-top: 30px;
-		font-size: 1.3em;
+		font-size: 1em;
 	}
 	.nav > li {
 		margin-right: 3px;
@@ -148,14 +148,13 @@ body {
 }
 
 .orange-color {
-	color: $orange-color;
+	color: $new-orange-color;
 }
 
 .footer {
 	color: white;
 	background-color: black;
-	padding-top: 20px;
-	padding-left: 50px;
+	padding: 50px 0 50px 50px;
 	.footer-element:after {
 		display: inline-block;
 		content: '|';
@@ -184,8 +183,13 @@ body {
     color: red;
 }
 
-.input-group .form-control {
-	width: 100%;
+.input-group .form-control,  .input-group .form-control:first-child{
+	width: 95%;
+	margin-right: 5px;
+	border-radius: 5px;
+}
+.input-group .btn, .input-group-btn:last-child > .btn {
+	border-radius: 5px;
 }
 .form-control::-webkit-input-placeholder {
     color: $new-blue-color;
