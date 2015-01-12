@@ -187,7 +187,7 @@
 		display: block;
 		position: absolute;
 		top: -30px;
-		left: 35px;
+		left: 45px;
 	}
 	.current-icon-line {
 		margin: 10px 0px;
@@ -245,6 +245,12 @@ input[type=text] {
 .form-content {
 	line-height: 350%;
 	width: 100%;
+
+	button {
+		float: right;
+		padding: 20px 50px;
+		font-size: 18px;
+	}
 }
 
 // For testimonials
@@ -272,6 +278,9 @@ input[type=text] {
 }
 .boxtitle {
 	margin-bottom: 10px;
+	font-weight: bold;
+	color: $new-blue-color;
+	font-size: 18px;
 }
 
 .helpbox {

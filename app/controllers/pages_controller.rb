@@ -19,7 +19,7 @@ class PagesController < ApplicationController
                       prev_page: 1,
                       next_page: 3,
                       step_index: 1,
-                      icon_array: ['zip.png', '', '', '', 'household.png'],
+                      icon_array: ['zip.png', 'household.png', '', '', 'household.png'],
                      },
 
                      3 => {
@@ -28,7 +28,7 @@ class PagesController < ApplicationController
                        prev_page: 2,
                        next_page: 4,
                        step_index: 2,
-                       icon_array: ['zip.png', 'household.png', '', '', 'income.png'],
+                       icon_array: ['zip.png', 'household.png', 'income.png', '', 'income.png'],
                      },
 
                      4 => {
@@ -38,7 +38,7 @@ class PagesController < ApplicationController
                        prev_page: 3,
                        next_page: 5,
                        step_index: 3,
-                       icon_array: ['zip.png', 'household.png', 'income.png', '', 'procedures.png'],                       
+                       icon_array: ['zip.png', 'household.png', 'income.png', 'procedures.png', 'procedures.png'],                       
                      },
                      
                      5 => {
