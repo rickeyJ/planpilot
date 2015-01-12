@@ -50,9 +50,6 @@ body {
 .navbar-default .navbar-nav > li > a  {
 	color: black;
 }
-.navbar-default .navbar-nav > li > a:hover {
-	color: $pink-color;
-}
 
 .nav {
 	padding-right: 20px;
@@ -79,7 +76,10 @@ body {
 		margin-right: 3px;
 		a {
 			display: inline-block;
-			
+			padding: 0px;
+			&:hover {
+				font-color: black;
+			}
 		}
 	}
 }

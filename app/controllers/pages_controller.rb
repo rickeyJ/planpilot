@@ -43,7 +43,13 @@ class PagesController < ApplicationController
                      
                      5 => {
                        is_results_page: true,
-                       next_page: 5,
+                       next_page: 6,
+                       step_index: 3,
+                     },
+
+                     6 => {
+                       is_results_page: false,
+                       next_page: 7,
                        step_index: 3,
                      },
                     }
@@ -64,6 +70,14 @@ class PagesController < ApplicationController
     build_current_info
     puts ">>> and after -- #{session[:current_info]}"
 
+    # Blank message page - let's just end it here.
+    if @page_data[:current_page] == 6
+      if params[:mesg] == 'underconstruction'
+        @page_data[:stop_message_header] = 'Traducción al Español próximamente.'
+        @page_data[:stop_message_subheader] = 'Spanish translation coming soon.'
+      end
+      render 'show_blank' and return
+    end
     # Second page - error handling for tricky zips
     if @page_data[:current_page] == 2 && ZipInfo.none_or_no_county?(session[:current_info]['zip'])
       redirect_to "#{root_path}&page_id=1", flash: {my_notice: 'Zip code incorrect or for the US territories'}
