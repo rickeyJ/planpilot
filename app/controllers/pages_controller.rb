@@ -199,7 +199,7 @@ class PagesController < ApplicationController
         @current_profile = nil
       end
       
-      render 'pages/results'
+      render 'pages/results' and return
     end
 
     if @page_data[:current_page] == 1
