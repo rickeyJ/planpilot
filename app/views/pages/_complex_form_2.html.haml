@@ -1,12 +1,6 @@
 - content_for(:main) do 
-  = "I am"
-  %input.ageinput.inline.form-control{name: 'age',  type: 'text', placeholder: '', value: session[:current_info]['age']}
-  years old, and I
+  %input.agecontrol.form-control{name: 'age',  type: 'text', placeholder: 'Enter your age', value: session[:current_info]['age']}
 
-  %span.explain_text
-    need healthcare for
-    .help_text
-      This is where the help would go typically.
   (check all that apply):
   .nextline
     .forms-checkbox
@@ -19,16 +13,12 @@
       Other Adults  
       = check_box_tag 'shop_for[]', 'other adults', (session[:current_info]['shop_for'] && session[:current_info]['shop_for'].include?('other adults'))
     .inputboxes
-      .boxset
-        .helpbox
-          Number of children
-        %div
-          %input.form-control{name: 'number_of_children', type: 'text', value: session[:current_info]['number_of_children'] == 0 ? '' : session[:current_info]['number_of_children'], placeholder: '', style: 'line-height: 120%;'}
-      .boxset
-        .helpbox
-          Number of other adults
-        %div
-          %input.form-control{name: 'number_of_adults', type: 'text', value: session[:current_info]['number_of_adults'] == 0 ? '' : session[:current_info]['number_of_adults'], placeholder: '', style: 'line-height: 120%;'}
+      .boxtitle
+        Number of Dependents  
+      %div
+        %input.noc-control.form-control{name: 'number_of_children', type: 'text', value: session[:current_info]['number_of_children'] == 0 ? '' : session[:current_info]['number_of_children'], placeholder: 'Number of children', style: 'line-height: 120%;'}
+      %div
+        %input.noa-control.form-control{name: 'number_of_adults', type: 'text', value: session[:current_info]['number_of_adults'] == 0 ? '' : session[:current_info]['number_of_adults'], placeholder: 'Number of other adults', style: 'line-height: 120%;'}
       
   %button.btn.btn-default.submit
     Go  

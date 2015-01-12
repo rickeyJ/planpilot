@@ -2,10 +2,14 @@
   .col-xs-4
     
   .col-xs-7.top-container
-    .current-info
-      %span.pink-color
-        = show_current_info session[:current_info]
     .row
+      .col-xs-1
+      .col-xs-8
+        .current-info
+          %span.orange-color
+            = show_current_info session[:current_info]
+      .col-xs-3
+    .row.question-header
       .col-xs-1
       .col-xs-8
         .question-header
@@ -20,10 +24,6 @@
     .row
       .col-xs-1
       .col-xs-8
-        - if @page_data[:prev_page]
-          %span.back-button-box
-            &laquo;
-            = link_to "Back", "#{@page_data[:prev_link]}", method: :post
 
         - if @page_data[:current_page]==6
           = render partial: 'no_plans'  

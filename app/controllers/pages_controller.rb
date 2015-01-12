@@ -15,7 +15,7 @@ class PagesController < ApplicationController
 
                      2 =>
                      {question_header: "Plans Found",
-                      question_main: "Find the best plan for me.",
+                      question_main: "Tell us about you and your family.",
                       prev_page: 1,
                       next_page: 3,
                       step_index: 1,
