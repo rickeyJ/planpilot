@@ -159,6 +159,11 @@
 	border-radius: 5px;
 	background:  asset-url("household_small.png") no-repeat scroll white 5px 5px;
 }
+.income-control {
+	width: 300px;
+	border-radius: 5px;
+	background:  asset-url("income_small.png") no-repeat scroll white 5px 5px;
+}
 .agecontrol {
 	width: 300px;
 	border-radius: 5px;
@@ -210,6 +215,14 @@
 		}
 
 	}
+
+	ul.token-input-list {
+		border-radius: 10px;
+	}
+
+	.btn.dropdown-toggle {
+		float: none;
+	}
 }
 
 // Override stuff for first page
@@ -248,7 +261,7 @@ input[type=text] {
 
 	button {
 		float: right;
-		padding: 20px 50px;
+		padding: 8px 50px;
 		font-size: 18px;
 	}
 }

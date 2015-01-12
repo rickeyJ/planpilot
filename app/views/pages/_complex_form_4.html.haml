@@ -1,13 +1,15 @@
 - content_for :main do
-  = "Are there any medical procedures you need? "
+  .boxtitle
+    = "Are there any medical procedures you need? (optional)"
   %input{id: 'ongoing_condition', name: 'ongoing_condition', type: 'hidden'}
-  = render 'dropdown', {dropdown_id: 'ongoing_condition_choices', dropdown_title: '-select-', options_list: ['Yes', 'No']}
+
   %p
   %input.largetextarea.procedure-autocomplete#procedure_names{name: 'procedure_names', type: 'text', disabled: 'true', placeholder: 'Enter the procedure name'}
   %input#procedure_ids{name: 'procedure_ids[]', type: 'hidden'}
   %hr    
 
-  = "Do you take prescription medication? "
+  .boxtitle
+    = "Do you take prescription medication? (optional)"
   %input{id: 'take_prescription', name: 'take_prescription', type: 'hidden'}
   = render 'dropdown', {dropdown_id: 'take_prescription_choices', dropdown_title: '-select-', options_list: ['Yes', 'No']}
   %p
