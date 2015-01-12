@@ -10,7 +10,7 @@
         = image_tag 'hpforyou_logo.png', class: 'img-responsive'
 
     .collapse.navbar-collapse{id: "bs-example-navbar-collapse-1"}
-      %ul.nav.navbar-nav.navbar-right
+      %ul.nav.navbar-nav.navbar-right{style: 'font-size: 22px;'}
         - if current_user
           %li
             = link_to "PROFILE", profile_path

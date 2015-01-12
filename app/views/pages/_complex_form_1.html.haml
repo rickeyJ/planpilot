@@ -6,8 +6,8 @@
         = flash[:my_notice]
 
     .input-group
-      %input.form-control.zipinput.zipcodecontrol{name: 'zip',  type: 'text', placeholder: 'Enter your ZIP to begin your search', value: session[:current_info]['zip']}
+      %input.form-control.zipinput.zipcodecontrol{style: 'height: 82px; font-size: 22px; border-radius: 15px; width: 500px', name: 'zip',  type: 'text', placeholder: 'Enter your ZIP to begin your search', value: session[:current_info]['zip']}
 
       %span.input-group-btn
-        %button.btn.btn-default.submit
+        %button.btn.btn-default.submit{style: 'height: 78px; width: 218px; font-size: 22px; background-color: grey'}
           Get Started

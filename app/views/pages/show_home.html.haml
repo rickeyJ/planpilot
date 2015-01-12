@@ -1,7 +1,7 @@
 .row.hero
   .col-xs-3
     
-  .col-xs-8.top-container
+  .col-xs-8.top-container{style: 'margin-top: 200px;'}
     - unless @page_data[:current_page] == 1
       .row
         .col-xs-1
@@ -24,7 +24,7 @@
       .col-xs-3
     .row{style: 'width: 80%;'}
       .col-xs-1
-      .col-xs-8.formbox{style: 'margin-left: 160px;'}
+      .col-xs-8.formbox{style: 'margin-left: 95px;'}
         = render partial: "complex_form_#{@page_data[:current_page]}", layout: 'simple_form_layout'
 
       .col-xs-3
