@@ -2,20 +2,6 @@
   .col-xs-3
     
   .col-xs-8.top-container
-    - unless @page_data[:current_page] == 1
-      .row
-        .col-xs-1
-        .col-xs-8.formbox
-          .current-info
-            %span.orange-color
-              = show_current_info session[:current_info]
-        .col-xs-3
-    .row
-      .col-xs-1
-      .col-xs-8.formbox
-        .question-header
-          = @page_data[:question_header]
-      .col-xs-3
     .row
       .col-xs-1
       .col-xs-8.formbox
