@@ -1,29 +1,34 @@
 .row.hero
-  .col-xs-4
+  .col-xs-3
     
-  .col-xs-7.top-container
-    .row
-      .col-xs-1
-      .col-xs-8
-        .current-info
-          %span.orange-color
-            = show_current_info session[:current_info]
-      .col-xs-3
+  .col-xs-8.top-container
+    - unless @page_data[:current_page] == 1
+      .row
+        .col-xs-1
+        .col-xs-8.formbox
+          .current-info
+            %span.orange-color
+              = show_current_info session[:current_info]
+        .col-xs-3
     .row.question-header
       .col-xs-1
-      .col-xs-8
-        .question-header
-          = @page_data[:question_header]
+      .col-xs-8.formbox
+        - if @page_data[:current_page] == 1
+          .question-header
+            = @page_data[:question_header]
+        - else
+          .question-header-inner-page
+            = @page_data[:question_header]
       .col-xs-3
     .row
       .col-xs-1
-      .col-xs-8
+      .col-xs-8.formbox
         .question-subheader
           = @page_data[:question_subheader]
       .col-xs-3
     .row
       .col-xs-1
-      .col-xs-8
+      .col-xs-8.formbox
 
         - if @page_data[:current_page]==6
           = render partial: 'no_plans'  

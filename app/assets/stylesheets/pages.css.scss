@@ -41,6 +41,9 @@
 		margin-top: 100px;
 		margin-left: -50px;
 	}
+	.formbox {
+		margin-left: 50px;
+	}
 }
 
 
@@ -87,7 +90,20 @@
 
 .question-header {
 	margin-bottom: 20px;
-	font-size: 1.4em;
+	font-size: 55px;
+	text-align: center;
+	.back-button-box {
+		margin-left: 10px;
+		font-size: 0.5em;
+		a {
+			color: $pink-color;
+		}
+	}
+}
+
+.question-header-inner-page {
+	margin-bottom: 20px;
+	font-size: 35px;
 	text-align: center;
 	.back-button-box {
 		margin-left: 10px;
@@ -100,6 +116,7 @@
 
 .question-subheader {
 	text-align: center;
+	font-size: 36px;
 }
 
 .current-info {
