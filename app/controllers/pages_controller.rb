@@ -187,6 +187,12 @@ class PagesController < ApplicationController
       
       render 'pages/results'
     end
+
+    if @page_data[:current_page] == 1
+      render 'show_home'
+    else
+      render 'show'
+    end
   end
 
   private
