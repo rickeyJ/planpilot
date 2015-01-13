@@ -76,5 +76,7 @@ $ ->
 	# Let income button be commafied
 	$("#income").autoNumeric('init')
 
-	$("#procedure_names").tokenInput('/api/v1/procedures/procedure_names?response_format=tokeninput', 
-		{hintText: 'Type in a procedure'})
+	$("#procedure_names").tokenInput('/api/v1/procedures/procedure_names?response_format=tokeninput' 
+		{hintText: ''})
+
+	$('#token-input-procedure_names').attr('placeholder', 'Type in a procedure')

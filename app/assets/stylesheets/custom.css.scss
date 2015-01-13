@@ -181,15 +181,20 @@ body {
 
 
 *::-webkit-input-placeholder {
-    color: red;
+	font-size: 15px;
+	color: $new-blue-color;
 }
+
 *:-moz-placeholder {
     /* FF 4-18 */
-    color: red;
+    font-size: 15px;
+    color: $new-blue-color;
 }
+
 *::-moz-placeholder {
     /* FF 19+ */
-    color: red;
+    font-size: 15px;
+    color: $new-blue-color;
 }
 
 .input-group .form-control,  .input-group .form-control:first-child{

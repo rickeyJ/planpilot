@@ -4,20 +4,20 @@
   %input{id: 'ongoing_condition', name: 'ongoing_condition', type: 'hidden'}
 
   %p
-  %input.largetextarea.procedure-autocomplete#procedure_names{name: 'procedure_names', type: 'text', disabled: 'true', placeholder: 'Enter the procedure name'}
+  %input.proc_control.largetextarea.procedure-autocomplete#procedure_names{name: 'procedure_names', type: 'text', placeholder: 'Type in a procedure'}
   %input#procedure_ids{name: 'procedure_ids[]', type: 'hidden'}
   %hr    
 
   .boxtitle
     = "Do you take prescription medication? (optional)"
   %input{id: 'take_prescription', name: 'take_prescription', type: 'hidden'}
-  = render 'dropdown', {dropdown_id: 'take_prescription_choices', dropdown_title: '-select-', options_list: ['Yes', 'No']}
-  %p
-  .medication-info
-    %input.largetextarea.drugname-autocomplete{name: 'drugnames[]', type: 'text',  placeholder: 'Enter the drug name'}
-    %input.zipinput{name: 'drugdosage', type: 'hidden', value: '40'}
-    %input.zipinput{name: 'drugorders', type: 'text',  placeholder: 'Annual orders'}
-    %hr
 
-  %button.btn.btn-default.submit
-    Next  
+
+  %input.proc_control.largetextarea.drugname-autocomplete{name: 'drugnames[]', type: 'text',  placeholder: 'Enter the drug name'}
+  %input.zipinput{name: 'drugdosage', type: 'hidden', value: '40'}
+  .input-group  
+    %input.proc_control.zipinput{name: 'drugorders', type: 'text',  placeholder: 'Annual orders'}
+
+    %span.input-group-btn
+      %button.btn.btn-default.submit
+        Next  

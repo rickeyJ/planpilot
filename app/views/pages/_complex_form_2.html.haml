@@ -13,10 +13,10 @@
   .boxtitle
     Number of Dependents  
   %div
-    %input.noc-control.form-control{name: 'number_of_children', type: 'text', value: session[:current_info]['number_of_children'] == 0 ? '' : session[:current_info]['number_of_children'], placeholder: 'Dependents (26 and under)', style: 'line-height: 120%;'}
+    %input.noc-control.form-control{name: 'number_of_children', type: 'text', value: session[:current_info]['number_of_children'] == 0 ? '' : session[:current_info]['number_of_children'], placeholder: 'Dependents (26 and under)', style: 'width: 290px;'}
   .input-group{style: 'margin-top: 20px;'}
     %div
-      %input.noa-control.form-control{name: 'number_of_adults', type: 'text', value: session[:current_info]['number_of_adults'] == 0 ? '' : session[:current_info]['number_of_adults'], placeholder: 'Adult Dependents', style: 'line-height: 120%;'}
+      %input.noa-control.form-control{name: 'number_of_adults', type: 'text', value: session[:current_info]['number_of_adults'] == 0 ? '' : session[:current_info]['number_of_adults'], placeholder: 'Adult Dependents', style: 'width: 290px;'}
     %span.input-group-btn
       %button.btn.btn-default.submit
         Next
