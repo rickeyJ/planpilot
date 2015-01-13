@@ -80,12 +80,21 @@ class PagesController < ApplicationController
     end
     # Second page - error handling for tricky zips
     if @page_data[:current_page] == 2 && ZipInfo.none_or_no_county?(session[:current_info]['zip'])
-      redirect_to "#{root_path}&page_id=1", flash: {my_notice: 'Zip code incorrect or for the US territories'}
+      redirect_to "#{root_path}&page_id=1", flash: {my_notice: 'The ZIP Code does not exist or is a US Territory. If a US territory, please check with your territory\'s government offices to learn about Medicaid, CHIP, and other health care options.'}
       return
     end
 
     if @page_data[:current_page] == 3
       # Bail to plain message page, if this user is old enough to qualify for Medicare.
+      
+      if session[:current_info]['age'].to_i < 18 
+        # Bail out now: change the page supposed to be shown to the plain message page.
+        @page_data[:prev_page]=nil
+        @page_data[:current_page]=6
+        med_rec = Medicaid.find_by_state(session[:current_info]['state'].downcase)
+        @page_data[:stop_message]="You must be 18 or older to apply for insurance."
+        render 'show' and return
+      end
       
       if session[:current_info]['age'].to_i > 65
         @page_data[:prev_page]=nil
