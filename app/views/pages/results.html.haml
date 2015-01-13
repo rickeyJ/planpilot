@@ -4,7 +4,7 @@
 
   .row.results-row
     .col-xs-2
-    .col-xs-8.info-box
+    .col-xs-8.info-box.info-box-top
       = form_tag 'page', action: 'post' do
         = hidden_field_tag :page_id, @page_data[:next_page]
         .pull-right

@@ -19,8 +19,9 @@ class ApplicationController < ActionController::Base
                ann_premium: 'Total Annual Premium', annual_subsidy: 'Annual Subsidy', true_annual_cost: 'Your True Annual Cost',
                more_info: 'More Info',},
       results_header: [
-        {val: 'Health Plan', col_size: 3},  {val: 'Monthly Premium', col_size: 4},
-        {val: 'True Cost Per Year', col_size: 4}, {val: 'Action', col_size: 1}],
+        {val: '<span class=bold-text>Health Plan</span>', col_size: 3},
+        {val: '<span class=bold-text>Monthly Premium</span>', col_size: 4},
+        {val: '<span class=bold-text>Total Annual Cost Estimate</span><br/>(Insurance + co-pay + medicine)', col_size: 4}, {val: '<span class=bold-text>Action</span>', col_size: 1}],
       checkbox_list: [{id: 'ongoing_condition', label: "I have an ongoing condition"}, {id: 'take_prescription', label: "I take prescription medication"},],
     }
 

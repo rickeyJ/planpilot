@@ -3,8 +3,8 @@
   .row.indiv-result-row.headerrow
     - page_data[:results_header].each do |hdr|
       .rescol{class: "col-xs-#{hdr[:col_size]}"}
-        %span.bold-text 
-          = add_help_tags(hdr[:val])
+        %span
+          = raw hdr[:val]
 
   // The results
 

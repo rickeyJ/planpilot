@@ -81,7 +81,11 @@
 	background-color: white;
 	padding: 5px 15px 15px;
 	margin-top: 20px;
-	border-top: solid 5px $pink-color;
+	border-top: solid 5px $new-orange-color;
+}
+
+.info-box.info-box-top {
+	border-top: solid 5px $new-blue-color;	
 }
 
 .popupparent {
