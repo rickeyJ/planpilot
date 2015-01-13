@@ -3,9 +3,9 @@ class ProfilesController < ApplicationController
 
   def show
     if current_user
-      if @profile 
-        @plans = @profile.plans.map do |plan_rec|
-          plan_rec.extract_data_for_person(@profile.demographic_data, session[:drug_info], session[:pd_info])
+      if @current_profile 
+        @plans = @current_profile.plans.map do |plan_rec|
+          plan_rec.extract_data_for_person(@current_profile.demographic_data, session[:drug_info], session[:pd_info])
         end
       else
         @plans=[]
@@ -18,9 +18,9 @@ class ProfilesController < ApplicationController
   private
   def load_current_user_profile
     if current_user
-      @profile = current_user.profile
+      @current_profile = current_user.profile
     else
-      @profile = nil
+      @current_profile = nil
     end
   end
 end

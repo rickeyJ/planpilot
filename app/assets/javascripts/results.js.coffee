@@ -14,7 +14,7 @@ $ ->
 						'&current_info=' + encodeURIComponent(JSON.stringify(curr_info_hash)))
 			else 
 				action_box.html 'Saved!'
-				action_box.css 'background-color', 'grey'
+				action_box.css 'color', 'grey'
 				action_box.css 'cursor', 'initial'
 
 	$(".save-plan").click( (eventObject) ->

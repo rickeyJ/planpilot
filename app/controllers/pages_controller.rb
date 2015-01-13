@@ -203,7 +203,7 @@ class PagesController < ApplicationController
       @plans = sort_results(@plans)
 
       if current_user
-        @current_profile = { plan_ids: current_user.profile.plans.pluck(:id)}
+        @current_profile = current_user.profile
       else
         @current_profile = nil
       end

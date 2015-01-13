@@ -32,7 +32,7 @@
           .col-xs-2
             = text_field_tag :number_of_children, session[:current_info]['number_of_children'], class: 'zipinput'
           .col-xs-2
-            = text_field_tag :income, session[:current_info]['income'], class: 'zipinput'
+            = text_field_tag :income, (session[:current_info]['income'] == -1 ? '' : session[:current_info]['income'] ), class: 'zipinput'
 
         .row.checkboxes
           - @page_data[:checkbox_list].each do |cb|  
