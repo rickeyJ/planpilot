@@ -115,7 +115,7 @@ class PagesController < ApplicationController
 
       # Do some math for the household size first, and update the :current_info hash value
       update_household_data
-      if medicaid_referral(session[:current_info]['income'].to_i, session[:current_info]['household_size'],
+      if medicaid_referral(session[:current_info]['income'], session[:current_info]['household_size'],
                            session[:current_info]['state'])
         # Bail out now: change the page supposed to be shown to the plain message page.
         @page_data[:prev_page]=nil
@@ -284,7 +284,8 @@ class PagesController < ApplicationController
   def update_household_data
     # Do some conversions from browser-entered data to internal formats
     if session[:current_info]['income'].is_a? String
-      session[:current_info]['income'] = session[:current_info]['income'].gsub(',', '').to_f
+      mod_str = session[:current_info]['income'].gsub(',', '')
+      session[:current_info]['income'] = /^s*$/.match(mod_str) ? -1 : mod_str.to_f
     end
     shop_for = session[:current_info]['shop_for']
     session[:current_info]['family_number'] = (shop_for && shop_for.include?('other adults')) ?

@@ -80,3 +80,8 @@ $ ->
 		{hintText: ''})
 
 	$('#token-input-procedure_names').attr('placeholder', 'Type in a procedure')
+	$('#token-input-procedure_names').bind('focus', ->
+		$(this).addClass('orange-border')
+	).bind('blur', ->
+		$(this).removeclass('orange-border')
+	)

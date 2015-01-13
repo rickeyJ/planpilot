@@ -10,6 +10,7 @@ module PremiumCap
   def medicaid_referral(income, household_size, state)
     # inputs should be: float, integer and string (lower case state abbrev)
 
+    return false if income == -1
 #    puts ">>> checking #{income}, #{household_size}, #{state}"
     fpl_amt = Fpl.by_household_size(household_size)
     
