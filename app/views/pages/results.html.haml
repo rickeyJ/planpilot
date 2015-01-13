@@ -7,8 +7,6 @@
     .col-xs-8.info-box.info-box-top
       = form_tag 'page', action: 'post' do
         = hidden_field_tag :page_id, @page_data[:next_page]
-        .pull-right
-          = submit_tag 'Refresh', class: 'action-box'
         .bold-text
           REFINE THE RESULTS
         .row.demographic-titles
