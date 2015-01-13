@@ -93,12 +93,25 @@
 }
 
 .action-box {
-	background-color: $blue-color;
+	background-color: $new-orange-color;
 	color: white;
-	padding: 10px 5px;
+	padding: 2px;
+	margin-left: -5px;
+	margin-right: 5px;
+	border-radius: 5px;
+	text-align: center;
 	margin-top: 10px;
 	cursor: pointer;
 	border: none;
+
+	a.plain-a, a.plain-a:visited, a.plain-a:hover {
+		color: white;
+	}
+}
+
+.save-plan {
+	font-size: 13px;
+	margin-top: 20px;
 }
 
 

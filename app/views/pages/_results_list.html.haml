@@ -1,8 +1,8 @@
 .results-list
   // The Header
   .row.indiv-result-row.headerrow
-    - page_data[:results_header].each do |hdr|
-      .rescol{class: "col-xs-#{hdr[:col_size]}"}
+    - page_data[:results_header].each_with_index do |hdr, idx|
+      .rescol{class: "col-xs-#{hdr[:col_size]}" + (idx == 1 || idx == 2 ? ' innercol' : '')}
         %span
           = raw hdr[:val]
 
@@ -30,7 +30,7 @@
         .bold-text.large.orange-color
           = "#{page_data[:labels][:final_monthly_premium]}: #{res[:final_monthly_premium]}"
 
-      .col-xs-4.rescol
+      .col-xs-4.innercol.rescol
         .bold-text
           = "#{page_data[:labels][:ann_premium]}: #{res[:ann_premium]}"
 
@@ -42,5 +42,9 @@
 
       .col-xs-1.rescol
         - if !@current_profile or !@current_profile[:plan_ids].include? res[:plan_db_id]
-          .action-box.save-plan
-            Save For Later
+          .action-box
+            %a.plain-a{href: res[:network_url], target: '_blank'}
+              Enroll
+          .save-plan
+            %a{href: ''}
+              Save Plan
