@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150109180918) do
+ActiveRecord::Schema.define(version: 20150117195644) do
 
   create_table "caps", force: true do |t|
     t.float    "fpl_income"
@@ -110,6 +110,14 @@ ActiveRecord::Schema.define(version: 20150109180918) do
   end
 
   add_index "oauth_applications", ["uid"], name: "index_oauth_applications_on_uid", unique: true
+
+  create_table "plan_url_maps", force: true do |t|
+    t.string "state"
+    t.string "rating_area"
+    t.string "url"
+    t.string "plan_name"
+    t.string "issuer_name"
+  end
 
   create_table "plans", force: true do |t|
     t.text     "payload"
