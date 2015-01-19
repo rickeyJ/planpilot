@@ -138,7 +138,7 @@ class Plan < ActiveRecord::Base
           ann_premium: number_to_currency(ann_premium), annual_subsidy: number_to_currency(12*actual_subsidy),
           ann_premium_in_num: ann_premium, annual_subsidy_in_num: 12*actual_subsidy,
           premium_after_subsidy: number_to_currency(ann_premium - 12*actual_subsidy),
-          network_url: self.payload_data['network_url'],
+          network_url: url,
          }
     data
   end
