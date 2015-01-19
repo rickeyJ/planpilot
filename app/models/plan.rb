@@ -181,22 +181,24 @@ class Plan < ActiveRecord::Base
   def network_url
     # Return it from the payload or try to fallback to the mapping model.
 
+    if !(self.network_url_attr.nil?)
+      return self.network_url_attr
+    end
+    
     ret_url = ''
     if self.payload_data['network_url'].nil? or self.payload_data['network_url'] == ''
       ps = PlanUrlMap.where(state: self.state, rating_area: self.rating_area.strip.downcase,
                             issuer_name: self.payload_data['issuer_name'].strip.downcase,
                             plan_name: self.payload_data['plan_marketing_name'].strip.downcase)
       if ps.count > 0
-        ret_url = ps.url
+        ret_url = ps[0].url
       end
     else
       ret_url = self.payload_data['network_url']
     end
 
-    if self.network_url_attr.nil?
-      self.network_url_attr = ret_url
-      self.save
-    end
+    self.network_url_attr = ret_url
+    self.save
 
     ret_url
   end
