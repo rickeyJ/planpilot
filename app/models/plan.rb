@@ -175,8 +175,6 @@ class Plan < ActiveRecord::Base
     end
   end
 
-  private
-
   def network_url
     # Return it from the payload or try to fallback to the mapping model.
 
@@ -201,6 +199,8 @@ class Plan < ActiveRecord::Base
 
     ret_url
   end
+
+  private
   
   def dp2(flt)
     sprintf("%0.2f", flt)
