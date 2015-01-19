@@ -129,7 +129,7 @@ class Plan < ActiveRecord::Base
     actual_subsidy = [subsidy, monthly_premium].min
     true_cost = (monthly_premium - actual_subsidy)*12 + drug_hit + procedure_hit
 
-    url = plan.network_url
+    url = self.network_url
     
     data={plan_db_id: self.id, 'state' => self.state, 'county' => self.county, 'plan_id' => self.plan_identifier,
           plan_name: name, image: "", monthly_premium: number_to_currency(monthly_premium),
