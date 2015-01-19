@@ -48,7 +48,7 @@
           .bold-text
             = "Customer Service Toll Free: #{@plan.payload_data['customer_service_phone_number_toll_free']}"
       .col-xs-6
-        %a{href: @plan.payload_data['network_url'], target: "_blank"}
+        %a{href: @plan.network_url, target: "_blank"}
           .section-title.buttonbox
             .large-text
               Purchase Now
