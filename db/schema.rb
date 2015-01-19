@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150117195644) do
+ActiveRecord::Schema.define(version: 20150119002247) do
 
   create_table "caps", force: true do |t|
     t.float    "fpl_income"
@@ -114,7 +114,7 @@ ActiveRecord::Schema.define(version: 20150117195644) do
   create_table "plan_url_maps", force: true do |t|
     t.string "state"
     t.string "rating_area"
-    t.string "url"
+    t.text   "url"
     t.string "plan_name"
     t.string "issuer_name"
   end

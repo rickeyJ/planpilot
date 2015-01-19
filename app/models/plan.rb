@@ -109,13 +109,10 @@ class Plan < ActiveRecord::Base
 
   def extract_data_for_person(consumer_info, drug_info, pd_info)
     plan_payload = self.deflate_payload
-#    puts ">>> Analyzing plan #{self.plan_identifier} for #{self.state}, #{self.county}"
-
     name=plan_payload["plan_marketing_name"]
     monthly_premium = calculate_premium(consumer_info)
 
     if drug_info
-#      puts ">>> Extracting drug hit"
       drug_hit = calculate_drug_hit(consumer_info, drug_info)
     else
       drug_hit = 0.0
@@ -132,9 +129,8 @@ class Plan < ActiveRecord::Base
     actual_subsidy = [subsidy, monthly_premium].min
     true_cost = (monthly_premium - actual_subsidy)*12 + drug_hit + procedure_hit
 
-#    puts ">>> cost params: #{monthly_premium}, #{drug_hit}, #{procedure_hit}"
-
-    puts ">>> compared #{subsidy} and #{monthly_premium}"
+    url = plan.network_url
+    
     data={plan_db_id: self.id, 'state' => self.state, 'county' => self.county, 'plan_id' => self.plan_identifier,
           plan_name: name, image: "", monthly_premium: number_to_currency(monthly_premium),
           subsidy: number_to_currency(actual_subsidy), true_annual_cost: number_to_currency(true_cost.to_i, precision: 0),
@@ -182,6 +178,29 @@ class Plan < ActiveRecord::Base
 
   private
 
+  def network_url
+    # Return it from the payload or try to fallback to the mapping model.
+
+    ret_url = ''
+    if self.payload_data['network_url'].nil? or self.payload_data['network_url'] == ''
+      ps = PlanUrlMap.where(state: self.state, rating_area: self.rating_area.strip.downcase,
+                            issuer_name: self.payload_data['issuer_name'].strip.downcase,
+                            plan_name: self.payload_data['plan_marketing_name'].strip.downcase)
+      if ps.count > 0
+        ret_url = ps.url
+      end
+    else
+      ret_url = self.payload_data['network_url']
+    end
+
+    if self.network_url_attr.nil?
+      self.network_url_attr = ret_url
+      self.save
+    end
+
+    ret_url
+  end
+  
   def dp2(flt)
     sprintf("%0.2f", flt)
   end
