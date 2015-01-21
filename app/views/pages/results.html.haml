@@ -5,68 +5,24 @@
   .row.results-row
     .col-xs-2
     .col-xs-8.info-box.info-box-top
-      = form_tag 'page', action: 'post' do
-        = hidden_field_tag :page_id, @page_data[:next_page]
-        .bold-text
-          REFINE THE RESULTS
-        .row.demographic-titles
-          .col-xs-2
-            ZIP Code:
-          .col-xs-2
-            Age:
-          .col-xs-2
-
-          .col-xs-2
-            Children:
-          .col-xs-2
-            Income:
-        .row.demographic-data
-          .col-xs-2
-            = text_field_tag :zip, session[:current_info]['zip'], class: 'zipinput'
-          .col-xs-2
-            = text_field_tag :age, session[:current_info]['age'], class: 'zipinput'
-          .col-xs-2
-
-          .col-xs-2
-            = text_field_tag :number_of_children, session[:current_info]['number_of_children'], class: 'zipinput'
-          .col-xs-2
-            = text_field_tag :income, (session[:current_info]['income'] == -1 ? '' : session[:current_info]['income'] ), class: 'zipinput'
-
-        .row.checkboxes
-          - @page_data[:checkbox_list].each do |cb|  
-            .col-xs-3.popupparent
-              %span.popup
-                = raw(cb[:popup_html])
-              %span.box{id: cb[:id], class: results_refine_selection(cb[:id], session[:current_info])}
-                &nbsp;X
-              %span.box-label
-                = cb[:label]
-          .col-xs-6
-            Shopping For:
-            .forms-checkbox
-              Myself
-              = check_box_tag 'shop_for[]', 'myself', (session[:current_info]['shop_for'] && session[:current_info]['shop_for'].include?('myself'))
-            .forms-checkbox
-              My Children
-              = check_box_tag 'shop_for[]', 'my children', (session[:current_info]['shop_for'] && session[:current_info]['shop_for'].include?('my children')), class: 'togglebox'
-            .forms-checkbox
-              Other Adults  
-              = check_box_tag 'shop_for[]', 'other adults', (session[:current_info]['shop_for'] && session[:current_info]['shop_for'].include?('other adults')), class: 'togglebox'
-
-        .row.additional_info
-          .col-xs-6
-          .col-xs-6
-            .boxset
-              .helpbox
-                Number of children
-              %div
-                %input.form-control{name: 'number_of_children', type: 'text', placeholder: '', style: 'line-height: 120%;'}
-            .boxset
-              .helpbox
-                Number of other adults
-              %div
-                %input.form-control{name: 'number_of_adults', type: 'text', placeholder: '', style: 'line-height: 120%;'}
-
+      .row
+        .col-xs-12.resultrowheader
+          Your Healthcare Profile
+      .row{style: 'margin-top: 20px;'}
+        .col-xs-3
+          = image_tag 'disabled/zip.png', class: 'img-responsive inlined middlealign', style: 'width: 40px;'        
+          .profiletext.inlined.middlealign
+            Zip Code: 95116
+            %br
+            San Francisco          
+        .col-xs-3    
+          = image_tag 'disabled/household.png', class: 'img-responsive inlined middlealign', style: 'width: 40px;'
+          .profiletext.inlined.middlealign
+            Zip Code: 95116
+            %br
+            San Francisco
+        .col-xs-3    
+        .col-xs-3    
     .col-xs-2
 
 .results-bottom-bg      
