@@ -1,4 +1,4 @@
-.complex-form-box{class: "#{@page_data[:current_page]==1?'homepage-override':''}", style: 'width: 85%; margin-left: 60px; padding-left: 25px'}
+.complex-form-box{class: "#{@page_data[:current_page]==1?'homepage-override':''}", style: 'width: 100%;'}
   .icon-row
     .icon-box
       - if @page_data[:icon_array][0][0]!=''
@@ -22,3 +22,6 @@
       %input#page_id{name: 'page_id', type: 'hidden', value: @page_data[:next_page]}  
       = content_for :main
   = content_for :suffix_form_content
+.supportbar
+  = link_to image_tag('supportbar.jpg', class: 'img-responsive'), '#'
+    
