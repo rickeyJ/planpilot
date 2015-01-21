@@ -1,32 +1,3 @@
-.row.hero
-  .col-xs-3
-    
-  .col-xs-8.top-container{style: 'margin-top: 200px;'}
-    - unless @page_data[:current_page] == 1
-      .row
-        .col-xs-1
-        .col-xs-8.formbox
-          .current-info
-            %span.orange-color
-              = show_current_info session[:current_info]
-        .col-xs-3
-    .row
-      .col-xs-1
-      .col-xs-8.formbox
-        .question-header{style: 'font-size: 68px; line-height: 1em;'}
-          = @page_data[:question_header]
-      .col-xs-3
-    .row
-      .col-xs-1
-      .col-xs-8.formbox
-        .question-subheader
-          = @page_data[:question_subheader]
-      .col-xs-3
-    .row{style: 'width: 80%;'}
-      .col-xs-1
-      .col-xs-8.formbox{style: 'margin-left: 95px;'}
-        = render partial: "complex_form_#{@page_data[:current_page]}", layout: 'simple_form_layout'
-
-      .col-xs-3
-
-  .col-xs-1
+.row.hero{class: "#{@page_data[:current_page]==1 ? 'homepage-override' : ''}", style: "position: relative;"}
+  .formbox{style: 'font-size: 14px; width: 59%; margin-left: 90px;'}
+    = render partial: "complex_form_1", layout: 'simple_form_layout'

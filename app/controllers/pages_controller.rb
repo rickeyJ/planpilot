@@ -6,8 +6,8 @@ class PagesController < ApplicationController
   
   @@page_data_table={
                      1 =>
-                     {question_header: 'We\'ve Got You Covered', question_subheader: 'Find the best health plan for you.',
-                      question_main: 'Please give us your zipcode.',
+                     {question_header: '', question_subheader: '',
+                      question_main: '',
                       next_page: 2,
                       step_index: 0,
                       icon_array: ['', '', '', '', 'zip.png'],
@@ -70,6 +70,11 @@ class PagesController < ApplicationController
     build_current_info
     puts ">>> and after -- #{session[:current_info]}"
 
+    # Root page - different render
+    if @page_data[:current_page] == 1
+      render 'show_home' and return
+    end
+    
     # Blank message page - let's just end it here.
     if @page_data[:current_page] == 6
       if params[:mesg] == 'underconstruction'
@@ -211,11 +216,7 @@ class PagesController < ApplicationController
       render 'pages/results' and return
     end
 
-    if @page_data[:current_page] == 1
-      render 'show_home'
-    else
-      render 'show'
-    end
+    render 'show'
   end
 
   private
