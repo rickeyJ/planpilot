@@ -1,5 +1,5 @@
-rake db:seed:make_navbar_entries
 rake db:seed:make_users
+rake db:seed:make_navbar_entries
 rake db:seed:add_zips
 rake db:seed:make_cms_data
 rake db:seed:make_cpt_code_maps
@@ -14,3 +14,7 @@ rake db:seed:make_plans_hc_6
 rake db:seed:make_plans_hc_7
 rake db:seed:make_plans_hc_8
 rake db:seed:make_plans_rwjf_1    
+rake db:seed:make_fpl_table
+rake db:seed:make_cap_table
+rake db:seed:make_medicaid_table
+rake db:seed:make_plan_url_maps

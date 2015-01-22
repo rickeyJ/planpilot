@@ -14,3 +14,7 @@ heroku run rake db:seed:make_plans_hc_6
 heroku run rake db:seed:make_plans_hc_7
 heroku run rake db:seed:make_plans_hc_8
 heroku run rake db:seed:make_plans_rwjf_1    
+heroku run rake db:seed:make_fpl_table
+heroku run rake db:seed:make_cap_table
+heroku run rake db:seed:make_medicaid_table
+heroku run rake db:seed:make_plan_url_maps
