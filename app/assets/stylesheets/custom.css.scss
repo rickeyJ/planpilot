@@ -212,6 +212,14 @@ body {
     /* FF 19+ */
     color: $new-blue-color;
 }
+
+.middlealign {
+	vertical-align: middle;
+}
+
+.inlined {
+	display: inline-block;
+}
 *:-ms-input-placeholder {
     /* IE 10+ */
     color: red;

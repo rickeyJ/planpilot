@@ -5,65 +5,13 @@
 	padding: 10px 0 20px;
 	background-color: black;
 
-	.checkboxes {
-
-		.box {
-			border-radius: 2px;
-			margin-right: 5px;
-			padding: 2px;
-			cursor: pointer;
-		}
-		.unselected {
-			color: $lightgrey-color;
-			background-color: $lightgrey-color;
-		}
-		.selected {
-			color: white;
-			background-color: $pink-color;
-		}
-		.popup {
-			visibility: hidden;
-			width: 150%;
-			border: solid 4px $pink-color;
-			border-radius: 1px;
-			position: absolute;
-			top: 34px;
-			left: -2px;
-			color: black;
-			z-index: 2;
-			background-color: white;
-			padding: 2px;
-		}
-
-		.popup:before {
-			position: absolute;
-			content: '';
-			border: 12px solid;
-			border-top-color: transparent;
-			border-bottom-color: $pink-color;
-			border-left-color: transparent;
-			border-right-color: transparent;
-			width: 0px;
-			top: -24px;
-			left: 10px;
-		}
-
-		.popup:after {
-			position: absolute;
-			content: '';
-			border: 6px solid;
-			border-top-color: transparent;
-			border-bottom-color: white;
-			border-left-color: transparent;
-			border-right-color: transparent;
-			width: 0px;
-			top: -12px;
-			left: 16px;
-		}
-	}
-
 	.additional_info {
 		display: none;
+	}
+
+	.resultrowheader {
+		color: $new-blue-color;
+		font-weight: bold;
 	}
 }
 
