@@ -12,7 +12,19 @@
 	.resultrowheader {
 		color: $new-blue-color;
 		font-weight: bold;
+		font-size: 18px;
 	}
+
+	.filterbar_title {
+		color: $new-blue-color;
+		font-weight: bold;
+		font-size: 16px;
+	}
+
+	.filterbar_text {
+		color: $new-blue-color;
+	}
+
 }
 
 .results-bottom-bg {

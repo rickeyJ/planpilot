@@ -217,18 +217,28 @@
 
 .icon-box {
 	display: inline-block;
-	width: 60px;
-	height: 60px;
+	width: 90px;
+	height: 90px;
 	border: 2px solid $new-blue-color;
 	border-radius: 50%;
-	margin-right: 12%;
 	background-color: white;
 	position: relative;
 	img {
 		position: absolute;
 		top: 16%;
 		left: 16%;
-		max-height: 40px;
+		width: 60px;
+	}
+
+	.editbutton {
+		border-radius: 7px;
+		background-color: black;
+		color: white;
+		position: absolute;
+		top: 45%;
+		left: 16%;
+		padding: 3px 20px;
+		font-size: 12px;
 	}
 }
 .icon-complete {

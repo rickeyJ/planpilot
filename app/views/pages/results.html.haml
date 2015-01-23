@@ -3,36 +3,79 @@
   #current_info{type: 'hidden', 'data-value' => session[:current_info].to_json}  
 
   .row.results-row
-    .col-xs-2
-    .col-xs-8.info-box.info-box-top
+    .col-xs-1
+    .col-xs-10.info-box.info-box-top
       .row
         .col-xs-12.resultrowheader
           Your Healthcare Profile
       .row{style: 'margin-top: 20px;'}
         .col-xs-3
-          = image_tag 'disabled/zip.png', class: 'img-responsive inlined middlealign', style: 'width: 40px;'        
-          .profiletext.inlined.middlealign
-            Zip Code: 95116
+          .icon-box.icon-complete    
+            = image_tag 'disabled/zip.png', class: 'img-responsive inlined'
+            .editbutton
+              Edit
+          .profiletext.inlined.topalign
+            %span.filterbar_title
+              Zip Code:
+            %span.filterbar_text
+              = session[:current_info]['zip']
             %br
-            San Francisco          
-        .col-xs-3    
-          = image_tag 'disabled/household.png', class: 'img-responsive inlined middlealign', style: 'width: 40px;'
-          .profiletext.inlined.middlealign
-            Zip Code: 95116
+            %span.filterbar_text
+              = "#{session[:current_info]['county']} County"
+        .col-xs-3
+          .icon-box.icon-complete    
+            = image_tag 'disabled/household.png', class: 'img-responsive inlined'
+            .editbutton
+              Edit
+          .profiletext.inlined.topalign
+            %span.filterbar_title
+              Age:
+            %span.filterbar_text
+              = session[:current_info]['age']
             %br
-            San Francisco
-        .col-xs-3    
-        .col-xs-3    
-    .col-xs-2
+            %span.filterbar_title
+              Children:
+            %span.filterbar_text
+              = session[:current_info]['child_number']
+            %br
+            %span.filterbar_title
+              Other Adults:
+            %span.filterbar_text
+              = session[:current_info]['family_number']
+
+        .col-xs-3
+          .icon-box.icon-complete    
+            = image_tag 'disabled/income.png', class: 'img-responsive inlined'
+            .editbutton
+              Edit
+          .profiletext.inlined.topalign
+            %span.filterbar_title
+              Income:
+            %span.filterbar_text
+              = session[:current_info]['income']
+                
+        .col-xs-3
+          .icon-box.icon-complete    
+            = image_tag 'disabled/procedures.png', class: 'img-responsive inlined'
+            .editbutton
+              Edit
+          .profiletext.inlined.topalign
+            %span.filterbar_title
+              Prescriptions:
+            %span.filterbar_text
+              = session[:current_info]['drugnames'].size
+            %br
+            %span.filterbar_title
+              Procedures:
+            %span.filterbar_text
+              = session[:current_info]['procedure_names'].split(',').size
+            %br
+    .col-xs-1
 
 .results-bottom-bg      
   .row.results-row
-    .col-xs-2
-    .col-xs-8.info-box
+    .col-xs-1
+    .col-xs-10.info-box
       = render partial:'results_list', locals: {plans: @plans, page_data: @page_data, in_profile_list: false}
-    .col-xs-2
+    .col-xs-1
 
-  .row.results-row
-    .col-xs-2
-    .col-xs-8.info-box
-    .col-xs-2
