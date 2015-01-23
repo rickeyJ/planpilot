@@ -1,15 +1,15 @@
 .complex-form-box{class: "#{@page_data[:current_page]==1?'homepage-override':''}", style: 'width: 100%;'}
   .icon-row
-    .icon-box
+    .icon-box{class: @page_data[:icon_array][0][1]=='complete' ? 'icon-complete' : ''} 
       - if @page_data[:icon_array][0][0]!=''
         = link_to image_tag(@page_data[:icon_array][0][0], class: 'img-responsive'), '/page?page_id=1'
-    .icon-box
+    .icon-box{class: @page_data[:icon_array][1][1]=='complete' ? 'icon-complete' : ''}
       - if @page_data[:icon_array][1][0]!=''
         = link_to image_tag(@page_data[:icon_array][1][0], class: 'img-responsive'), '/page?page_id=2'
-    .icon-box
+    .icon-box{class: @page_data[:icon_array][2][1]=='complete' ? 'icon-complete' : ''}
       - if @page_data[:icon_array][2][0]!=''
         = link_to image_tag(@page_data[:icon_array][2][0], class: 'img-responsive'), '/page?page_id=3'
-    .icon-box
+    .icon-box{class: @page_data[:icon_array][3][1]=='complete' ? 'icon-complete' : ''}
       - if @page_data[:icon_array][3][0]!=''
         = link_to image_tag(@page_data[:icon_array][3][0], class: 'img-responsive'), '/page?page_id=4'
 
