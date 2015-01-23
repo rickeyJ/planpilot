@@ -3,7 +3,7 @@ TestDk::Application.routes.draw do
   # I like having this to populate the navbar with, via the database rather than do it in the views.
   resources :navbar_entries
 
-  get '/page' => 'pages#show'
+  get '/page/:page_id' => 'pages#show'
   post '/page' => 'pages#show'
   
   # Logins and Profiles
@@ -19,7 +19,7 @@ TestDk::Application.routes.draw do
   get '/procedures_search' => 'procedures#search_form'
   post '/procedures_search' => 'procedures#search'
   
-  root to: 'pages#show', page_id: 1 # Change this to something else in your app.
+  root to: 'pages#show_home'
 
   # The rest of the routes file is probably useless to most new apps based on this template, EXCEPT for the 
   # 404 catchall below which has to always be at the end.

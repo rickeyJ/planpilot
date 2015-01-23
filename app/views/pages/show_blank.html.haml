@@ -8,11 +8,18 @@
         .question-header{style: 'font-size: 60px; line-height: 1em;'}
           = @page_data[:stop_message_header]
       .col-xs-3
+
     .row
       .col-xs-1
       .col-xs-8.formbox
-        .question-subheader{style: 'font-size: 36px;'}
-          = @page_data[:stop_message_subheader]
+        - if !@page_data[:stop_message_subheader].blank?
+          .question-subheader{style: 'font-size: 36px;'}
+            = @page_data[:stop_message_subheader]
+        - if !@page_data[:blank_message].blank?
+          .question-blank-message
+            = @page_data[:blank_message]
+            %p
+              = link_to 'Start Over', root_path
       .col-xs-3
 
   .col-xs-1

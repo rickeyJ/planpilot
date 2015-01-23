@@ -3,6 +3,7 @@ class PagesController < ApplicationController
   include PlanSorter
   include ActionView::Helpers::NumberHelper
   include PremiumCap
+  before_action :setup_page
   
   @@page_data_table={
                      1 =>
@@ -53,10 +54,149 @@ class PagesController < ApplicationController
                        step_index: 3,
                      },
                     }
-  
-  def show
-    @page_data[:current_page]=params[:page_id].to_i
 
+  def show_home
+  end
+  def show_blank
+    if params[:mesg] == 'underconstruction'
+      @page_data[:stop_message_header] = 'Traducción al Español próximamente.'
+      @page_data[:stop_message_subheader] = 'Spanish translation coming soon.'
+    end
+    if flash[:stop_message_subheader]
+      @page_data[:blank_message] = flash[:stop_message_subheader]
+    end
+    render 'show_blank'
+  end
+
+  def show
+    subroutes = {6 => 'show_blank'}
+
+    if subroutes.keys.include? @page_data[:current_page]
+      subaction = subroutes[@page_data[:current_page]]
+      self.send subaction
+    else
+      (redirect_to '/page/6' and return) if page_has_error?
+      
+      if @page_data[:current_page] == 4
+        # We have household size and income - we can now decide if we have a medicaid referral
+
+        # Do some math for the household size first, and update the :current_info hash value
+        update_household_data
+        if medicaid_referral(session[:current_info]['income'], session[:current_info]['household_size'],
+                             session[:current_info]['state'])
+          # Bail out now: change the page supposed to be shown to the plain message page.
+          @page_data[:prev_page]=nil
+          @page_data[:current_page]=6
+          med_rec = Medicaid.find_by_state(session[:current_info]['state'].downcase)
+          @page_data[:stop_message]="You are eligible for Medicaid. Please use your <a href='#{med_rec.url}'>state's Medicaid website</a> to purchase health insurance instead. You can also contact them at <strong>#{med_rec.phone} </strong><span class='fineprint-text'>(<a href='/?null_session=1'>start over</a>)</span>."
+          render 'show' and return
+        end
+      end
+
+      if session[:current_info]['number_of_plans'] == 0
+        # Bail out now: change the page supposed to be shown to the plain message page.
+        @page_data[:prev_page]=nil
+        @page_data[:current_page]=6
+        @page_data[:stop_message]="Sorry, there are no plans for your state in the federal exchange - you have to use your state's exchange instead."
+        render 'show' and return
+      end
+
+      if @page_data[:is_results_page]
+        # This is a bit redundant but left over from old code. :(
+        session[:consumer_info] = info = session[:current_info]
+
+        state = info["state"].gsub(/\+/, ' ')
+        info["age"] = info["age"]=='' ? 35 : info['age']
+
+        # We might have reached here through a refresh of the results page, which would require household data math to be
+        # redone.
+        update_household_data
+        subsidy_cap = calculate_premium_cap(info['income'], info['household_size'], info['state'])
+        if subsidy_cap == -1
+          info['subsidy'] = 0
+        else
+          silver_plan_2 = Plan.subsidy_cap_plan_premium(session[:plans], info)
+          puts ">>> you shdn't get charged more than #{subsidy_cap} when you try to pay for #{silver_plan_2}"
+          info['subsidy'] = (silver_plan_2 - subsidy_cap < 0) ? silver_plan_2 : (silver_plan_2 - subsidy_cap)
+        end
+
+        county = info['county']
+
+        goodrx_prices=nil
+        if info['take_prescription'] == 'Yes'
+          goodrx_prices = GoodRx::ApiWrappers.compare_price(info['drugnames'][0])
+          goodrx_prices[:drug_base_cost] = drug_expense(goodrx_prices, info)
+          goodrx_prices[:is_specialty] = SpecialtyDrug.is_drug?(info['drugnames'][0])
+          puts ">>> Base cost is #{goodrx_prices[:drug_base_cost]}"
+          session[:drug_info] = goodrx_prices
+        end
+
+        pokitdok_prices = nil
+        if info['procedure_names']
+          info['procedure_orders']='1'
+          cpt_codes = info['procedure_names'].split(',').map do |cpt_id|
+            # Some maps don't have a code? Maybe.
+            CptCodeMap.find(cpt_id.to_i).try(:cpt_code)
+          end
+          if !cpt_codes.compact.empty?
+            pokitdok_prices = cpt_codes.map { |code| PokitdokApi::ApiWrappers.price_search(code, info['zip']) }
+            session[:pd_info] = pokitdok_prices
+          end
+        end
+
+        # If the user is logged in, let's put all this data into their profile
+        if current_user
+          if !current_user.profile
+            current_user.build_profile
+          end
+          # This will save the user's profile
+          current_user.profile.update_data(session)
+        end
+
+        # The data from HC.gov had county names in both up and down case. :)
+        puts ">>> using in extraction = #{info}"
+        plans=session[:plans]
+        @plans = plans.inject([]) do |acc, plan|
+          acc << plan.extract_data_for_person(info, goodrx_prices, pokitdok_prices)
+          acc
+        end
+        @plans = sort_results(@plans)
+
+        if current_user
+          @current_profile = current_user.profile
+        else
+          @current_profile = nil
+        end
+        
+        render 'pages/results' and return
+      end
+    end
+
+  end
+
+  private
+  def page_has_error?
+    has_error = false
+    # Second page - error handling for tricky zips
+    if @page_data[:current_page] == 2 && ZipInfo.none_or_no_county?(session[:current_info]['zip'])
+      has_error=true
+      flash[:stop_message_subheader] = 'The ZIP Code does not exist or is a US Territory. If a US territory, please check with your territory\'s government offices to learn about Medicaid, CHIP, and other health care options.'
+    end
+    if @page_data[:current_page] == 3
+      age = session[:current_info]['age'].to_i 
+      if age < 18 || age > 65
+        has_error = true
+        # Bail out now: change the page supposed to be shown to the plain message page.
+        flash[:stop_message_subheader]= age<18 ? "You must be 18 or older to apply for insurance." : "You are eligible for Medicare. Please purchase your health insurance through Medicare </strong><span class='fineprint-text'>(<a href='/?null_session=1'>start over</a>)</span>."
+      end
+    end
+
+    has_error
+  end
+
+  def setup_page
+    @page_data[:current_page]=!(params[:page_id].blank?) ? params[:page_id].to_i : 1
+    
     puts ">>> looking at page #{@page_data[:current_page]} with session data before -- #{session[:current_info]}"
     @page_data[:random_person_index]=rand(3)+1
 
@@ -70,156 +210,8 @@ class PagesController < ApplicationController
     build_current_info
     puts ">>> and after -- #{session[:current_info]}"
 
-    # Root page - different render
-    if @page_data[:current_page] == 1
-      render 'show_home' and return
-    end
-    
-    # Blank message page - let's just end it here.
-    if @page_data[:current_page] == 6
-      if params[:mesg] == 'underconstruction'
-        @page_data[:stop_message_header] = 'Traducción al Español próximamente.'
-        @page_data[:stop_message_subheader] = 'Spanish translation coming soon.'
-      end
-      render 'show_blank' and return
-    end
-    # Second page - error handling for tricky zips
-    if @page_data[:current_page] == 2 && ZipInfo.none_or_no_county?(session[:current_info]['zip'])
-      redirect_to "#{root_path}&page_id=1", flash: {my_notice: 'The ZIP Code does not exist or is a US Territory. If a US territory, please check with your territory\'s government offices to learn about Medicaid, CHIP, and other health care options.'}
-      return
-    end
-
-    if @page_data[:current_page] == 3
-      # Bail to plain message page, if this user is old enough to qualify for Medicare.
-      
-      if session[:current_info]['age'].to_i < 18 
-        # Bail out now: change the page supposed to be shown to the plain message page.
-        @page_data[:prev_page]=nil
-        @page_data[:current_page]=6
-        med_rec = Medicaid.find_by_state(session[:current_info]['state'].downcase)
-        @page_data[:stop_message]="You must be 18 or older to apply for insurance."
-        render 'show' and return
-      end
-      
-      if session[:current_info]['age'].to_i > 65
-        @page_data[:prev_page]=nil
-        @page_data[:current_page]=6
-
-        @page_data[:stop_message]="You are eligible for Medicare. Please purchase your health insurance through Medicare </strong><span class='fineprint-text'>(<a href='/?null_session=1'>start over</a>)</span>."
-        render 'show' and return
-      end
-      
-      if session[:current_info]['shop_for'].nil?
-        # User forgot to click at least one checkbox - in that case, let's fill it for them.
-        session[:current_info]['shop_for']=['myself']
-      end
-    end
-
-    if @page_data[:current_page] == 4
-      # We have household size and income - we can now decide if we have a medicaid referral
-
-      # Do some math for the household size first, and update the :current_info hash value
-      update_household_data
-      if medicaid_referral(session[:current_info]['income'], session[:current_info]['household_size'],
-                           session[:current_info]['state'])
-        # Bail out now: change the page supposed to be shown to the plain message page.
-        @page_data[:prev_page]=nil
-        @page_data[:current_page]=6
-        med_rec = Medicaid.find_by_state(session[:current_info]['state'].downcase)
-        @page_data[:stop_message]="You are eligible for Medicaid. Please use your <a href='#{med_rec.url}'>state's Medicaid website</a> to purchase health insurance instead. You can also contact them at <strong>#{med_rec.phone} </strong><span class='fineprint-text'>(<a href='/?null_session=1'>start over</a>)</span>."
-        render 'show' and return
-      end
-    end
-
-    if session[:current_info]['number_of_plans'] == 0
-      # Bail out now: change the page supposed to be shown to the plain message page.
-      @page_data[:prev_page]=nil
-      @page_data[:current_page]=6
-      @page_data[:stop_message]="Sorry, there are no plans for your state in the federal exchange - you have to use your state's exchange instead."
-      render 'show' and return
-    end
-
-#    puts ">>> session data = #{session[:current_info]} which is a #{session[:current_info].class}"
-
-    # Construct the back link.
-    if @page_data[:prev_page]
-      @page_data[:prev_link] = "/page?page_id=#{@page_data[:prev_page]}"
-    end
-    
-    if @page_data[:is_results_page]
-      # This is a bit redundant but left over from old code. :(
-      session[:consumer_info] = info = session[:current_info]
-
-      state = info["state"].gsub(/\+/, ' ')
-      info["age"] = info["age"]=='' ? 35 : info['age']
-
-      # We might have reached here through a refresh of the results page, which would require household data math to be
-      # redone.
-      update_household_data
-      subsidy_cap = calculate_premium_cap(info['income'], info['household_size'], info['state'])
-      if subsidy_cap == -1
-        info['subsidy'] = 0
-      else
-        silver_plan_2 = Plan.subsidy_cap_plan_premium(session[:plans], info)
-        puts ">>> you shdn't get charged more than #{subsidy_cap} when you try to pay for #{silver_plan_2}"
-        info['subsidy'] = (silver_plan_2 - subsidy_cap < 0) ? silver_plan_2 : (silver_plan_2 - subsidy_cap)
-      end
-
-      county = info['county']
-
-      goodrx_prices=nil
-      if info['take_prescription'] == 'Yes'
-        goodrx_prices = GoodRx::ApiWrappers.compare_price(info['drugnames'][0])
-        goodrx_prices[:drug_base_cost] = drug_expense(goodrx_prices, info)
-        goodrx_prices[:is_specialty] = SpecialtyDrug.is_drug?(info['drugnames'][0])
-        puts ">>> Base cost is #{goodrx_prices[:drug_base_cost]}"
-        session[:drug_info] = goodrx_prices
-      end
-
-      pokitdok_prices = nil
-      if info['procedure_names']
-        info['procedure_orders']='1'
-        cpt_codes = info['procedure_names'].split(',').map do |cpt_id|
-          # Some maps don't have a code? Maybe.
-          CptCodeMap.find(cpt_id.to_i).try(:cpt_code)
-        end
-        if !cpt_codes.compact.empty?
-          pokitdok_prices = cpt_codes.map { |code| PokitdokApi::ApiWrappers.price_search(code, info['zip']) }
-          session[:pd_info] = pokitdok_prices
-        end
-      end
-
-      # If the user is logged in, let's put all this data into their profile
-      if current_user
-        if !current_user.profile
-          current_user.build_profile
-        end
-        # This will save the user's profile
-        current_user.profile.update_data(session)
-      end
-
-      # The data from HC.gov had county names in both up and down case. :)
-      puts ">>> using in extraction = #{info}"
-      plans=session[:plans]
-      @plans = plans.inject([]) do |acc, plan|
-        acc << plan.extract_data_for_person(info, goodrx_prices, pokitdok_prices)
-        acc
-      end
-      @plans = sort_results(@plans)
-
-      if current_user
-        @current_profile = current_user.profile
-      else
-        @current_profile = nil
-      end
-      
-      render 'pages/results' and return
-    end
-
-    render 'show'
   end
 
-  private
   def build_current_info
     # Update the session
     session[:current_info] ||= {}
