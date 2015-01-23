@@ -1,4 +1,7 @@
 $ ->
+	# make icon boxes as high as they are wide, for max responsive awesomeness.
+#	$('.icon-box').css('height', $('.icon-box').css('width'))
+
 	$('.submit').click( (eventObject) -> 
 		if $('input#page_id').val() != '4'
 			$('#pageform').submit()

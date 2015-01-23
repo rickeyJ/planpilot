@@ -4,7 +4,7 @@ TestDk::Application.routes.draw do
   resources :navbar_entries
 
   get '/page/:page_id' => 'pages#show'
-  post '/page' => 'pages#show'
+  post '/page/:page_id' => 'pages#show'
   
   # Logins and Profiles
   devise_for :users, controllers: { sessions: "users/sessions" }

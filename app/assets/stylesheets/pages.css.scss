@@ -203,8 +203,7 @@
 		width: 100%;
 		display: block;
 		position: absolute;
-		top: -30px;
-		left: 45px;
+		top: -50px;
 	}
 	.current-icon-line {
 		margin: 10px 0px;
@@ -224,13 +223,13 @@
 }
 
 .icon-box {
-	display: inline-block;
 	width: 90px;
 	height: 90px;
 	border: 2px solid $new-blue-color;
 	border-radius: 50%;
 	background-color: white;
 	position: relative;
+	margin: auto;
 	img {
 		position: absolute;
 		top: 16%;
