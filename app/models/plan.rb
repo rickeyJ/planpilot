@@ -137,7 +137,7 @@ class Plan < ActiveRecord::Base
           final_monthly_premium: number_to_currency(monthly_premium - actual_subsidy),
           ann_premium: number_to_currency(ann_premium), annual_subsidy: number_to_currency(12*actual_subsidy),
           ann_premium_in_num: ann_premium, annual_subsidy_in_num: 12*actual_subsidy,
-          premium_after_subsidy: number_to_currency(ann_premium - 12*actual_subsidy),
+          premium_after_subsidy: number_to_currency(ann_premium - 12*actual_subsidy), plan_url: url,
          }
     data
   end
