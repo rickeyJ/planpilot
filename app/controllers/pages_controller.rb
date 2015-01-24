@@ -56,6 +56,8 @@ class PagesController < ApplicationController
                     }
 
   def show_home
+
+    render 'show_home'
   end
   def show_blank
     if params[:mesg] == 'underconstruction'
@@ -69,7 +71,7 @@ class PagesController < ApplicationController
   end
 
   def show
-    subroutes = {6 => 'show_blank'}
+    subroutes = {6 => 'show_blank', 1 => 'show_home'}
 
     if subroutes.keys.include? @page_data[:current_page]
       subaction = subroutes[@page_data[:current_page]]
