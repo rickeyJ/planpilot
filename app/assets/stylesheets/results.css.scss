@@ -36,6 +36,7 @@
 	width: 100%;
 	height: 100%;
 	padding: 10px 0;
+	background-color: #999;
 }
 
 .plan-name {
@@ -45,8 +46,63 @@
 .info-box {
 	background-color: white;
 	padding: 5px 15px 15px;
-	margin-top: 20px;
+	margin: 20px 0 0;
 	border-top: solid 5px $new-orange-color;
+}
+
+.result-card {
+	padding: 60px 43px 43px 43px;
+	font-size: 12px;
+
+	.ribbondiv {
+		float: right;
+		margin-top: -70px;
+		margin-right: -20px;
+	}
+	.providername {
+		font-size: 28px;
+	}
+
+	.planname {
+		font-size: 18px;
+	}
+
+	.trueannualcost {
+		font-size: 32px;
+		color: $new-blue-color;
+	}
+
+	.monthlypremium {
+		font-size: 18px;
+		color: $new-blue-color;
+		margin-top: 20px;
+	}
+
+	.action-row {
+		.action-box {
+			background-color: $new-orange-color;
+			color: white;
+			padding: 10px 30px;
+			margin-left: -5px;
+			margin-right: 75px;
+			border-radius: 5px;
+			text-align: center;
+			margin-top: 10px;
+			cursor: pointer;
+			border: none;
+			display: inline-block;
+		}
+		a.plain-a, a.plain-a:visited, a.plain-a:hover {
+			color: white;
+		}
+		.save-plan {
+			display: inline-block;
+			font-size: 13px;
+			margin-top: 20px;
+			cursor: pointer;
+			text-decoration: underline;
+		}
+	}
 }
 
 .info-box.info-box-top {
@@ -56,31 +112,6 @@
 .popupparent {
 	position: relative;
 }
-
-.action-box {
-	background-color: $new-orange-color;
-	color: white;
-	padding: 2px;
-	margin-left: -5px;
-	margin-right: 5px;
-	border-radius: 5px;
-	text-align: center;
-	margin-top: 10px;
-	cursor: pointer;
-	border: none;
-
-	a.plain-a, a.plain-a:visited, a.plain-a:hover {
-		color: white;
-	}
-}
-
-.save-plan {
-	color: $new-blue-color;
-	font-size: 13px;
-	margin-top: 20px;
-	cursor: pointer;
-}
-
 
 .rescol {
 	padding: 10px 0 10px 10px;

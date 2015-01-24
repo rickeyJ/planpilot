@@ -63,7 +63,7 @@
             %span.filterbar_title
               Prescriptions:
             %span.filterbar_text
-              = session[:current_info]['drugnames'].size
+              = session[:current_info]['drugnames'].select { |x| x!='' }.size
             %br
             %span.filterbar_title
               Procedures:
@@ -75,7 +75,7 @@
 .results-bottom-bg      
   .row.results-row
     .col-xs-1
-    .col-xs-10.info-box
+    .col-xs-10
       = render partial:'results_list', locals: {plans: @plans, page_data: @page_data, in_profile_list: false}
     .col-xs-1
 

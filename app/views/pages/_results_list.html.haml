@@ -1,13 +1,55 @@
 .results-list
-  // The Header
-  .row.indiv-result-row.headerrow
-    - page_data[:results_header].each_with_index do |hdr, idx|
-      .rescol{class: "col-xs-#{hdr[:col_size]}" + (idx == 1 || idx == 2 ? ' innercol' : '')}
-        %span
-          = raw hdr[:val]
+  .row
+    .col-xs-4
+      .info-box.result-card
+        .ribbondiv
+          = image_tag 'ribbon-dummy.png', class: 'img-responsive'
+        .providername
+          Kaiser Permanente
+        .planname
+          Silver 70 HMO
+        .trueannualcost
+          $280
+        .bold-text
+          Your True Annual Cost Estimate
 
+        (Insurance + Co-pay + Prescription)
+        .monthlypremium
+          $20
+        .bold-text
+          Your Monthly Premium
+        (After a subsidy of $78)
+
+        .action-row
+          .action-box{style: 'display: inline-block'}
+            %a.plain-a{href: '#' || res[:plan_url], target: '_blank'}
+              Enroll
+          - if 1 || !@current_profile or !@current_profile.plans.include?(Plan.find(res[:plan_db_id]))
+            .save-plan
+              Save Plan
+
+    .col-xs-4
+      .info-box.result-card
+        .row
+          Some text at the top
+        .row
+          Some text in the middle
+        .row
+          Some text at the bottom
+        
+    .col-xs-4
+      .info-box.result-card
+        .row
+          Some text at the top
+        .row
+          Some text in the middle
+        .row
+          Some text at the bottom
   // The results
 
+  .row.info-box
+  .row.info-box
+  .row.info-box
   - plans.each_with_index do |res, idx|
     .row.indiv-result-row{class: "#{cycle('unshaded', 'shaded', name: 'shading_class')}"}
       .col-xs-3.rescol
