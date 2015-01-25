@@ -4,6 +4,7 @@ body {
 	font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
 //		font-family: 'Cabin', serif;
 		font-size: 16px;
+		background-color: black;
 
 }
 
@@ -59,8 +60,10 @@ body {
 }
 
 .navbar {
+// Removing default Bootstrap styles
+	border-radius: 0px;
 	border: none;
-	margin-bottom: 5px;
+	margin-bottom: 0px;
 	li.bluetext, li.bluetext a, li.bluetext a:hover {
 		color: $new-blue-color;
 	}

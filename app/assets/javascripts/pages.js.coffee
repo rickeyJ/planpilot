@@ -1,8 +1,11 @@
 $ ->
 	# make icon boxes as high as they are wide, for max responsive awesomeness.
 	win_width = $(window).width()
-	left_perc = 27.0 * win_width/1440.0
-#	$('.complex-form-box').css('left', left_perc + '%')
+	win_height = $(window).height()
+	$(".hero").css('min-height', (635.0/800.0)*win_height)
+	
+	pix_value = 0.5 * win_width - 330.0
+	$('.complex-form-box').css('left', pix_value + 'px')
 
 	$('.submit').click( (eventObject) -> 
 		if $('input#page_id').val() != '4'
