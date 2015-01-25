@@ -109,7 +109,9 @@ class Plan < ActiveRecord::Base
 
   def extract_data_for_person(consumer_info, drug_info, pd_info)
     plan_payload = self.deflate_payload
-    name=plan_payload["plan_marketing_name"]
+    plan_name=plan_payload["plan_marketing_name"]
+    provider_name=plan_payload['issuer_name']
+    
     monthly_premium = calculate_premium(consumer_info)
 
     if drug_info
@@ -132,7 +134,7 @@ class Plan < ActiveRecord::Base
     url = network_url
     
     data={plan_db_id: self.id, 'state' => self.state, 'county' => self.county, 'plan_id' => self.plan_identifier,
-          plan_name: name, image: "", monthly_premium: number_to_currency(monthly_premium),
+          provider_name: provider_name, plan_name: plan_name, image: "", monthly_premium: number_to_currency(monthly_premium),
           subsidy: number_to_currency(actual_subsidy), true_annual_cost: number_to_currency(true_cost.to_i, precision: 0),
           final_monthly_premium: number_to_currency(monthly_premium - actual_subsidy),
           ann_premium: number_to_currency(ann_premium), annual_subsidy: number_to_currency(12*actual_subsidy),

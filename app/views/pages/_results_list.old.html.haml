@@ -1,0 +1,91 @@
+.results-list
+  .row
+    .col-xs-4
+      .info-box.result-card
+        .ribbondiv
+          = image_tag 'ribbon-dummy.png', class: 'img-responsive'
+        .providername
+          = res[:provider_name]
+        .planname
+          = res[:issuer_name]
+        .trueannualcost
+          = res[:true_annual_cost]
+        .bold-text
+          Your True Annual Cost Estimate
+
+        (Insurance + Co-pay + Prescription)
+        .monthlypremium
+          = res[:final_monthly_premium]
+        .bold-text
+          Your Monthly Premium
+        = "(After a subsidy of #{res[:subsidy]})"
+
+        .action-row
+          .action-box{style: 'display: inline-block'}
+            %a.plain-a{href: '#' || res[:plan_url], target: '_blank'}
+              Enroll
+          - if 1 || !@current_profile or !@current_profile.plans.include?(Plan.find(res[:plan_db_id]))
+            .save-plan
+              Save Plan
+
+    .col-xs-4
+      .info-box.result-card
+        .row
+          Some text at the top
+        .row
+          Some text in the middle
+        .row
+          Some text at the bottom
+        
+    .col-xs-4
+      .info-box.result-card
+        .row
+          Some text at the top
+        .row
+          Some text in the middle
+        .row
+          Some text at the bottom
+  // The results
+
+  .row.info-box
+  .row.info-box
+  .row.info-box
+  - plans.each_with_index do |res, idx|
+    .row.indiv-result-row{class: "#{cycle('unshaded', 'shaded', name: 'shading_class')}"}
+      .col-xs-3.rescol
+        .ribbon{class: "#{idx==0 ? 'best' : idx==1 ? 'good' : 'none'}"}
+          = "#{idx==0 ? 'Best' : idx==1 ? 'Good' : 'No'} Plan"
+          .ribbon-stitches-top
+            %span
+              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+        .plan-name{'data-plan-db-id'=> res[:plan_db_id]}
+          = link_to res[:plan_name], plan_path(res[:plan_db_id])
+
+      .col-xs-4.innercol.rescol
+        .bold-text
+          = add_help_tags(page_data[:labels][:monthly_premium]) + ": #{res[:monthly_premium]}"
+
+        .result-deets
+          = "#{page_data[:labels][:subsidy]}: #{res[:subsidy]}"
+
+        .bold-text.large.orange-color
+          = "#{page_data[:labels][:final_monthly_premium]}: #{res[:final_monthly_premium]}"
+
+      .col-xs-4.innercol.rescol
+        .bold-text
+          = "#{page_data[:labels][:ann_premium]}: #{res[:ann_premium]}"
+
+        .result-deets
+          = "#{page_data[:labels][:annual_subsidy]}: #{res[:annual_subsidy]}"
+
+        .bold-text.large.pink-color
+          = "#{page_data[:labels][:true_annual_cost]}: #{res[:true_annual_cost]}"
+
+      .col-xs-1.rescol
+        .action-box
+          %a.plain-a{href: res[:plan_url], target: '_blank'}
+            Enroll
+        - if !@current_profile or !@current_profile.plans.include?(Plan.find(res[:plan_db_id]))
+          .save-plan
+            Save Plan
