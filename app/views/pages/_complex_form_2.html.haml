@@ -1,15 +1,5 @@
 - content_for(:main) do 
   %input.agecontrol.form-control{name: 'age',  type: 'text', placeholder: 'Enter your age', value: session[:current_info]['age']}
-  .nextline
-    .forms-checkbox
-      Myself
-      = check_box_tag 'shop_for[]', 'myself', (session[:current_info]['shop_for'] && session[:current_info]['shop_for'].include?('myself'))
-    .forms-checkbox
-      My Children
-      = check_box_tag 'shop_for[]', 'my children', (session[:current_info]['shop_for'] && session[:current_info]['shop_for'].include?('my children'))
-    .forms-checkbox
-      Other Adults  
-      = check_box_tag 'shop_for[]', 'other adults', (session[:current_info]['shop_for'] && session[:current_info]['shop_for'].include?('other adults'))
   .boxtitle
     Number of Dependents  
   %div

@@ -221,10 +221,10 @@ class PagesController < ApplicationController
     # Update the session
     session[:current_info] ||= {}
     
-    [:zip, :shop_for, :marital_status, :number_of_adults, :number_of_children, :age, :smoker, :ongoing_condition, :fave_doctor, :take_prescription, :income, :procedure_names, :drugnames, :drugdosage, :drugorders ].each do |id|
+    [:zip, :marital_status, :number_of_adults, :number_of_children, :age, :smoker, :ongoing_condition, :fave_doctor, :take_prescription, :income, :procedure_names, :drugnames, :drugdosage, :drugorders ].each do |id|
       if params[id]
         session[:current_info][id.to_s]=params[id]
-        if id == :number_of_children
+        if id == :number_of_children || id == :number_of_adults
           session[:current_info][id.to_s] = params[id].to_i
         elsif id == :zip && @page_data[:current_page]==2 # only recompute state when reaching the second form page
 
@@ -285,11 +285,7 @@ class PagesController < ApplicationController
       mod_str = session[:current_info]['income'].gsub(',', '')
       session[:current_info]['income'] = /^s*$/.match(mod_str) ? -1 : mod_str.to_f
     end
-    shop_for = session[:current_info]['shop_for']
-    session[:current_info]['family_number'] = (shop_for && shop_for.include?('other adults')) ?
-                              session[:current_info]['number_of_adults'].to_i : 0
-    session[:current_info]['child_number'] = (shop_for && shop_for.include?('my children')) ?
-                             session[:current_info]['number_of_children'].to_i : 0
+
     session[:current_info]['household_size'] = 1 + session[:current_info]['family_number'] + session[:current_info]['child_number']
   end    
 end
