@@ -1,32 +1,40 @@
-.results-list
+.col-xs-1
+.col-xs-10
   - plans.each_slice(3).with_index do |slice_of_3, slice_index|
-    .row{id: "plan-card-row-#{slice_index}", class: slice_index > 0 ? 'hidden' : ''}
-      - slice_of_3.each do |res|
-        .col-xs-4
-          .info-box.result-card
-            .ribbondiv
-              = image_tag 'ribbon-dummy.png', class: 'img-responsive'
-            .providername
-              = res[:provider_name]
-            .planname
-              = res[:issuer_name]
-            .trueannualcost
-              = res[:true_annual_cost]
-            .bold-text
-              Your True Annual Cost Estimate
+    .row
+      %div{id: "plan-card-row-#{slice_index}", class: slice_index > 0 ? 'hidden' : ''}
+        .row
+          - slice_of_3.each do |res|
+            .col-xs-4
+              .info-box.result-card
+                .ribbondiv
+                  = image_tag 'ribbon-dummy.png', class: 'img-responsive'
+                .providername
+                  = res[:provider_name]
+                .planname
+                  = res[:issuer_name]
+                .trueannualcost
+                  = res[:true_annual_cost]
+                .bold-text
+                  Your True Annual Cost Estimate
 
-            (Insurance + Co-pay + Prescription)
-            .monthlypremium
-              = res[:final_monthly_premium]
-            .bold-text
-              Your Monthly Premium
-            = "(After a subsidy of #{res[:subsidy]})"
-
-            .action-row
-              .action-box{style: 'display: inline-block'}
-                %a.plain-a{href: '#' || res[:plan_url], target: '_blank'}
-                  Enroll
-              - if !@current_profile or !@current_profile.plans.include?(Plan.find(res[:plan_db_id]))
-                .save-plan
-                  Save Plan
-
+                (Insurance + Co-pay + Prescription)
+                .monthlypremium
+                  = res[:final_monthly_premium]
+                .bold-text
+                  Your Monthly Premium
+                = "(After a subsidy of #{res[:subsidy]})"
+                .action-row
+                  .action-box{style: 'display: inline-block'}
+                    %a.plain-a{href: '#' || res[:plan_url], target: '_blank'}
+                      Enroll
+                  - if !@current_profile or !@current_profile.plans.include?(Plan.find(res[:plan_db_id]))
+                    .save-plan
+                      Save Plan
+                    
+        .row{style: 'margin-left: 15px; margin-right: 15px; margin-bottom: 10px;'}
+          .col-xs-5
+          .col-xs-2.view-more-button
+            View More Plans
+          .col-xs-5
+.col-xs-1

@@ -1,4 +1,12 @@
 $ ->
+	current_stage = 1
+	$('.view-more-button').click( (eventObject) ->
+		$(this).hide()
+		clas_name = '#plan-card-row-' + current_stage
+		current_stage += 1
+		$(clas_name).removeClass('hidden')
+		)
+
 	$('.togglebox').click( (eventObject) -> 
 		if $(this).is(':checked')
 			$('.additional_info').show()

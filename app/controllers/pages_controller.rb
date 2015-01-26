@@ -63,7 +63,10 @@ class PagesController < ApplicationController
     if params[:mesg] == 'underconstruction'
       @page_data[:stop_message_header] = 'Traducción al Español próximamente.'
       @page_data[:stop_message_subheader] = 'Spanish translation coming soon.'
-    end
+    elsif params[:mesg] == 'supportbar'
+      @page_data[:stop_message_header] = ''
+      @page_data[:stop_message_subheader] = 'Live chat, video tutorials, audio help, and FAQs coming soon.'
+    end      
     if flash[:stop_message_subheader]
       @page_data[:blank_message] = flash[:stop_message_subheader]
     end

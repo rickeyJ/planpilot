@@ -72,10 +72,6 @@
             %br
     .col-xs-1
 
-.results-bottom-bg      
-  .row.results-row
-    .col-xs-1
-    .col-xs-10
-      = render partial:'results_list', locals: {plans: @plans, page_data: @page_data, in_profile_list: false}
-    .col-xs-1
+.row.results-bottom-bg
+  = render partial:'results_list', locals: {plans: @plans, page_data: @page_data, in_profile_list: false}
 
