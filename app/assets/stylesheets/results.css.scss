@@ -3,7 +3,7 @@
 .results-top-bg {
 	width: 100%;
 	padding: 10px 0 20px;
-	background-color: black;
+	background-color: #c5c5c5;
 
 	.additional_info {
 		display: none;
@@ -30,6 +30,10 @@
 		
 	}
 
+	.profiletext {
+		margin-left: 10px;
+	}
+
 }
 
 .plan-name {
@@ -44,7 +48,7 @@
 }
 
 .results-bottom-bg {
-	background-color: #999;
+	background-color: #ddd;
 	.view-more-button {
 		margin-top: 10px;
 		padding: 10px 30px;
@@ -55,15 +59,16 @@
 	}
 }
 .result-card {
-	padding: 60px 43px 43px 43px;
+	padding: 43px;
 	font-size: 12px;
 
 	.ribbondiv {
 		float: right;
-		margin-top: -70px;
+		margin-top: -55px;
 		margin-right: -20px;
 	}
 	.providername {
+		min-height: 80px;
 		font-size: 28px;
 	}
 
@@ -88,7 +93,7 @@
 			color: white;
 			padding: 10px 30px;
 			margin-left: -5px;
-			margin-right: 75px;
+			margin-right: 25px;
 			border-radius: 5px;
 			text-align: center;
 			margin-top: 10px;

@@ -55,7 +55,7 @@
             %span.filterbar_title
               Income:
             %span.filterbar_text
-              = session[:current_info]['income']
+              = number_to_currency(session[:current_info]['income'], precision: 0)
                 
         .col-xs-3
           %a{href: '/page/4'}
