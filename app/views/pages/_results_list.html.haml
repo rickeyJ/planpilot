@@ -10,9 +10,9 @@
                 .ribbondiv
                   = image_tag 'ribbon-dummy.png', class: 'img-responsive'
                 .providername
-                  = res[:provider_name]
+                  = link_to res[:provider_name], plan_path(Plan.find(res[:plan_db_id]))
                 .planname
-                  = res[:issuer_name]
+                  = res[:plan_name]
                 .trueannualcost
                   = res[:true_annual_cost]
                 .bold-text
@@ -26,7 +26,7 @@
                 = "(After a subsidy of #{res[:subsidy]})"
                 .action-row
                   .action-box{style: 'display: inline-block'}
-                    %a.plain-a{href: '#' || res[:plan_url], target: '_blank'}
+                    %a.plain-a{href: res[:plan_url], target: '_blank'}
                       Enroll
                   - if !@current_profile or !@current_profile.plans.include?(Plan.find(res[:plan_db_id]))
                     .save-plan
