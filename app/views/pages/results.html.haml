@@ -10,10 +10,11 @@
           Your Healthcare Profile
       .row{style: 'margin-top: 20px;'}
         .col-xs-3
-          .icon-box.icon-complete.inlined
-            = image_tag 'disabled/zip.png', class: 'img-responsive inlined'
-            .editbutton
-              Edit
+          %a{href: '/page/1'}
+            .icon-box.icon-complete.inlined
+              = image_tag 'disabled/zip.png', class: 'img-responsive inlined'
+              .editbutton
+                Edit
           .profiletext.inlined.topalign
             %span.filterbar_title
               Zip Code:
@@ -23,10 +24,11 @@
             %span.filterbar_text
               = "#{session[:current_info]['county']} County"
         .col-xs-3
-          .icon-box.icon-complete.inlined
-            = image_tag 'disabled/household.png', class: 'img-responsive inlined'
-            .editbutton
-              Edit
+          %a{href: '/page/2'}
+            .icon-box.icon-complete.inlined
+              = image_tag 'disabled/household.png', class: 'img-responsive inlined'
+              .editbutton
+                Edit
           .profiletext.inlined.topalign
             %span.filterbar_title
               Age:
@@ -44,10 +46,11 @@
               = session[:current_info]['family_number']
 
         .col-xs-3
-          .icon-box.icon-complete.inlined
-            = image_tag 'disabled/income.png', class: 'img-responsive inlined'
-            .editbutton
-              Edit
+          %a{href: '/page/3'}
+            .icon-box.icon-complete.inlined
+              = image_tag 'disabled/income.png', class: 'img-responsive inlined'
+              .editbutton
+                Edit
           .profiletext.inlined.topalign
             %span.filterbar_title
               Income:
@@ -55,10 +58,11 @@
               = session[:current_info]['income']
                 
         .col-xs-3
-          .icon-box.icon-complete.inlined
-            = image_tag 'disabled/procedures.png', class: 'img-responsive inlined'
-            .editbutton
-              Edit
+          %a{href: '/page/4'}
+            .icon-box.icon-complete.inlined
+              = image_tag 'disabled/procedures.png', class: 'img-responsive inlined'
+              .editbutton
+                Edit
           .profiletext.inlined.topalign
             %span.filterbar_title
               Prescriptions:

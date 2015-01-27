@@ -285,7 +285,8 @@ class PagesController < ApplicationController
       mod_str = session[:current_info]['income'].gsub(',', '')
       session[:current_info]['income'] = /^s*$/.match(mod_str) ? -1 : mod_str.to_f
     end
-
+    session[:current_info]['family_number'] ||= 0
+    session[:current_info]['child_number'] ||= 0
     session[:current_info]['household_size'] = 1 + session[:current_info]['family_number'] + session[:current_info]['child_number']
   end    
 end
