@@ -4,11 +4,12 @@
     .row
       %div{id: "plan-card-row-#{slice_index}", class: slice_index > 0 ? 'hidden' : ''}
         .row
-          - slice_of_3.each do |res|
+          - slice_of_3.each_with_index do |res, inner_index|
             .col-xs-4
               .info-box.result-card
-                .ribbondiv
-                  = image_tag 'ribbon-dummy.png', class: 'img-responsive'
+                - if slice_index == 0
+                  .ribbondiv
+                    = image_tag "ribbon-#{['first', 'second', 'third'][inner_index]}.png", class: 'img-responsive'
                 .providername
                   = link_to res[:provider_name], plan_path(Plan.find(res[:plan_db_id]))
                 .planname
