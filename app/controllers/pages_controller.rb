@@ -201,11 +201,9 @@ class PagesController < ApplicationController
 
   def setup_page
     @page_data[:current_page]=!(params[:page_id].blank?) ? params[:page_id].to_i : 1
-    
-    puts ">>> looking at page #{@page_data[:current_page]} with session data before -- #{session[:current_info]}"
     @page_data[:random_person_index]=rand(3)+1
 
-    # We can destroy the session from the root page.
+    # We can destroy the session from the root page, if a special parameter is set
     if @page_data[:current_page] == 1 && params[:null_session]
       null_session
     end
@@ -213,8 +211,6 @@ class PagesController < ApplicationController
     @page_data.merge! (@@page_data_table[@page_data[:current_page]])
     # Put the current info into the session
     build_current_info
-    puts ">>> and after -- #{session[:current_info]}"
-
   end
 
   def build_current_info

@@ -3,13 +3,11 @@ source 'https://rubygems.org'
 ruby '2.2.1'
 
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
-gem 'rails', '~> 4.1'
-# Uncomment this for Heroku
-gem 'rails_12factor'
-
+gem 'rails', '~> 4.2'
 gem 'quiet_assets'
 gem 'activerecord-session_store'
 
+# Temporarily removing until eventmachine compiles on OSX for Ruby 2.2.1
 gem 'thin'
 # Admin Interface
 gem 'rails_admin'
@@ -31,23 +29,19 @@ gem 'jquery-rails'
 gem 'turbolinks'
 gem 'underscore-rails'
 
-# Build JSON APIs with ease. Read more: https://github.com/rails/jbuilder
-gem 'jbuilder'
-
 group :doc do
   # bundle exec rake doc:rails generates the API under doc/api.
   gem 'sdoc', require: false
 end
 
-gem 'devise', git: 'https://github.com/plataformatec/devise.git', :branch => 'lm-rails-4-2'
+gem 'devise'#, git: 'https://github.com/plataformatec/devise.git', :branch => 'lm-rails-4-2'
 gem 'haml-rails'
-gem 'cancan'
-
-gem 'twitter-bootstrap-rails', :git => 'git://github.com/seyhunak/twitter-bootstrap-rails.git'
-gem 'resque-web', require: 'resque_web'
-gem 'resque-scheduler'
+gem 'bootstrap-sass'
 
 group :production do
+# Uncomment this for Heroku
+  gem 'rails_12factor'
+
   gem 'pg'
   gem 'activerecord-postgresql-adapter'
 end
@@ -55,15 +49,10 @@ end
 gem 'therubyracer'
 gem 'less-rails'
 
-gem 'formtastic'
-gem 'formtastic-bootstrap', github: 'siruguri/formtastic-bootstrap'
-
 group :development do
   # Use sqlite3 as the database for Active Record
   gem 'sqlite3'
-end
 
-group :development do
   gem 'pry'
   gem 'pry-remote'
   gem 'pry-stack_explorer'
@@ -87,5 +76,7 @@ group :development, :test do
   gem 'dotenv-rails'
   gem 'rspec-rails'
 end
+
+# Integrations
 
 gem 'pokitdok-ruby'
