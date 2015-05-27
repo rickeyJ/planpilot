@@ -39,3 +39,7 @@ bower.json
 data/*
 .DS_Store
 *.zip
+.vagrant/
+#except 7-zip cookbook
+!7-zip
+!rbenv
