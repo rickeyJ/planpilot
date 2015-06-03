@@ -51,15 +51,21 @@ You will have to login for setting up additional app-specific libraries. You can
 
 You are now ready to install the following packages:
 
+1. Ruby
+1. SQLite3
 1. Postgres
 1. QT
 1. The Ruby bundler gem
 
 Login to the box either via the GUI, or by typing in `vagrant ssh` in your Rails root folder. If you use the GUI, log in as 
 
-*Make Coffee Alert:*: Run the following commands to get these packages - be warned that compiling Ruby will take a while.
+*Make Coffee Alert:*: Run the following commands to get these packages - be warned that compiling Ruby (the last step in this sequence) will take a while.
 
 ````
+# SQLite3 dependencies: the default dev database is SQLite3, so you will most probably
+# need this.
+sudo apt-get install libsqlite3-dev
+
 # Postgres dependencies
 # These are only necessary if you are going to use the production environment; you can avoid this by bundling
 # without the production group; if you are not familiar with Rails terminology, just install the libraries.
@@ -70,6 +76,9 @@ sudo apt-get install libpq-dev postgresql postgresql-contrib
 sudo apt-get install qt5-default libqt5webkit5-dev
 
 # Ruby bundle
+
+# Ruby needs a couple of packages first
+sudo apt-get install libreadline-dev
 sudo apt-get install libffi-dev	
 sudo apt-get install rbenv
 rbenv install 2.2.1
@@ -87,9 +96,17 @@ rbenv rehash
 
 ````
 
-Now go to the `/vagrant` folder and run `bundle install`
+Now go to the `/vagrant` folder and run:
 
-You should now be set to run your rake tasks in the VM!
+
+````
+bundle install
+
+# RBenv shims have to be rehashed to notice the rails executable
+rbenv rehash
+````
+
+You should now be set to run your rake tasks in the VM.
 
 ## Starting the server
 
