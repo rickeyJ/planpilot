@@ -13,7 +13,11 @@ Vagrant.configure(2) do |config|
   # Every Vagrant development environment requires a box. You can search for
   # boxes at https://atlas.hashicorp.com/search.
   config.vm.box = "ubuntu/trusty64"
-
+  config.vm.boot_timeout = 1000
+  config.vm.provider :virtualbox do |vb|
+    vb.gui = true
+  end
+  
   # Disable automatic box update checking. If you disable this, then
   # boxes will only be checked for updates when the user runs
   # `vagrant box outdated`. This is not recommended.
@@ -74,13 +78,12 @@ Vagrant.configure(2) do |config|
   # SHELL
 
   config.vm.provision :chef_solo do |chef|
-    chef.cookbooks_path = ["cookbooks", "site-cookbooks"]
+    chef.cookbooks_path = ["cookbooks"]
 
     chef.add_recipe "apt"
     chef.add_recipe "nodejs"
     chef.add_recipe "ruby_build"
-    chef.add_recipe "vim"
-
+    
     # Install Ruby 2.2.1 and Bundler
     chef.json = {
       rbenv: {

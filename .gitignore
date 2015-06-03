@@ -43,3 +43,4 @@ data/*
 #except 7-zip cookbook
 !7-zip
 !rbenv
+cookbooks/
