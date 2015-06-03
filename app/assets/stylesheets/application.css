@@ -11,7 +11,6 @@
  *= require_self
  *= require bootstrap
  *= require bootstrap_and_overrides
- *= require formtastic-bootstrap
  *= require devise.css
  *= require custom.css
  *= require pages.css

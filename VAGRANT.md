@@ -57,21 +57,47 @@ You are now ready to install the following packages:
 
 Login to the box either via the GUI, or by typing in `vagrant ssh` in your Rails root folder. If you use the GUI, log in as 
 
-Run the following commands for each of these:
+*Make Coffee Alert:*: Run the following commands to get these packages - be warned that compiling Ruby will take a while.
 
 ````
 # Postgres dependencies
+# These are only necessary if you are going to use the production environment; you can avoid this by bundling
+# without the production group; if you are not familiar with Rails terminology, just install the libraries.
 sudo apt-get install libpq-dev postgresql postgresql-contrib
 
 # QT
+# Required for the test group in the Gemfile
 sudo apt-get install qt5-default libqt5webkit5-dev
 
 # Ruby bundle
-gem install bundle
-rbenv rehash
+sudo apt-get install libffi-dev	
+sudo apt-get install rbenv
+rbenv install 2.2.1
+echo 'export PATH="$HOME/.rbenv/bin:$HOME/.rbenv/shims:$PATH"' >> ~/.bash_profile
 
 ````
 
-Log out and log back in. Go to `/vagrant` and run `bundle install`
+Log out and log back in
+
+````
+
+gem install bundle
+rbenv rehash
+
+
+````
+
+Now go to the `/vagrant` folder and run `bundle install`
 
 You should now be set to run your rake tasks in the VM!
+
+## Starting the server
+
+The Vagrant VM is configured to accept connections at port 3001, via a configuration line in `Vagrantfile`. This means your Rails app needs to be started to listen in at 3001, rather than the default of 3000.
+
+Also, note that the IP address binding from host to guest is to forward 127.0.0.1 **on the host** to 0.0.0.0 **on the guest.**
+
+So you have to start the Rails app with these bindings in mind, like so:
+
+    rails s -b 0.0.0.0 -p 3001
+

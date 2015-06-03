@@ -352,3 +352,6 @@ DEPENDENCIES
   turbolinks
   uglifier
   underscore-rails
+
+BUNDLED WITH
+   1.10.2
