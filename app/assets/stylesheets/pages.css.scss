@@ -33,7 +33,7 @@
 	width: 100%;
 	min-height: 635px;
 	background-color: peach;
-	background:  asset-url("retina_background_notext.png") no-repeat scroll top left ;
+	background:  asset-url("retina_background_notext.jpg") no-repeat scroll top left ;
 	background-size: cover;
 	overflow: hidden;
 	
@@ -255,7 +255,7 @@
 
 // Override stuff for first page
 .hero.homepage-override {
-	background:  asset-url("retina_background.png") no-repeat scroll top left ;
+	background:  asset-url("retina_background.jpg") no-repeat scroll top left ;
 	background-size: cover;
 }
 .complex-form-box.homepage-override {
