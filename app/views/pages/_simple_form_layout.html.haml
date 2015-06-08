@@ -1,4 +1,4 @@
-.complex-form-box{class: "#{@page_data[:current_page]==1?'homepage-override':''}", style: 'width: 0px; '}
+.complex-form-box{class: "#{@page_data[:current_page]==1?'homepage-override':''}"}
   .question-follow
   = form_tag("/page/#{@page_data[:next_page]}", id: 'pageform') do
     .form-content
