@@ -44,3 +44,6 @@ data/*
 !7-zip
 !rbenv
 cookbooks/
+
+# Ignore the backup files created by some editors
+*~
