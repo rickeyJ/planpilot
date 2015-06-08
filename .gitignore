@@ -48,4 +48,3 @@ cookbooks/
 # Ignore the backup files created by some editors
 *~
 *_test.sh
-
