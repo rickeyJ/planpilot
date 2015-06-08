@@ -80,6 +80,8 @@ body {
 		font-size: 1em;
 	}
 	.nav > li {
+		display: inline;
+		float: none;
 		a {
 			display: inline-block;
 			padding: 0px;
