@@ -34,6 +34,7 @@
 	background: asset-url("retina_background_notext_muted.jpg") no-repeat scroll top center ;
 	background-size: cover;
 	overflow: hidden;
+	padding-top: 30px;
 	position: relative;
 	
 	.top-container {
@@ -278,6 +279,10 @@
 	width: 150px;
 	font-size: 22px;
 	background-color: grey;
+}
+
+.btn.btn-default.submit {
+	border-radius: 0;
 }
 
 .icon-box {
