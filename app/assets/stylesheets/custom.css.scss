@@ -204,12 +204,8 @@ body {
 }
 
 .input-group .form-control,  .input-group .form-control:first-child{
-	width: 95%;
 	margin-right: 5px;
 	border-radius: 5px;
-}
-.input-group .btn, .input-group-btn:last-child > .btn {
-	border-radius: 15px;
 }
 .form-control::-webkit-input-placeholder {
     color: $new-blue-color;

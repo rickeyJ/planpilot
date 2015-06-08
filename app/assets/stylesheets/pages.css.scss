@@ -27,15 +27,14 @@
 }
 
 .hero {
-	&.row {
-		margin-left: 0px;
-	}
+  margin: 0;
 	width: 100%;
-	min-height: 635px;
+	min-height: 690px;
 	background-color: peach;
-	background:  asset-url("retina_background_notext.jpg") no-repeat scroll top left ;
+	background: asset-url("retina_background_notext.jpg") no-repeat scroll top center ;
 	background-size: cover;
 	overflow: hidden;
+	position: relative;
 	
 	.top-container {
 		margin-top: 100px;
@@ -43,7 +42,10 @@
 		width: 83%;
 	}
 	.formbox {
-		margin-left: 50px;
+		font-size: 14px;
+		position: absolute;
+		top: 50%;
+		width: 100%;
 	}
 }
 
@@ -153,9 +155,15 @@
 }
 
 .zipcodecontrol {
-	width: 300px;
-	border-radius: 5px;
-	background:  asset-url("zip_small.png") no-repeat scroll white 15px 25px;
+	background: asset-url("zip_small.png") no-repeat scroll white 9px center;
+}
+.form-control.zipinput.zipcodecontrol {
+	line-height: 120%
+}
+.form-control.zipinput.zipcodecontrol, .btn.btn-default.submit {
+	font-size: 160%;
+	height: 60px;
+	width: auto;
 }
 .noc-control {
 	width: 300px;
@@ -193,10 +201,8 @@
 // For complex form box
 .complex-form-box {
 	background-color: white;
-	color: black;
 	border-top: 5px solid $new-blue-color;
 	display: inline-block;
-	position: relative;
 	width: 100%;
 	padding: 10px;
 	.icon-row {
@@ -220,6 +226,26 @@
 	input {
 		height: 47px;
 	}
+}
+
+.homepage-override .input-group {
+	text-align: center;
+}
+
+.input-group {
+	width: 100%;
+}
+
+.form-content .input-group,
+.form-content .input-group .zipcodecontrol,
+.form-content .input-group-btn {
+	display: inline-block;
+}
+
+.button.btn.btn-default.submit {
+	width: 150px;
+	font-size: 22px;
+	background-color: grey;
 }
 
 .icon-box {
@@ -255,15 +281,17 @@
 
 // Override stuff for first page
 .hero.homepage-override {
-	background:  asset-url("retina_background.jpg") no-repeat scroll top left ;
+	background: asset-url("retina_background.jpg") no-repeat scroll top center ;
 	background-size: cover;
 }
+
+.hero.homepage-override .question-follow {
+	display: none;
+}
+
 .complex-form-box.homepage-override {
 	background-color: transparent;
 	border-top: none;
-	position: absolute;
-	top: 55%;
-	left: 375px;
 }
 
 .forms-checkbox {
@@ -292,11 +320,9 @@ input[type=text] {
 
 .form-content {
 	line-height: 350%;
-	width: 100%;
 
 	button {
-		float: right;
-		padding: 8px 50px;
+		padding: 8px 33px;
 		font-size: 18px;
 	}
 }
