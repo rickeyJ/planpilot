@@ -31,15 +31,15 @@
 	width: 100%;
 	min-height: 690px;
 	background-color: peach;
-	background: asset-url("retina_background_notext.jpg") no-repeat scroll top center ;
+	background: asset-url("retina_background_notext_muted.jpg") no-repeat scroll top center ;
 	background-size: cover;
-	overflow: hidden;
+	overflow: auto;
+	padding-top: 30px;
 	position: relative;
 	
 	.top-container {
 		margin-top: 100px;
-		margin-left: 225px;
-		width: 83%;
+		min-width: 550px;
 	}
 	.formbox {
 		font-size: 14px;
@@ -47,6 +47,14 @@
 		top: 50%;
 		width: 100%;
 	}
+  .titlebox {
+		color: black;
+		margin: 0 auto;
+		position: relative;
+		top: 150px;
+		text-align: center;
+		width: 50%;
+  }
 }
 
 
@@ -162,9 +170,29 @@
 }
 .form-control.zipinput.zipcodecontrol, .btn.btn-default.submit {
 	font-size: 160%;
-	height: 60px;
+	height: 48px;
+	margin: 0 30px;
 	width: auto;
 }
+.homepage-override {
+  .form-control.zipinput.zipcodecontrol, .btn.btn-default.submit {
+		margin: 0;
+  }
+}
+.home-title {
+	font-size: 170%;
+	margin-bottom: 20px;
+	text-align: center;
+	font-weight: bold;
+	width: 100%;
+}
+.home-subtitle {
+  font-size: 100%;
+  font-weight: lighter;
+}
+.homepage-override .btn.btn-default.submit {
+    background-color: #09A8A8;
+  }
 .noc-control {
 	width: 300px;
 	border-radius: 5px;
@@ -242,10 +270,18 @@
 	display: inline-block;
 }
 
+.input-group-btn {
+  width: auto;
+}
+
 .button.btn.btn-default.submit {
 	width: 150px;
 	font-size: 22px;
 	background-color: grey;
+}
+
+.btn.btn-default.submit {
+	border-radius: 0;
 }
 
 .icon-box {
@@ -281,7 +317,7 @@
 
 // Override stuff for first page
 .hero.homepage-override {
-	background: asset-url("retina_background.jpg") no-repeat scroll top center ;
+	background: asset-url("retina_background_notext_muted.jpg") no-repeat scroll top center ;
 	background-size: cover;
 }
 

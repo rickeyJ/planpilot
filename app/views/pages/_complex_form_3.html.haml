@@ -1,6 +1,6 @@
 = content_for :main do
   .input-group  
-    %input#income.income-control.zipinput.inline.form-control{name: 'income',  type: 'text', placeholder: 'Enter your annual income', value: session[:current_info]['income'] != -1 ? session[:current_info]['income'] : '', style: 'width: 350px; padding-left: 50px;'}
+    %input#income.income-control.zipinput.inline.form-control{name: 'income',  type: 'text', placeholder: 'Annual income', value: session[:current_info]['income'] != -1 ? session[:current_info]['income'] : '', size: '15', style: 'width: auto; padding-left: 50px;'}
     %span.input-group-btn
       %button.btn.btn-default.submit
         Next  
