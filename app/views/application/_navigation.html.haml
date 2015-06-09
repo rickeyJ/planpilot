@@ -13,13 +13,17 @@
       %ul.nav.navbar-nav.navbar-right{style: 'font-size: 22px;'}
         - if current_user
           %li
-            = link_to("PROFILE", profile_path) + " | "
+            = link_to("PROFILE", profile_path)
+          %li.nav-separation
+            = "|"
           %li.bluetext
             = link_to("SIGN OUT (#{current_user.email[0..8]}...)", destroy_user_session_path, :method => :delete)
         - else
           %li.bluetext
             %b
-              = link_to('Login', new_user_session_path) + " | "
+              = link_to('Login', new_user_session_path)
+          %li.nav-separation
+            = "|"
 
           %li.orangetext
             %b
