@@ -1,5 +1,5 @@
 - content_for(:main) do 
-  %input.agecontrol.form-control{name: 'age',  type: 'text', placeholder: 'Enter your age', value: session[:current_info]['age']}
+  %input.agecontrol.form-control{name: 'age',  type: 'text', placeholder: 'Enter your age', value: session[:current_info]['age'], autofocus: true}
   .boxtitle
     Number of Dependents  
   %input.noc-control.form-control{name: 'number_of_children', type: 'text', value: session[:current_info]['number_of_children'] == 0 ? '' : session[:current_info]['number_of_children'], placeholder: 'Dependents (26 and under)', style: 'width: 290px;'}

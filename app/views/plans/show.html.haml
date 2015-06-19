@@ -48,12 +48,15 @@
           .bold-text
             = "Customer Service Toll Free: #{@plan.payload_data['customer_service_phone_number_toll_free']}"
       .col-xs-6
-        %a{href: @plan.network_url, target: "_blank"}
+        %a{href: "https://www.healthsherpa.com/managed_applications/new?enrollment_type=managed&plan_hios_id=#{@plan.plan_identifier}&zip_code=#{@session_info['zip']}&csr_type=none&subsidy=#{@session_info['subsidy']}&premium=196.09&year=#{ENV['CURRENT_YEAR']}", target: "_blank"}
           .section-title.buttonbox
             .large-text
-              Purchase Now
+              Purchase With HealthSherpa
             .fineprint-text
               (This link will open a new tab and take you to a page outside HealthPlanForYou.org)
+        %a{href: @plan.network_url, target: "_blank"}
+          .section-title.buttonbox
+            Go To Plan Site
   
     .col-xs-2
 

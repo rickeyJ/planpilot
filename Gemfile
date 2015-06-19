@@ -52,7 +52,9 @@ gem 'less-rails'
 group :development do
   # Use sqlite3 as the database for Active Record
   gem 'sqlite3'
-
+  gem "better_errors"
+  gem "binding_of_caller"
+  gem 'web-console'
   gem 'pry'
   gem 'pry-remote'
   gem 'pry-stack_explorer'
