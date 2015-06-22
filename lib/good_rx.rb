@@ -42,7 +42,7 @@ module GoodRx
         "#{k.to_s.gsub(/ /, '+')}=#{v.gsub(/ /, '+')}"
       end.join '&'
 
-      digest = Digest::HMAC.digest(full_query_string, secret_key, Digest::SHA256)
+      digest = OpenSSL::HMAC.digest(OpenSSL::Digest.new('sha256'), secret_key, full_query_string)
       api_params[:sig]=Base64.encode64 digest
       api_params[:sig].gsub! /\+/, '_'
       api_params[:sig].gsub! /\//, '_'
